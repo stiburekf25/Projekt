@@ -18,25 +18,43 @@ rozliseni_okna = (okno_sirka, okno_vyska)
 kamera_x = 0
 
 info_jezero = 1570
+info_shop = 920
 
 leva_zona = 300
 prava_zona = 400
 
 pocitadlo = 0
 
+inventar = False 
 
+#predmety
+coins = 0
+plechovka = 0
+bota = 0
+kapr = 0
+
+
+
+#BARVICKY
+zluta = (205, 235, 98)
+cerna = (0, 0, 0)
+bila = (255, 255, 255)
+seda = (94, 94, 94)
 
 
 okno = pygame.display.set_mode(rozliseni_okna)
 clock = pygame.time.Clock()
 
+# obrazky levelu
 venek = pygame.image.load("venek.png")
 jezero = pygame.image.load("level_2.png")
+shop = pygame.image.load("shop.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
 pozadi_vyska = pozadi.get_height()
 
+#obrazky pepy
 postava = pygame.image.load("pepa.png")
 TEXTURApostava = pygame.transform.scale(postava, (hrac_velikostX, hrac_velikostY))
 
@@ -53,14 +71,12 @@ TEXTURApepa_1 = pygame.transform.scale(pepa_1, (hrac_velikostX, hrac_velikostY))
 pepa_2 = pygame.image.load("pepa_levo_2.png")
 TEXTURApepa_2 = pygame.transform.scale(pepa_2, (hrac_velikostX, hrac_velikostY))
 
-
-
-
-
-
-
+#priprava textu
 E_font = pygame.font.SysFont("Aharoni", 40)
-E_text = E_font.render("E", True, (0, 0, 0))
+E_text = E_font.render("E", True, (cerna))
+
+coins_font = pygame.font.SysFont("Aharoni", 30)
+coins_text = coins_font.render(("golds:"f"{coins}"), True, (seda))
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
@@ -84,6 +100,7 @@ while True:
     pocet_snimku = 2
     faktor_zpozdeni = 8
     
+    #animace pepy pri chuzi
     if stisknuto[pygame.K_d]:
         if pocitadlo % (pocet_snimku * faktor_zpozdeni) < faktor_zpozdeni:
             aktualni_sprite = TEXTURApepa1
@@ -99,12 +116,15 @@ while True:
         else:
             aktualni_sprite = TEXTURApepa_2
         hrac_pozice_x -= hrac_rychlost
-        
+    
+    #inventar zapinani a vypinani
+    if stisknuto[pygame.K_SPACE]:
+        inventar = True
+    
+    if stisknuto[pygame.K_ESCAPE]:
+        inventar = False 
     
     #VENEK
-    
-
-
     
     if pozadi == venek:
         if hrac_pozice_x < 190:
@@ -125,6 +145,7 @@ while True:
 
 
         info_jezero_obrazovka_x = info_jezero - kamera_x
+        info_shop_obrazovka_x = info_shop - kamera_x
         
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
             
@@ -138,7 +159,18 @@ while True:
             hrac_velikostX= 110
             hrac_velikostY = 170
             hrac_rychlost = 4
-    
+        
+        stojim_u_shopu = hrac_pozice_x > 750 and hrac_pozice_x < 1020
+        
+        if stojim_u_shopu and stisknuto[pygame.K_e]:
+            pozadi = shop
+            
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
+            
+            
+        
     #JEZERO
     if pozadi == jezero:
         if hrac_pozice_x < 0:
@@ -159,14 +191,31 @@ while True:
     
     # VYKRESLENI PRVKU HRY
     
-    okno.blit(pozadi, (-kamera_x, 0))
-    okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
+    if pozadi != shop:
+        okno.blit(pozadi, (-kamera_x, 0))
+    else:
+        okno.blit(pozadi, (0, 0))
+    
+    
+        
+    okno.blit(coins_text, (20, 30))
 
     
     if pozadi == venek and stojim_u_jezera:
-        pygame.draw.rect(okno, (255, 255, 255), (info_jezero_obrazovka_x, 340, 50, 50))
+        pygame.draw.rect(okno, (bila), (info_jezero_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
+    if pozadi == venek and stojim_u_shopu:
+        pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
+        okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
 
+    if pozadi != shop:
+        okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
+    
+        if inventar:
+            pygame.draw.rect(okno, (bila), (hrac_obrazovka_x - (300 - hrac_velikostX) / 2, 100, 300, 100))
+
+
+        
     print(kamera_x, hrac_pozice_x)
     
     clock.tick(60)
