@@ -25,7 +25,22 @@ prava_zona = 400
 
 pocitadlo = 0
 
-inventar = False 
+okno = pygame.display.set_mode(rozliseni_okna)
+clock = pygame.time.Clock()
+
+#BARVICKY
+zluta = (205, 235, 98)
+cerna = (0, 0, 0)
+bila = (255, 255, 255)
+seda = (94, 94, 94)
+
+
+#inventar
+inventar = False
+buy = pygame.draw.rect(okno, (seda), (120, 335, 200, 100))
+sell = pygame.draw.rect(okno, (seda), (480, 335, 200, 100))
+leave = pygame.draw.rect(okno, (seda), (670, 520, 100, 50))
+shop_mode = None # nic / buy / sell
 
 #predmety
 coins = 0
@@ -35,15 +50,8 @@ kapr = 0
 
 
 
-#BARVICKY
-zluta = (205, 235, 98)
-cerna = (0, 0, 0)
-bila = (255, 255, 255)
-seda = (94, 94, 94)
 
 
-okno = pygame.display.set_mode(rozliseni_okna)
-clock = pygame.time.Clock()
 
 # obrazky levelu
 venek = pygame.image.load("venek.png")
@@ -71,6 +79,9 @@ TEXTURApepa_1 = pygame.transform.scale(pepa_1, (hrac_velikostX, hrac_velikostY))
 pepa_2 = pygame.image.load("pepa_levo_2.png")
 TEXTURApepa_2 = pygame.transform.scale(pepa_2, (hrac_velikostX, hrac_velikostY))
 
+pepa_lod = pygame.image.load("pepa_beznohy.png")
+TEXTURApepa_lod = pygame.transform.scale(pepa_lod, (hrac_velikostX, hrac_velikostY))
+
 #obrazek inv
 inv = pygame.image.load("inventar.png")
 TEXTURAinv = pygame.transform.scale(inv, (500, 300))
@@ -97,6 +108,9 @@ while True:
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
     stisknuto = pygame.key.get_pressed()
+    mys_pozice = pygame.mouse.get_pos()
+    klik = pygame.mouse.get_pressed()
+
     
     # UPRAVA HRY MEZI FRAMY
     
@@ -106,6 +120,8 @@ while True:
     faktor_zpozdeni = 8
     
     #animace pepy pri chuzi
+    
+    
     if stisknuto[pygame.K_d]:
         if pocitadlo % (pocet_snimku * faktor_zpozdeni) < faktor_zpozdeni:
             aktualni_sprite = TEXTURApepa1
@@ -161,7 +177,7 @@ while True:
             
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-            hrac_pozice_x = 50
+            hrac_pozice_x = 370
             hrac_pozice_y = 320
             hrac_velikostX= 110
             hrac_velikostY = 170
@@ -169,22 +185,24 @@ while True:
         
         stojim_u_shopu = hrac_pozice_x > 750 and hrac_pozice_x < 1020
         
+        
         if stojim_u_shopu and stisknuto[pygame.K_e]:
             pozadi = shop
+            hrac_rychlost = 0
             
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         
 
             
-            
         
     #JEZERO
     if pozadi == jezero:
-        if hrac_pozice_x < 0:
-            hrac_pozice_x = 0
-        if hrac_pozice_x > pozadi_sirka - hrac_velikostX:
-            hrac_pozice_x = pozadi_sirka - hrac_velikostX
+        aktualni_sprite = TEXTURApepa_lod
+        if hrac_pozice_x < 330:
+            hrac_pozice_x = 330
+        if hrac_pozice_x > 422:
+            hrac_pozice_x = 422
     
             
         if hrac_obrazovka_x > prava_zona:
@@ -196,7 +214,22 @@ while True:
             kamera_x = 0
         if kamera_x > pozadi_sirka - okno_sirka:
             kamera_x = pozadi_sirka - okno_sirka 
-    
+        
+        stojim_u_leva_lod = hrac_pozice_x > 329 and hrac_pozice_x < 350
+        
+        if stojim_u_leva_lod and stisknuto[pygame.K_e]:
+            pozadi = venek
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+
+            hrac_pozice_x = 1312
+            hrac_pozice_y = 315
+
+            hrac_velikostX = 110
+            hrac_velikostY = 170
+            hrac_rychlost = 4
+
+            kamera_x = 0
 
     # VYKRESLENI PRVKU HRY
     
@@ -216,16 +249,71 @@ while True:
     if pozadi == venek and stojim_u_shopu:
         pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
         okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
+    if pozadi == jezero and stojim_u_leva_lod:
+        pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
+        okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
+
 
     if pozadi != shop:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
     
         if inventar:
             okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
+    
+    if pozadi == shop:
+        pygame.draw.rect(okno, seda, buy)
+        pygame.draw.rect(okno, seda, sell)
+        pygame.draw.rect(okno, seda, leave)
 
+    
+    if pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    else:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
+    if pozadi == shop and shop_mode is None: 
+        if buy.collidepoint(mys_pozice) and klik[0]:
+            shop_mode = "buy"
         
-    print(kamera_x, hrac_pozice_x)
+        if sell.collidepoint(mys_pozice) and klik[0]:
+            shop_mode = "sell"
+        
+        if leave.collidepoint(mys_pozice) and klik[0]:
+            pozadi = venek
+            shop_mode = None
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+
+            hrac_pozice_x = 888
+            hrac_pozice_y = 315
+
+            hrac_velikostX = 110
+            hrac_velikostY = 170
+            hrac_rychlost = 4
+
+            kamera_x = 0
+
+
+    if pozadi == shop and shop_mode is None:
+        pygame.draw.rect(okno, seda, buy)
+        pygame.draw.rect(okno, seda, sell)
+        pygame.draw.rect(okno, seda, leave)
+
+
+    if pozadi == shop and shop_mode == "buy":
+        # tady později itemy
+        pass
+
+    if pozadi == shop and shop_mode == "sell":
+        # tady ryby
+        pass
+    
+    if pozadi == shop and stisknuto[pygame.K_ESCAPE]:
+        shop_mode = None
+    
+
+    print(shop_mode)
+    #print(kamera_x, hrac_pozice_x)
     
     clock.tick(60)
     pygame.display.update()
