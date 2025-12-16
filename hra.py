@@ -71,6 +71,11 @@ TEXTURApepa_1 = pygame.transform.scale(pepa_1, (hrac_velikostX, hrac_velikostY))
 pepa_2 = pygame.image.load("pepa_levo_2.png")
 TEXTURApepa_2 = pygame.transform.scale(pepa_2, (hrac_velikostX, hrac_velikostY))
 
+#obrazek inv
+inv = pygame.image.load("inventar.png")
+TEXTURAinv = pygame.transform.scale(inv, (500, 300))
+
+
 #priprava textu
 E_font = pygame.font.SysFont("Aharoni", 40)
 E_text = E_font.render("E", True, (cerna))
@@ -120,10 +125,12 @@ while True:
     #inventar zapinani a vypinani
     if stisknuto[pygame.K_SPACE]:
         inventar = True
+        hrac_rychlost = 0
     
     if stisknuto[pygame.K_ESCAPE]:
         inventar = False 
-    
+        hrac_rychlost = 4
+
     #VENEK
     
     if pozadi == venek:
@@ -167,7 +174,8 @@ while True:
             
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-            
+        
+
             
             
         
@@ -189,6 +197,7 @@ while True:
         if kamera_x > pozadi_sirka - okno_sirka:
             kamera_x = pozadi_sirka - okno_sirka 
     
+
     # VYKRESLENI PRVKU HRY
     
     if pozadi != shop:
@@ -197,8 +206,8 @@ while True:
         okno.blit(pozadi, (0, 0))
     
     
-        
     okno.blit(coins_text, (20, 30))
+
 
     
     if pozadi == venek and stojim_u_jezera:
@@ -212,7 +221,7 @@ while True:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
     
         if inventar:
-            pygame.draw.rect(okno, (bila), (hrac_obrazovka_x - (300 - hrac_velikostX) / 2, 100, 300, 100))
+            okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
 
 
         
