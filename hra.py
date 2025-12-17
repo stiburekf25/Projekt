@@ -82,6 +82,12 @@ TEXTURApepa_2 = pygame.transform.scale(pepa_2, (hrac_velikostX, hrac_velikostY))
 pepa_lod = pygame.image.load("pepa_beznohy.png")
 TEXTURApepa_lod = pygame.transform.scale(pepa_lod, (hrac_velikostX, hrac_velikostY))
 
+pepa_1_lod = pygame.image.load("pepa_beznohy_levo.png")
+TEXTURApepa_1_lod = pygame.transform.scale(pepa_1_lod, (hrac_velikostX, hrac_velikostY))
+
+pepa_2_lod = pygame.image.load("pepa_beznohy_pravo.png")
+TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_velikostY))
+
 #obrazek inv
 inv = pygame.image.load("inventar.png")
 TEXTURAinv = pygame.transform.scale(inv, (500, 300))
@@ -182,6 +188,7 @@ while True:
             hrac_velikostX= 110
             hrac_velikostY = 170
             hrac_rychlost = 4
+            
         
         stojim_u_shopu = hrac_pozice_x > 750 and hrac_pozice_x < 1020
         
@@ -198,7 +205,15 @@ while True:
         
     #JEZERO
     if pozadi == jezero:
+    
         aktualni_sprite = TEXTURApepa_lod
+        
+        if stisknuto[pygame.K_d]:
+            aktualni_sprite = TEXTURApepa_2_lod
+
+        elif stisknuto[pygame.K_a]:
+            aktualni_sprite = TEXTURApepa_1_lod
+            
         if hrac_pozice_x < 330:
             hrac_pozice_x = 330
         if hrac_pozice_x > 422:
@@ -229,7 +244,7 @@ while True:
             hrac_velikostY = 170
             hrac_rychlost = 4
 
-            kamera_x = 0
+            kamera_x = 848
 
     # VYKRESLENI PRVKU HRY
     
@@ -291,7 +306,7 @@ while True:
             hrac_velikostY = 170
             hrac_rychlost = 4
 
-            kamera_x = 0
+            kamera_x = 496
 
 
     if pozadi == shop and shop_mode is None:
@@ -312,7 +327,7 @@ while True:
         shop_mode = None
     
 
-    print(shop_mode)
+    #print(shop_mode)
     #print(kamera_x, hrac_pozice_x)
     
     clock.tick(60)
