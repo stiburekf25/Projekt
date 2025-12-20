@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 pygame.init()
 
 # PRIPRAVA HRY
@@ -13,12 +14,24 @@ hrac_rychlost = 4
 hrac_velikostX= 110
 hrac_velikostY = 170
 
-rozliseni_okna = (okno_sirka, okno_vyska)
+info_jezero = 1570
+info_shop = 920
 
 kamera_x = 0
 
-info_jezero = 1570
-info_shop = 920
+soubor = open("shop.txt", "r", encoding="utf-8")
+
+seznam_vet = []
+
+for radek in soubor:
+    seznam_vet.append(radek[:-1])
+
+soubor.close()
+
+
+
+rozliseni_okna = (okno_sirka, okno_vyska)
+
 
 leva_zona = 300
 prava_zona = 400
@@ -33,13 +46,19 @@ zluta = (205, 235, 98)
 cerna = (0, 0, 0)
 bila = (255, 255, 255)
 seda = (94, 94, 94)
+hneda = (148, 96, 56)
 
 
 #inventar
 inventar = False
-buy = pygame.draw.rect(okno, (seda), (120, 335, 200, 100))
-sell = pygame.draw.rect(okno, (seda), (480, 335, 200, 100))
-leave = pygame.draw.rect(okno, (seda), (670, 520, 100, 50))
+
+za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
+za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
+za_opustit = pygame.draw.rect(okno, (cerna), (669, 534, 102, 52))
+
+buy = pygame.draw.rect(okno, (hneda), (125, 395, 200, 100))
+sell = pygame.draw.rect(okno, (hneda), (475, 395, 200, 100))
+leave = pygame.draw.rect(okno, (hneda), (670, 535, 100, 50))
 shop_mode = None # nic / buy / sell
 
 #predmety
@@ -48,9 +67,12 @@ plechovka = 0
 bota = 0
 kapr = 0
 
-
-
-
+#shop
+buy_velikost = 60
+sell_velikost = 60
+leave_velikost =  40
+shop_hlaska = None
+hlaska_velikost = 25
 
 
 # obrazky levelu
@@ -96,9 +118,21 @@ TEXTURAinv = pygame.transform.scale(inv, (500, 300))
 #priprava textu
 E_font = pygame.font.SysFont("Aharoni", 40)
 E_text = E_font.render("E", True, (cerna))
+za_e_u_jezera = pygame.draw.rect(okno, (cerna), (721, 339, 52, 52))
 
 coins_font = pygame.font.SysFont("Aharoni", 30)
 coins_text = coins_font.render(("golds:"f"{coins}"), True, (seda))
+
+buy_font = pygame.font.SysFont("Aharoni", buy_velikost)
+buy_text = buy_font.render("BUY", True, (cerna))
+sell_font = pygame.font.SysFont("Aharoni", sell_velikost)
+sell_text = sell_font.render("SELL", True, cerna)
+leave_font = pygame.font.SysFont("Aharoni", leave_velikost)
+leave_text = leave_font.render("EXIT", True, cerna)
+
+hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
+shop_hlaska = random.choice(seznam_vet)
+hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
@@ -172,9 +206,8 @@ while True:
         if kamera_x > pozadi_sirka - okno_sirka:
             kamera_x = pozadi_sirka - okno_sirka 
 
-
-        info_jezero_obrazovka_x = info_jezero - kamera_x
         info_shop_obrazovka_x = info_shop - kamera_x
+
         
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
             
@@ -189,7 +222,8 @@ while True:
             hrac_velikostY = 170
             hrac_rychlost = 4
             
-        
+        info_jezero_obrazovka_x = info_jezero - kamera_x
+
         stojim_u_shopu = hrac_pozice_x > 750 and hrac_pozice_x < 1020
         
         
@@ -199,8 +233,11 @@ while True:
             
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-        
-
+            
+            shop_mode = None
+            
+            shop_hlaska = random.choice(seznam_vet)
+            hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
             
         
     #JEZERO
@@ -259,12 +296,19 @@ while True:
 
     
     if pozadi == venek and stojim_u_jezera:
+        pygame.draw.rect(okno, cerna, za_e_u_jezera)
         pygame.draw.rect(okno, (bila), (info_jezero_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
+
     if pozadi == venek and stojim_u_shopu:
+        info_shop_obrazovka_x = info_shop - kamera_x
+        
+        pygame.draw.rect(okno, cerna, (info_shop_obrazovka_x -1, 359, 52, 52))
         pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
         okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
+
     if pozadi == jezero and stojim_u_leva_lod:
+        pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
         pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
 
@@ -275,11 +319,8 @@ while True:
         if inventar:
             okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
     
-    if pozadi == shop:
-        pygame.draw.rect(okno, seda, buy)
-        pygame.draw.rect(okno, seda, sell)
-        pygame.draw.rect(okno, seda, leave)
 
+        
     
     if pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -296,6 +337,7 @@ while True:
         if leave.collidepoint(mys_pozice) and klik[0]:
             pozadi = venek
             shop_mode = None
+            shop_hlaska = None
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
 
@@ -310,11 +352,21 @@ while True:
 
 
     if pozadi == shop and shop_mode is None:
-        pygame.draw.rect(okno, seda, buy)
-        pygame.draw.rect(okno, seda, sell)
-        pygame.draw.rect(okno, seda, leave)
+        pygame.draw.rect(okno, cerna, za_koupit)
+        pygame.draw.rect(okno, hneda, buy)
+        pygame.draw.rect(okno, cerna, za_prodat)
+        pygame.draw.rect(okno, hneda, sell)
+        pygame.draw.rect(okno, cerna, za_opustit)
+        pygame.draw.rect(okno, hneda, leave)
+        okno.blit(buy_text, (180, 425))
+        okno.blit(sell_text, (525, 425))
+        okno.blit(leave_text, (687, 548))
+        okno.blit(hlaska_text, (458, 262))
 
 
+
+        
+        
     if pozadi == shop and shop_mode == "buy":
         # tady později itemy
         pass
