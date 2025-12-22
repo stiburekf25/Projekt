@@ -47,38 +47,49 @@ cerna = (0, 0, 0)
 bila = (255, 255, 255)
 seda = (94, 94, 94)
 hneda = (148, 96, 56)
+Sseda = (158, 158, 158)
 
 
 #inventar
 inventar = False
 
-za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
-za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
-za_opustit = pygame.draw.rect(okno, (cerna), (669, 534, 102, 52))
-
-buy = pygame.draw.rect(okno, (hneda), (125, 395, 200, 100))
-sell = pygame.draw.rect(okno, (hneda), (475, 395, 200, 100))
-leave = pygame.draw.rect(okno, (hneda), (670, 535, 100, 50))
-shop_mode = None # nic / buy / sell
-
-#predmety
-coins = 0
-plechovka = 0
-bota = 0
-kapr = 0
 
 #shop
 buy_velikost = 60
 sell_velikost = 60
 leave_velikost =  40
+leave_buy_velikost = 40
+leave_sell_velikost = 40
 shop_hlaska = None
 hlaska_velikost = 25
+
+za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
+za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
+za_opustit = pygame.draw.rect(okno, (cerna), (669, 534, 102, 52))
+za_opustit_buy = pygame.draw.rect(okno, (cerna), (39, 534, 102, 52))
+za_opustit_sell = pygame.draw.rect(okno, (cerna), (39, 534, 102, 52))
+
+buy = pygame.draw.rect(okno, (hneda), (125, 395, 200, 100))
+sell = pygame.draw.rect(okno, (hneda), (475, 395, 200, 100))
+leave = pygame.draw.rect(okno, (hneda), (670, 535, 100, 50))
+leave_buy = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
+leave_sell = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
+shop_mode = None # nic / buy / sell
+
+#predmety
+coins = 100
+plechovka = 0
+bota = 0
+kapr = 0
+
+
 
 
 # obrazky levelu
 venek = pygame.image.load("venek.png")
 jezero = pygame.image.load("level_2.png")
 shop = pygame.image.load("shop.png")
+pozadi_shop = pygame.image.load("pozadi_shop.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
@@ -113,6 +124,11 @@ TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_vel
 #obrazek inv
 inv = pygame.image.load("inventar.png")
 TEXTURAinv = pygame.transform.scale(inv, (500, 300))
+ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
+ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
+tlacitko = pygame.draw.rect(okno, Sseda, (392, 240, 30, 30))
+za_tlacitko = pygame.draw.rect(okno, seda, (391, 239, 32, 32))
+
 
 
 #priprava textu
@@ -120,15 +136,20 @@ E_font = pygame.font.SysFont("Aharoni", 40)
 E_text = E_font.render("E", True, (cerna))
 za_e_u_jezera = pygame.draw.rect(okno, (cerna), (721, 339, 52, 52))
 
-coins_font = pygame.font.SysFont("Aharoni", 30)
-coins_text = coins_font.render(("golds:"f"{coins}"), True, (seda))
-
+coins_font = pygame.font.Font("CHAOS16.otf", 30)
+coins_text = coins_font.render(f"golds:{coins}", True, zluta)
 buy_font = pygame.font.SysFont("Aharoni", buy_velikost)
 buy_text = buy_font.render("BUY", True, (cerna))
 sell_font = pygame.font.SysFont("Aharoni", sell_velikost)
 sell_text = sell_font.render("SELL", True, cerna)
 leave_font = pygame.font.SysFont("Aharoni", leave_velikost)
 leave_text = leave_font.render("EXIT", True, cerna)
+leave_buy_font = pygame.font.SysFont("Aharoni", leave_buy_velikost)
+leave_buy_text = leave_buy_font.render("EXIT", True, cerna)
+leave_sell_font = pygame.font.SysFont("Aharoni", leave_sell_velikost)
+leave_sell_text = leave_sell_font.render("EXIT", True, cerna)
+
+
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -178,15 +199,6 @@ while True:
             aktualni_sprite = TEXTURApepa_2
         hrac_pozice_x -= hrac_rychlost
     
-    #inventar zapinani a vypinani
-    if stisknuto[pygame.K_SPACE]:
-        inventar = True
-        hrac_rychlost = 0
-    
-    if stisknuto[pygame.K_ESCAPE]:
-        inventar = False 
-        hrac_rychlost = 4
-
     #VENEK
     
     if pozadi == venek:
@@ -228,6 +240,7 @@ while True:
         
         
         if stojim_u_shopu and stisknuto[pygame.K_e]:
+            pozice_pred_shopem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
             pozadi = shop
             hrac_rychlost = 0
             
@@ -283,17 +296,67 @@ while True:
 
             kamera_x = 848
 
+
+    if pozadi == shop:
+        if shop_mode is None: 
+            if buy.collidepoint(mys_pozice) and klik[0]:
+                shop_mode = "buy"
+        
+            elif sell.collidepoint(mys_pozice) and klik[0]:
+                shop_mode = "sell"
+        
+            elif leave.collidepoint(mys_pozice) and klik[0]:
+                pozadi = venek
+                hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_shopem
+                hrac_velikostX = 110
+                hrac_velikostY = 170
+                hrac_rychlost = 4
+                shop_mode = None
+                shop_hlaska = None
+                pozadi_sirka = pozadi.get_width()
+                pozadi_vyska = pozadi.get_height()
+
+        
+        elif shop_mode == "buy":
+            if leave_buy.collidepoint(mys_pozice) and klik[0]:
+                shop_mode = None
+                pozadi = shop
+        
+        elif shop_mode == "sell":
+            if leave_sell.collidepoint(mys_pozice) and klik[0]:
+                shop_mode = None
+                pozadi = shop
+                
+    if pozadi != shop:
+        if ikona_inv_rect.collidepoint(mys_pozice) and klik[0]:
+            inventar = True
+            hrac_rychlost = 0
+        if inventar:
+            if tlacitko.collidepoint(mys_pozice) and klik[0]:
+                inventar = False
+                hrac_rychlost = 4
+                
+    kurzor_hand = False 
+        
+    if pozadi == pozadi_shop and leave_buy.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and leave_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif tlacitko.collidepoint(mys_pozice) and inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    else:         
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        
     # VYKRESLENI PRVKU HRY
     
     if pozadi != shop:
         okno.blit(pozadi, (-kamera_x, 0))
     else:
         okno.blit(pozadi, (0, 0))
-    
-    
-    okno.blit(coins_text, (20, 30))
-
-
     
     if pozadi == venek and stojim_u_jezera:
         pygame.draw.rect(okno, cerna, za_e_u_jezera)
@@ -315,42 +378,7 @@ while True:
 
     if pozadi != shop:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
-    
-        if inventar:
-            okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
-    
-
-        
-    
-    if pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    else:
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
-    if pozadi == shop and shop_mode is None: 
-        if buy.collidepoint(mys_pozice) and klik[0]:
-            shop_mode = "buy"
-        
-        if sell.collidepoint(mys_pozice) and klik[0]:
-            shop_mode = "sell"
-        
-        if leave.collidepoint(mys_pozice) and klik[0]:
-            pozadi = venek
-            shop_mode = None
-            shop_hlaska = None
-            pozadi_sirka = pozadi.get_width()
-            pozadi_vyska = pozadi.get_height()
-
-            hrac_pozice_x = 888
-            hrac_pozice_y = 315
-
-            hrac_velikostX = 110
-            hrac_velikostY = 170
-            hrac_rychlost = 4
-
-            kamera_x = 496
-
-
+          
     if pozadi == shop and shop_mode is None:
         pygame.draw.rect(okno, cerna, za_koupit)
         pygame.draw.rect(okno, hneda, buy)
@@ -362,26 +390,67 @@ while True:
         okno.blit(sell_text, (525, 425))
         okno.blit(leave_text, (687, 548))
         okno.blit(hlaska_text, (458, 262))
-
-
-
-        
-        
-    if pozadi == shop and shop_mode == "buy":
-        # tady později itemy
-        pass
-
-    if pozadi == shop and shop_mode == "sell":
-        # tady ryby
-        pass
     
-    if pozadi == shop and stisknuto[pygame.K_ESCAPE]:
-        shop_mode = None
+    if shop_mode == "buy":
+        pozadi = pozadi_shop
+        okno.blit(pozadi_shop, (0,0))
+        hrac_rychlost = 0
+        pygame.draw.rect(okno, cerna, za_opustit_buy)
+        pygame.draw.rect(okno, hneda, leave_buy)
+        okno.blit(leave_buy_text, (57, 548))
+ 
+        
+    if pozadi == pozadi_shop and shop_mode == "buy":
+        if leave_buy.collidepoint(mys_pozice) and klik[0]:
+            pozadi = shop
+            shop_mode = None
+            pygame.draw.rect(okno, cerna, za_koupit)
+            pygame.draw.rect(okno, hneda, buy)
+            pygame.draw.rect(okno, cerna, za_prodat)
+            pygame.draw.rect(okno, hneda, sell)
+            pygame.draw.rect(okno, cerna, za_opustit)
+            pygame.draw.rect(okno, hneda, leave)
+            okno.blit(buy_text, (180, 425))
+            okno.blit(sell_text, (525, 425))
+            okno.blit(leave_text, (687, 548))
+            okno.blit(hlaska_text, (458, 262))
+
+    if shop_mode == "sell":
+        pozadi = pozadi_shop
+        okno.blit(pozadi_shop, (0,0))
+        hrac_rychlost = 0
+        pygame.draw.rect(okno, cerna, za_opustit_sell)
+        pygame.draw.rect(okno, hneda, leave_sell)
+        okno.blit(leave_sell_text, (57, 548))
     
+    if pozadi == pozadi_shop and shop_mode == "sell":
+        if leave_sell.collidepoint(mys_pozice) and klik[0]:
+            pozadi = shop
+            shop_mode = None
+            pygame.draw.rect(okno, cerna, za_koupit)
+            pygame.draw.rect(okno, hneda, buy)
+            pygame.draw.rect(okno, cerna, za_prodat)
+            pygame.draw.rect(okno, hneda, sell)
+            pygame.draw.rect(okno, cerna, za_opustit)
+            pygame.draw.rect(okno, hneda, leave)
+            okno.blit(buy_text, (180, 425))
+            okno.blit(sell_text, (525, 425))
+            okno.blit(leave_text, (687, 548))
+            okno.blit(hlaska_text, (458, 262))
+  
+    okno.blit(coins_text, (30, 20))
+    
+    if not inventar:
+        okno.blit(ikona_inv, (700, 20))
+        
+    if inventar:
+        okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
+        pygame.draw.rect(okno, seda, (391, 239, 32, 32)) # za tlacitko
+        pygame.draw.rect(okno, Sseda, (392, 240, 30, 30)) # tlacitko
 
     #print(shop_mode)
     #print(kamera_x, hrac_pozice_x)
+    #print(inventar)
     
     clock.tick(60)
     pygame.display.update()
-    
