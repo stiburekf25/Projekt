@@ -90,6 +90,8 @@ venek = pygame.image.load("venek.png")
 jezero = pygame.image.load("level_2.png")
 shop = pygame.image.load("shop.png")
 pozadi_shop = pygame.image.load("pozadi_shop.png")
+rybareni = pygame.image.load("rybareni.png")
+ikona_prut = pygame.image.load("ikona_prut.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
@@ -135,6 +137,7 @@ za_tlacitko = pygame.draw.rect(okno, seda, (391, 239, 32, 32))
 E_font = pygame.font.SysFont("Aharoni", 40)
 E_text = E_font.render("E", True, (cerna))
 za_e_u_jezera = pygame.draw.rect(okno, (cerna), (721, 339, 52, 52))
+za_space_u_jezera = pygame.draw.rect(okno, cerna, (721, 339, 52, 52))
 
 coins_font = pygame.font.Font("CHAOS16.otf", 30)
 coins_text = coins_font.render(f"golds:{coins}", True, zluta)
@@ -296,6 +299,14 @@ while True:
 
             kamera_x = 848
 
+        stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
+        
+        if stojim_u_prava_lod and stisknuto[pygame.K_e]:
+            pozadi = rybareni
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
 
     if pozadi == shop:
         if shop_mode is None: 
@@ -327,7 +338,7 @@ while True:
                 shop_mode = None
                 pozadi = shop
                 
-    if pozadi != shop:
+    if pozadi != shop and pozadi != pozadi_shop:
         if ikona_inv_rect.collidepoint(mys_pozice) and klik[0]:
             inventar = True
             hrac_rychlost = 0
@@ -344,7 +355,7 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and leave_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar:
+    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -374,9 +385,15 @@ while True:
         pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
         pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
+    
+    if pozadi == jezero and stojim_u_prava_lod:
+        okno.blit(ikona_prut, (722, 290))
+        pygame.draw.rect(okno, cerna, za_space_u_jezera)
+        pygame.draw.rect(okno, bila, (722, 340, 50, 50))
+        okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
 
 
-    if pozadi != shop:
+    if pozadi != shop and pozadi != rybareni:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
     if pozadi == shop and shop_mode is None:
@@ -440,7 +457,7 @@ while True:
   
     okno.blit(coins_text, (30, 20))
     
-    if not inventar:
+    if not inventar and pozadi != shop and pozadi != pozadi_shop:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
@@ -449,7 +466,7 @@ while True:
         pygame.draw.rect(okno, Sseda, (392, 240, 30, 30)) # tlacitko
 
     #print(shop_mode)
-    #print(kamera_x, hrac_pozice_x)
+    print(kamera_x, hrac_pozice_x)
     #print(inventar)
     
     clock.tick(60)
