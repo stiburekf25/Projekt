@@ -306,6 +306,8 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+
+                
             
 
     if pozadi == shop:
@@ -464,6 +466,12 @@ while True:
         okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
         pygame.draw.rect(okno, seda, (391, 239, 32, 32)) # za tlacitko
         pygame.draw.rect(okno, Sseda, (392, 240, 30, 30)) # tlacitko
+    
+    if not inventar and pozadi == rybareni:
+        hrac_rychlost = 0
+    if inventar and pozadi == rybareni:
+        hrac_rychlost = 0
+        
 
     #print(shop_mode)
     print(kamera_x, hrac_pozice_x)
@@ -471,3 +479,4 @@ while True:
     
     clock.tick(60)
     pygame.display.update()
+    
