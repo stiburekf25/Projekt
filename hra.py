@@ -5,6 +5,13 @@ pygame.init()
 
 # PRIPRAVA HRY
 
+def vyber_predmet(predmety):
+    los = random.randint(1, 100)
+    for p in predmety:
+        if p["sance"] >= los:
+            return p
+        
+
 okno_sirka = 800
 okno_vyska = 600
 
@@ -53,6 +60,36 @@ Sseda = (158, 158, 158)
 #inventar
 inventar = False
 
+#predmety
+coins = 100
+obsah_inventare = {
+    "plechovka":0, "bota":0, "kapr":0}
+
+#Rybareni
+prut = False
+minihra = False
+predmety = [
+    {
+        "jmeno": "plechovka",
+        "sance": 50,
+        "cekani": 1,
+        "zmacknuti": 5
+    },
+    {
+        "jmeno": "bota",
+        "sance": 90,
+        "cekani": 1.3,
+        "zmacknuti": 7
+    },
+    {
+        "jmeno": "kapr",
+        "sance": 100,
+        "cekani": 2,
+        "zmacknuti": 12
+    }
+]
+        
+
 
 #shop
 buy_velikost = 60
@@ -75,15 +112,6 @@ leave = pygame.draw.rect(okno, (hneda), (670, 535, 100, 50))
 leave_buy = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
 leave_sell = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
 shop_mode = None # nic / buy / sell
-
-#predmety
-coins = 100
-plechovka = 0
-bota = 0
-kapr = 0
-
-
-
 
 # obrazky levelu
 venek = pygame.image.load("venek.png")
@@ -306,6 +334,60 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+    if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
+        prut = True
+        ulovek = vyber_predmet(predmety)
+        cas_nahozeni = pygame.time.get_ticks()
+        print(ulovek)
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+    if prut and pygame.time.get_ticks() - cas_nahozeni > ulovek["cekani"]:
+        prut = False
+        minihra = True
+        sekvence = ""
+        poradi = 0
+        
+        for pismeno in range(ulovek["zmacknuti"]):
+            pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
+            while sekvence != "" and sekvence[-1] == pismneko_ktere_zkousime_davat_do_sekvence:
+                pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
+            sekvence += pismneko_ktere_zkousime_davat_do_sekvence
+        print(sekvence)
+
+    if minihra:
+        print(sekvence[poradi])
+        if stisknuto[ord(sekvence[poradi])]:
+            poradi += 1
+        if poradi == ulovek["zmacknuti"]:
+            obsah_inventare[ulovek["jmeno"]] += 1
+            minihra = False
+            print(obsah_inventare)
+            
+        
+
+        
+            
+            
+            
+                
+            
 
                 
             
@@ -474,7 +556,7 @@ while True:
         
 
     #print(shop_mode)
-    print(kamera_x, hrac_pozice_x)
+    #print(kamera_x, hrac_pozice_x)
     #print(inventar)
     
     clock.tick(60)
