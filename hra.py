@@ -72,19 +72,19 @@ predmety = [
     {
         "jmeno": "plechovka",
         "sance": 50,
-        "cekani": 1,
+        "cekani": 3000,
         "zmacknuti": 5
     },
     {
         "jmeno": "bota",
         "sance": 90,
-        "cekani": 1.3,
+        "cekani": 5000,
         "zmacknuti": 7
     },
     {
         "jmeno": "kapr",
         "sance": 100,
-        "cekani": 2,
+        "cekani": 10000,
         "zmacknuti": 12
     }
 ]
@@ -339,25 +339,7 @@ while True:
         prut = True
         ulovek = vyber_predmet(predmety)
         cas_nahozeni = pygame.time.get_ticks()
-        print(ulovek)
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+    
     if prut and pygame.time.get_ticks() - cas_nahozeni > ulovek["cekani"]:
         prut = False
         minihra = True
@@ -380,18 +362,6 @@ while True:
             minihra = False
             print(obsah_inventare)
             
-        
-
-        
-            
-            
-            
-                
-            
-
-                
-            
-
     if pozadi == shop:
         if shop_mode is None: 
             if buy.collidepoint(mys_pozice) and klik[0]:
