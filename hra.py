@@ -120,6 +120,7 @@ shop = pygame.image.load("shop.png")
 pozadi_shop = pygame.image.load("pozadi_shop.png")
 rybareni = pygame.image.load("rybareni.png")
 ikona_prut = pygame.image.load("ikona_prut.png")
+rybareni_dole = pygame.image.load("rybareni_dole.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
@@ -336,6 +337,7 @@ while True:
             pozadi_vyska = pozadi.get_height()
         
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
+        pozadi = rybareni
         prut = True
         ulovek = vyber_predmet(predmety)
         cas_nahozeni = pygame.time.get_ticks()
