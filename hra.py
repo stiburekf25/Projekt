@@ -121,6 +121,7 @@ pozadi_shop = pygame.image.load("pozadi_shop.png")
 rybareni = pygame.image.load("rybareni.png")
 ikona_prut = pygame.image.load("ikona_prut.png")
 rybareni_dole = pygame.image.load("rybareni_dole.png")
+rybareni_pozor = pygame.image.load("rybareni_pozor.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
@@ -337,7 +338,10 @@ while True:
             pozadi_vyska = pozadi.get_height()
         
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
-        pozadi = rybareni
+        pozadi = rybareni_dole
+        hrac_rychlost = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
         prut = True
         ulovek = vyber_predmet(predmety)
         cas_nahozeni = pygame.time.get_ticks()
@@ -357,11 +361,19 @@ while True:
 
     if minihra:
         print(sekvence[poradi])
+        pozadi = rybareni_pozor
+        hrac_rychlost = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
         if stisknuto[ord(sekvence[poradi])]:
             poradi += 1
         if poradi == ulovek["zmacknuti"]:
             obsah_inventare[ulovek["jmeno"]] += 1
             minihra = False
+            pozadi = rybareni
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
             print(obsah_inventare)
             
     if pozadi == shop:
@@ -449,7 +461,7 @@ while True:
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
 
 
-    if pozadi != shop and pozadi != rybareni:
+    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
     if pozadi == shop and shop_mode is None:
