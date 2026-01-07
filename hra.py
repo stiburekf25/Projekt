@@ -67,7 +67,9 @@ obsah_inventare = {
 
 #Rybareni
 prut = False
+zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
 minihra = False
+zpet_tlacitko = False
 predmety = [
     {
         "jmeno": "plechovka",
@@ -99,6 +101,8 @@ leave_buy_velikost = 40
 leave_sell_velikost = 40
 shop_hlaska = None
 hlaska_velikost = 25
+zpet_tlacitko_velikost = 40
+space_to_fish_velikost = 40
 
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
 za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
@@ -181,6 +185,10 @@ leave_buy_font = pygame.font.SysFont("Aharoni", leave_buy_velikost)
 leave_buy_text = leave_buy_font.render("EXIT", True, cerna)
 leave_sell_font = pygame.font.SysFont("Aharoni", leave_sell_velikost)
 leave_sell_text = leave_sell_font.render("EXIT", True, cerna)
+zpet_tlacitko_font = pygame.font.SysFont("Aharoni", zpet_tlacitko_velikost)
+zpet_tlacitko_text = zpet_tlacitko_font.render("EXIT", True, cerna)
+space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
+space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cerna)
 
 
 
@@ -289,6 +297,8 @@ while True:
     #JEZERO
     if pozadi == jezero:
     
+        kamera_x = 0
+        
         aktualni_sprite = TEXTURApepa_lod
         
         if stisknuto[pygame.K_d]:
@@ -301,12 +311,6 @@ while True:
             hrac_pozice_x = 330
         if hrac_pozice_x > 422:
             hrac_pozice_x = 422
-    
-            
-        if hrac_obrazovka_x > prava_zona:
-            kamera_x += hrac_rychlost
-        if hrac_obrazovka_x < leva_zona:
-            kamera_x -= hrac_rychlost
                 
         if kamera_x < 0:
             kamera_x = 0
@@ -331,18 +335,29 @@ while True:
 
         stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
         
-        if stojim_u_prava_lod and stisknuto[pygame.K_e]:
+        if stojim_u_prava_lod and stisknuto[pygame.K_e] and pozadi != rybareni:
             pozadi = rybareni
+            zpet_tlacitko = True
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-        
+    
+    if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and klik[0]:
+        pozadi = jezero
+        zpet_tlacitko = False
+        hrac_rychlost = 4
+        hrac_pozice_x = 422
+        kamera_x = 0
+        aktualni_sprite = TEXTURApepa_lod
+
+   
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
         pozadi = rybareni_dole
         hrac_rychlost = 0
         pozadi_sirka = pozadi.get_width()
         pozadi_vyska = pozadi.get_height()
         prut = True
+        zpet_tlacitko = False
         ulovek = vyber_predmet(predmety)
         cas_nahozeni = pygame.time.get_ticks()
     
@@ -370,6 +385,7 @@ while True:
         if poradi == ulovek["zmacknuti"]:
             obsah_inventare[ulovek["jmeno"]] += 1
             minihra = False
+            zpet_tlacitko = True
             pozadi = rybareni
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
@@ -427,6 +443,8 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)     
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
@@ -448,12 +466,16 @@ while True:
         pygame.draw.rect(okno, cerna, (info_shop_obrazovka_x -1, 359, 52, 52))
         pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
         okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
+    
+    stojim_u_leva_lod = hrac_pozice_x > 329 and hrac_pozice_x < 350
 
     if pozadi == jezero and stojim_u_leva_lod:
         pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
         pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
     
+    stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
+
     if pozadi == jezero and stojim_u_prava_lod:
         okno.blit(ikona_prut, (722, 290))
         pygame.draw.rect(okno, cerna, za_space_u_jezera)
@@ -537,6 +559,11 @@ while True:
         hrac_rychlost = 0
     if inventar and pozadi == rybareni:
         hrac_rychlost = 0
+    
+    if zpet_tlacitko:
+        pygame.draw.rect(okno, cerna, (349, 529, 102, 52))
+        zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
+        okno.blit(zpet_tlacitko_text, (367, 543))
         
 
     #print(shop_mode)
