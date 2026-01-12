@@ -75,19 +75,22 @@ predmety = [
         "jmeno": "plechovka",
         "sance": 50,
         "cekani": 3000,
-        "zmacknuti": 5
+        "zmacknuti": 5,
+        "limit_cekani": 3000,
     },
     {
         "jmeno": "bota",
         "sance": 90,
         "cekani": 5000,
-        "zmacknuti": 7
+        "zmacknuti": 7,
+        "limit_cekani": 2500,
     },
     {
         "jmeno": "kapr",
         "sance": 100,
         "cekani": 10000,
-        "zmacknuti": 12
+        "zmacknuti": 12,
+        "limit_cekani": 2000,
     }
 ]
         
@@ -103,6 +106,7 @@ shop_hlaska = None
 hlaska_velikost = 25
 zpet_tlacitko_velikost = 40
 space_to_fish_velikost = 40
+pismeno_velikost = 40
 
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
 za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
@@ -173,6 +177,7 @@ E_text = E_font.render("E", True, (cerna))
 za_e_u_jezera = pygame.draw.rect(okno, (cerna), (721, 339, 52, 52))
 za_space_u_jezera = pygame.draw.rect(okno, cerna, (721, 339, 52, 52))
 
+
 coins_font = pygame.font.Font("CHAOS16.otf", 30)
 coins_text = coins_font.render(f"golds:{coins}", True, zluta)
 buy_font = pygame.font.SysFont("Aharoni", buy_velikost)
@@ -189,6 +194,7 @@ zpet_tlacitko_font = pygame.font.SysFont("Aharoni", zpet_tlacitko_velikost)
 zpet_tlacitko_text = zpet_tlacitko_font.render("EXIT", True, cerna)
 space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
 space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cerna)
+pismeno_font = pygame.font.SysFont("Aharoni", pismeno_velikost)
 
 
 
@@ -263,7 +269,9 @@ while True:
 
         
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
-            
+        
+        #Vstup na jezero
+        
         if stojim_u_jezera and stisknuto[pygame.K_e]:
             pozadi = jezero
             
@@ -279,6 +287,7 @@ while True:
 
         stojim_u_shopu = hrac_pozice_x > 750 and hrac_pozice_x < 1020
         
+        #Vstup do shopu
         
         if stojim_u_shopu and stisknuto[pygame.K_e]:
             pozice_pred_shopem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
@@ -319,6 +328,8 @@ while True:
         
         stojim_u_leva_lod = hrac_pozice_x > 329 and hrac_pozice_x < 350
         
+        #Vystup z lode na jezere zpatky ven
+        
         if stojim_u_leva_lod and stisknuto[pygame.K_e]:
             pozadi = venek
             pozadi_sirka = pozadi.get_width()
@@ -335,12 +346,16 @@ while True:
 
         stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
         
+        #Vstup z lode na jezere do rybareni
+        
         if stojim_u_prava_lod and stisknuto[pygame.K_e] and pozadi != rybareni:
             pozadi = rybareni
             zpet_tlacitko = True
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+    
+    #Tlacitko exit k opusteni rybareni zpet na jezero
     
     if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and klik[0]:
         pozadi = jezero
@@ -350,6 +365,7 @@ while True:
         kamera_x = 0
         aktualni_sprite = TEXTURApepa_lod
 
+    #SPACE k zapnuti naprahu
    
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
         pozadi = rybareni_dole
@@ -361,29 +377,39 @@ while True:
         ulovek = vyber_predmet(predmety)
         cas_nahozeni = pygame.time.get_ticks()
     
+    #Doba cekani nez hrac muze chytat ulovek
+    
     if prut and pygame.time.get_ticks() - cas_nahozeni > ulovek["cekani"]:
         prut = False
         minihra = True
         sekvence = ""
         poradi = 0
         
+        #Pridani pismena do sekvence a opatreni proti opakujicimu pismenu
+        
         for pismeno in range(ulovek["zmacknuti"]):
             pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
             while sekvence != "" and sekvence[-1] == pismneko_ktere_zkousime_davat_do_sekvence:
                 pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
             sekvence += pismneko_ktere_zkousime_davat_do_sekvence
-        print(sekvence)
+        #print(sekvence)
+        pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
+        okraj_random_x = random.randint(20, 780 - pismeno_velikost)
+        okraj_random_y = random.randint(20, 580 - pismeno_velikost)
+        zacatek_limitu = pygame.time.get_ticks()
+        
+        
+        
 
+    #System minihry, scitani poradi, ziskani ulovku
+    
     if minihra:
-        print(sekvence[poradi])
         pozadi = rybareni_pozor
         hrac_rychlost = 0
         pozadi_sirka = pozadi.get_width()
         pozadi_vyska = pozadi.get_height()
-        if stisknuto[ord(sekvence[poradi])]:
-            poradi += 1
-        if poradi == ulovek["zmacknuti"]:
-            obsah_inventare[ulovek["jmeno"]] += 1
+        
+        if pygame.time.get_ticks() - zacatek_limitu > ulovek["limit_cekani"]:
             minihra = False
             zpet_tlacitko = True
             pozadi = rybareni
@@ -391,6 +417,37 @@ while True:
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             print(obsah_inventare)
+    
+        elif stisknuto[ord(sekvence[poradi])]:
+            poradi += 1
+            if poradi < ulovek["zmacknuti"]:
+                pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
+                okraj_random_x = random.randint(20, 780 - pismeno_velikost)
+                okraj_random_y = random.randint(20, 580 - pismeno_velikost)
+                zacatek_limitu = pygame.time.get_ticks()
+            else:
+                obsah_inventare[ulovek["jmeno"]] += 1
+                minihra = False
+                zpet_tlacitko = True
+                pozadi = rybareni
+                hrac_rychlost = 0
+                pozadi_sirka = pozadi.get_width()
+                pozadi_vyska = pozadi.get_height()
+                print(obsah_inventare)
+        elif any(stisknuto) and not (poradi > 0 and stisknuto[ord(sekvence[poradi - 1])]):
+            minihra = False
+            zpet_tlacitko = True
+            pozadi = rybareni
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            print(obsah_inventare)
+            
+            
+
+                
+            
+    #Funkcnost shopu, klik na buy, sell a moznost opusteni shopu
             
     if pozadi == shop:
         if shop_mode is None: 
@@ -411,6 +468,7 @@ while True:
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
 
+        #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
         elif shop_mode == "buy":
             if leave_buy.collidepoint(mys_pozice) and klik[0]:
@@ -421,7 +479,9 @@ while True:
             if leave_sell.collidepoint(mys_pozice) and klik[0]:
                 shop_mode = None
                 pozadi = shop
-                
+    
+    #Omezeni otevirani inv v shopu a v buy and sell
+    
     if pozadi != shop and pozadi != pozadi_shop:
         if ikona_inv_rect.collidepoint(mys_pozice) and klik[0]:
             inventar = True
@@ -430,7 +490,9 @@ while True:
             if tlacitko.collidepoint(mys_pozice) and klik[0]:
                 inventar = False
                 hrac_rychlost = 4
-                
+    
+    #Kurzor na hand nebo arrow podle urciteho pozadi ci podminky
+    
     kurzor_hand = False 
         
     if pozadi == pozadi_shop and leave_buy.collidepoint(mys_pozice):
@@ -443,12 +505,14 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra:
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)     
+    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell":
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
     # VYKRESLENI PRVKU HRY
+    
+
     
     if pozadi != shop:
         okno.blit(pozadi, (-kamera_x, 0))
@@ -564,12 +628,16 @@ while True:
         pygame.draw.rect(okno, cerna, (349, 529, 102, 52))
         zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
         okno.blit(zpet_tlacitko_text, (367, 543))
+    
+    if minihra:
+        okno.blit(pismeno_text, (okraj_random_x, okraj_random_y))
         
 
     #print(shop_mode)
     #print(kamera_x, hrac_pozice_x)
     #print(inventar)
-    
+    #print(sekvence[poradi])
+        
     clock.tick(60)
     pygame.display.update()
     
