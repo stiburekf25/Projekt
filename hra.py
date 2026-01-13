@@ -63,7 +63,7 @@ inventar = False
 #predmety
 coins = 100
 obsah_inventare = {
-    "plechovka":0, "bota":0, "kapr":0}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0,}
 
 #Rybareni
 prut = False
@@ -72,26 +72,33 @@ minihra = False
 zpet_tlacitko = False
 predmety = [
     {
-        "jmeno": "plechovka",
-        "sance": 50,
+        "jmeno": "Plechovka",
+        "sance": 45,
         "cekani": 3000,
         "zmacknuti": 5,
         "limit_cekani": 3000,
     },
     {
-        "jmeno": "bota",
-        "sance": 90,
+        "jmeno": "Bota",
+        "sance": 70,
         "cekani": 5000,
         "zmacknuti": 7,
         "limit_cekani": 2500,
     },
     {
-        "jmeno": "kapr",
-        "sance": 100,
+        "jmeno": "Kapr",
+        "sance": 90,
         "cekani": 10000,
         "zmacknuti": 12,
         "limit_cekani": 2000,
-    }
+    },
+    {
+        "jmeno": "Štika",
+        "sance": 100,
+        "cekani": 11000,
+        "zmacknuti": 15,
+        "limit_cekani": 1300,
+    },
 ]
         
 
@@ -424,6 +431,7 @@ while True:
                 pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
                 okraj_random_x = random.randint(20, 780 - pismeno_velikost)
                 okraj_random_y = random.randint(20, 580 - pismeno_velikost)
+                
                 zacatek_limitu = pygame.time.get_ticks()
             else:
                 obsah_inventare[ulovek["jmeno"]] += 1
@@ -629,9 +637,16 @@ while True:
         zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
         okno.blit(zpet_tlacitko_text, (367, 543))
     
+    
     if minihra:
-        okno.blit(pismeno_text, (okraj_random_x, okraj_random_y))
-        
+        center = (okraj_random_x, okraj_random_y)
+        radius = 22
+
+        pygame.draw.circle(okno, cerna, center, radius + 3)
+        pygame.draw.circle(okno, bila, center, radius)
+
+        text_rect = pismeno_text.get_rect(center=center)
+        okno.blit(pismeno_text, text_rect)
 
     #print(shop_mode)
     #print(kamera_x, hrac_pozice_x)
