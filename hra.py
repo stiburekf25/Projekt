@@ -10,6 +10,7 @@ def vyber_predmet(predmety):
     for p in predmety:
         if p["sance"] >= los:
             return p
+
         
 
 okno_sirka = 800
@@ -121,11 +122,36 @@ space_to_fish_velikost = 40
 pismeno_velikost = 40
 plny_inventory_velikost = 60
 
+
+
+
+
+#pozice polozek v shopu + velikost
+polozky_velikost_x = 230
+polozky_velikost_y = 120
+
+sell_plechovka_pozice_x = 80
+sell_plechovka_pozice_y = 80
+plechovka_sell = pygame.draw.rect(okno, hneda, (sell_plechovka_pozice_x, sell_plechovka_pozice_y, polozky_velikost_x, polozky_velikost_y))
+
+sell_bota_pozice_x = 80
+sell_bota_pozice_y = 240
+bota_sell = pygame.draw.rect(okno, hneda, (sell_bota_pozice_x, sell_bota_pozice_y, polozky_velikost_x, polozky_velikost_y))
+
+sell_kapr_pozice_x = 80
+sell_kapr_pozice_y = 360
+kapr_sell = pygame.draw.rect(okno, hneda, (sell_kapr_pozice_x, sell_kapr_pozice_y, polozky_velikost_x, polozky_velikost_y))
+
+
+
+
+
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
 za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
 za_opustit = pygame.draw.rect(okno, (cerna), (669, 534, 102, 52))
 za_opustit_buy = pygame.draw.rect(okno, (cerna), (39, 534, 102, 52))
 za_opustit_sell = pygame.draw.rect(okno, (cerna), (39, 534, 102, 52))
+
 
 buy = pygame.draw.rect(okno, (hneda), (125, 395, 200, 100))
 sell = pygame.draw.rect(okno, (hneda), (475, 395, 200, 100))
@@ -613,6 +639,9 @@ while True:
         hrac_rychlost = 0
         pygame.draw.rect(okno, cerna, za_opustit_sell)
         pygame.draw.rect(okno, hneda, leave_sell)
+        pygame.draw.rect(okno, hneda, plechovka_sell)
+        pygame.draw.rect(okno, hneda, bota_sell)
+        pygame.draw.rect(okno, hneda, kapr_sell)
         okno.blit(leave_sell_text, (57, 548))
     
     if pozadi == pozadi_shop and shop_mode == "sell":
