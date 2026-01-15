@@ -59,6 +59,11 @@ Sseda = (158, 158, 158)
 
 #inventar
 inventar = False
+obsah_inventare = 0
+obsah_inventare_max = 7
+plny_inventar_upozorneni = False
+plny_inventar_cas = 0
+plny_inventar_doba = 2000
 
 #predmety
 coins = 100
@@ -103,7 +108,7 @@ predmety = [
         
 
 
-#shop
+#velikosti
 buy_velikost = 60
 sell_velikost = 60
 leave_velikost =  40
@@ -114,6 +119,7 @@ hlaska_velikost = 25
 zpet_tlacitko_velikost = 40
 space_to_fish_velikost = 40
 pismeno_velikost = 40
+plny_inventory_velikost = 60
 
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
 za_prodat = pygame.draw.rect(okno, (cerna), (474, 394, 202, 102))
@@ -202,6 +208,9 @@ zpet_tlacitko_text = zpet_tlacitko_font.render("EXIT", True, cerna)
 space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
 space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cerna)
 pismeno_font = pygame.font.SysFont("Aharoni", pismeno_velikost)
+plny_inv_font = pygame.font.SysFont("Aharoni", plny_inventory_velikost)
+plny_inv_text = plny_inv_font.render("FULL INVENTORY", True, cerna)
+
 
 
 
@@ -375,14 +384,18 @@ while True:
     #SPACE k zapnuti naprahu
    
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
-        pozadi = rybareni_dole
-        hrac_rychlost = 0
-        pozadi_sirka = pozadi.get_width()
-        pozadi_vyska = pozadi.get_height()
-        prut = True
-        zpet_tlacitko = False
-        ulovek = vyber_predmet(predmety)
-        cas_nahozeni = pygame.time.get_ticks()
+        if sum(obsah_inventare.values()) < obsah_inventare_max:
+            pozadi = rybareni_dole
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            prut = True
+            zpet_tlacitko = False
+            ulovek = vyber_predmet(predmety)
+            cas_nahozeni = pygame.time.get_ticks()
+        else:
+            plny_inventar_upozorneni = True
+            plny_inventar_cas = pygame.time.get_ticks()
     
     #Doba cekani nez hrac muze chytat ulovek
     
@@ -647,7 +660,14 @@ while True:
 
         text_rect = pismeno_text.get_rect(center=center)
         okno.blit(pismeno_text, text_rect)
+    
+    if plny_inventar_upozorneni:
+        plny_inventar_upozorneni_rect = plny_inv_text.get_rect(center=(okno_sirka // 2, 50))
+        okno.blit(plny_inv_text, plny_inventar_upozorneni_rect)
+        if pygame.time.get_ticks() - plny_inventar_cas > plny_inventar_doba:
+            plny_inventar_upozorneni = False
 
+    
     #print(shop_mode)
     #print(kamera_x, hrac_pozice_x)
     #print(inventar)
