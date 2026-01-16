@@ -10,7 +10,10 @@ def vyber_predmet(predmety):
     for p in predmety:
         if p["sance"] >= los:
             return p
-
+def najdi_predmet_podle_jmena(predmety, jmeno):
+    for p in predmety:
+        if p["jmeno"] == jmeno:
+            return p
         
 
 okno_sirka = 800
@@ -69,7 +72,7 @@ plny_inventar_doba = 2000
 #predmety
 coins = 100
 obsah_inventare = {
-    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0,}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
 prut = False
@@ -79,31 +82,51 @@ zpet_tlacitko = False
 predmety = [
     {
         "jmeno": "Plechovka",
-        "sance": 45,
-        "cekani": 3000,
+        "sance": 40,
+        "cekani": 4000,
         "zmacknuti": 5,
         "limit_cekani": 3000,
+        "cena": 20,
     },
     {
         "jmeno": "Bota",
-        "sance": 70,
+        "sance": 65,
         "cekani": 5000,
         "zmacknuti": 7,
         "limit_cekani": 2500,
+        "cena": 30,
     },
     {
         "jmeno": "Kapr",
-        "sance": 90,
-        "cekani": 10000,
+        "sance": 80,
+        "cekani": 6000,
         "zmacknuti": 12,
         "limit_cekani": 2000,
+        "cena": 80,
     },
     {
         "jmeno": "Štika",
-        "sance": 100,
-        "cekani": 11000,
+        "sance": 90,
+        "cekani": 7000,
         "zmacknuti": 15,
         "limit_cekani": 1300,
+        "cena": 130,
+    },
+    {
+        "jmeno": "Sumec",
+        "sance": 97,
+        "cekani": 11000,
+        "zmacknuti": 18,
+        "limit_cekani": 1000,
+        "cena": 180,
+    },
+    {
+        "jmeno": "Rak",
+        "sance": 100,
+        "cekani": 9000,
+        "zmacknuti": 25,
+        "limit_cekani": 800,
+        "cena": 500,
     },
 ]
         
@@ -230,7 +253,6 @@ za_space_u_jezera = pygame.draw.rect(okno, cerna, (721, 339, 52, 52))
 
 
 coins_font = pygame.font.Font("CHAOS16.otf", 30)
-coins_text = coins_font.render(f"golds:{coins}", True, zluta)
 buy_font = pygame.font.SysFont("Aharoni", buy_velikost)
 buy_text = buy_font.render("BUY", True, (cerna))
 sell_font = pygame.font.SysFont("Aharoni", sell_velikost)
@@ -248,8 +270,6 @@ space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cern
 pismeno_font = pygame.font.SysFont("Aharoni", pismeno_velikost)
 plny_inv_font = pygame.font.SysFont("Aharoni", plny_inventory_velikost)
 plny_inv_text = plny_inv_font.render("FULL INVENTORY", True, cerna)
-
-
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -501,11 +521,7 @@ while True:
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             print(obsah_inventare)
-            
-            
-
-                
-            
+                   
     #Funkcnost shopu, klik na buy, sell a moznost opusteni shopu
             
     if pozadi == shop:
@@ -526,7 +542,82 @@ while True:
                 shop_hlaska = None
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
+                
+                
+    if shop_mode == "sell" and pozadi == pozadi_shop:
+        if plechovka_sell.collidepoint(mys_pozice) and klik[0]:
+                jmeno = "plechovka"
+                
+                if obsah_inventare["plechovka"] <= 0:
+                    print("nemas plechovku lol", obsah_inventare)
+                    
+                else:
+                    predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                    
+                    obsah_inventare[jmeno] -= 1
+                    coins += predmet["cena"]
+        
+        if bota_sell.collidepoint(mys_pozice) and klik[0]:
+            jmeno = "Bota"
+            
+            if obsah_inventare["Bota"] <= 0:
+                print("nemas botu lol", obsah_inventare)
+                
+            else:
+                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                
+                obsah_inventare[jmeno] -= 1
+                coins += predmet["cena"]
+        
+        if kapr_sell.collidepoint(mys_pozice) and klik[0]:
+            jmeno = "kapr"
+            
+            if obsah_inventare["kapr"] <= 0:
+                print("nemas kapra lol", obsah_inventare)
+            
+            else:
+                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                
+                obsah_inventare[jmeno] -= 1
+                coins += predmet["cena"]
+        
+        if stika_sell.collidepoint(mys_pozice) and klik[0]:
+            jmeno = "stika"
+            
+            if obsah_inventare["Stika"] <= 0:
+                print("nemas stiku lol", obsah_inventare)
+                
+            else:
+                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                
+                obsah_inventare[jmeno] -= 1
+                coins += predmet["cena"]
+        
+        if sumec_sell.collidepoint(mys_pozice) and klik[0]:
+            jmeno = "sumec"
+            
+            if obsah_inventare["Sumec"] <= 0:
+                print("nemas sumce lol", obsah_inventare)
+                
+            else:
+                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                
+                obsah_inventare[jmeno] -= 1
+                coins += predmet["cena"]
 
+        if tajnaRyba_sell.collidepoint(mys_pozice) and klik[0]:
+            jmeno = "rak"
+            
+            if obsah_inventare["Rak"] <= 0:
+                print("nemas tajnou rybu lol", obsah_inventare)
+                
+            else:
+                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+                
+                obsah_inventare[jmeno] -= 1
+                coins += predmet["cena"]
+
+            
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
         elif shop_mode == "buy":
@@ -538,6 +629,7 @@ while True:
             if leave_sell.collidepoint(mys_pozice) and klik[0]:
                 shop_mode = None
                 pozadi = shop
+
     
     #Omezeni otevirani inv v shopu a v buy and sell
     
@@ -567,6 +659,16 @@ while True:
     elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell":
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "sell" and plechovka_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and bota_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and kapr_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and stika_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and sumec_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and tajnaRyba_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -688,7 +790,9 @@ while True:
             okno.blit(sell_text, (525, 425))
             okno.blit(leave_text, (687, 548))
             okno.blit(hlaska_text, (458, 262))
-  
+
+    
+    coins_text = coins_font.render(f"golds:{coins}", True, zluta)
     okno.blit(coins_text, (30, 20))
     
     if not inventar and pozadi != shop and pozadi != pozadi_shop:
