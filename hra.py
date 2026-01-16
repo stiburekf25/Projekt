@@ -123,27 +123,39 @@ pismeno_velikost = 40
 plny_inventory_velikost = 60
 
 
-
-
-
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
 polozky_velikost_y = 120
 
-sell_plechovka_pozice_x = 80
+sell_plechovka_pozice_x = 100
 sell_plechovka_pozice_y = 80
+za_plechovka_sell = pygame.draw.rect(okno, cerna, (sell_plechovka_pozice_x - 1, sell_plechovka_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
 plechovka_sell = pygame.draw.rect(okno, hneda, (sell_plechovka_pozice_x, sell_plechovka_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
-sell_bota_pozice_x = 80
+sell_bota_pozice_x = 100
 sell_bota_pozice_y = 240
+za_bota_sell = pygame.draw.rect(okno, cerna, (sell_bota_pozice_x - 1, sell_bota_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
 bota_sell = pygame.draw.rect(okno, hneda, (sell_bota_pozice_x, sell_bota_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
-sell_kapr_pozice_x = 80
-sell_kapr_pozice_y = 360
+sell_kapr_pozice_x = 100
+sell_kapr_pozice_y = 400
+za_kapr_sell = pygame.draw.rect(okno, cerna, (sell_kapr_pozice_x - 1, sell_kapr_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
 kapr_sell = pygame.draw.rect(okno, hneda, (sell_kapr_pozice_x, sell_kapr_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
+sell_stika_pozice_x = 470
+sell_stika_pozice_y = 80
+za_stika_sell = pygame.draw.rect(okno, cerna, (sell_stika_pozice_x - 1, sell_stika_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
+stika_sell = pygame.draw.rect(okno, hneda, (sell_stika_pozice_x, sell_stika_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
+sell_sumec_pozice_x = 470
+sell_sumec_pozice_y = 240
+za_sumec_sell = pygame.draw.rect(okno, cerna, (sell_sumec_pozice_x - 1, sell_sumec_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
+sumec_sell = pygame.draw.rect(okno, hneda, (sell_sumec_pozice_x, sell_sumec_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
+sell_tajnaRyba_pozice_x = 470
+sell_tajnaRyba_pozice_y = 400
+za_tajnaRyba_sell = pygame.draw.rect(okno, cerna, (sell_tajnaRyba_pozice_x - 1, sell_tajnaRyba_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
+tajnaRyba_sell = pygame.draw.rect(okno, hneda, (sell_tajnaRyba_pozice_x, sell_tajnaRyba_pozice_y, polozky_velikost_x, polozky_velikost_y))
 
 
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
@@ -554,6 +566,8 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell":
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "sell" and plechovka_sell.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
@@ -639,9 +653,25 @@ while True:
         hrac_rychlost = 0
         pygame.draw.rect(okno, cerna, za_opustit_sell)
         pygame.draw.rect(okno, hneda, leave_sell)
+        
+        pygame.draw.rect(okno, cerna, za_plechovka_sell)
         pygame.draw.rect(okno, hneda, plechovka_sell)
+        
+        pygame.draw.rect(okno, cerna, za_bota_sell)
         pygame.draw.rect(okno, hneda, bota_sell)
+        
+        pygame.draw.rect(okno, cerna, za_kapr_sell)
         pygame.draw.rect(okno, hneda, kapr_sell)
+        
+        pygame.draw.rect(okno, cerna, za_stika_sell)
+        pygame.draw.rect(okno, hneda, stika_sell)
+        
+        pygame.draw.rect(okno, cerna, za_sumec_sell)
+        pygame.draw.rect(okno, hneda, sumec_sell)
+        
+        pygame.draw.rect(okno, cerna, za_tajnaRyba_sell)
+        pygame.draw.rect(okno, hneda, tajnaRyba_sell)
+        
         okno.blit(leave_sell_text, (57, 548))
     
     if pozadi == pozadi_shop and shop_mode == "sell":
