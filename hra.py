@@ -144,6 +144,7 @@ zpet_tlacitko_velikost = 40
 space_to_fish_velikost = 40
 pismeno_velikost = 40
 plny_inventory_velikost = 60
+cislo_u_polozky_velikost = 20
 
 
 #pozice polozek v shopu + velikost
@@ -270,6 +271,7 @@ space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cern
 pismeno_font = pygame.font.SysFont("Aharoni", pismeno_velikost)
 plny_inv_font = pygame.font.SysFont("Aharoni", plny_inventory_velikost)
 plny_inv_text = plny_inv_font.render("FULL INVENTORY", True, cerna)
+cislo_u_plechovky_font = pygame.font.SysFont("Aharoni", cislo_u_polozky_velikost)
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -282,16 +284,21 @@ while True:
 
     # OVLADANI HRY HRACEM
     
+    mouse_click = False
+    
     for udalost in pygame.event.get():
         if udalost.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+            
+        if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
+            mouse_click = True
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
     stisknuto = pygame.key.get_pressed()
     mys_pozice = pygame.mouse.get_pos()
-    klik = pygame.mouse.get_pressed()
+    #klik = pygame.mouse.get_pressed()
 
     
     # UPRAVA HRY MEZI FRAMY
@@ -431,7 +438,7 @@ while True:
     
     #Tlacitko exit k opusteni rybareni zpet na jezero
     
-    if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and klik[0]:
+    if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and mouse_click:
         pozadi = jezero
         zpet_tlacitko = False
         hrac_rychlost = 4
@@ -526,13 +533,13 @@ while True:
             
     if pozadi == shop:
         if shop_mode is None: 
-            if buy.collidepoint(mys_pozice) and klik[0]:
+            if buy.collidepoint(mys_pozice) and mouse_click:
                 shop_mode = "buy"
         
-            elif sell.collidepoint(mys_pozice) and klik[0]:
+            elif sell.collidepoint(mys_pozice) and mouse_click:
                 shop_mode = "sell"
         
-            elif leave.collidepoint(mys_pozice) and klik[0]:
+            elif leave.collidepoint(mys_pozice) and mouse_click:
                 pozadi = venek
                 hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_shopem
                 hrac_velikostX = 110
@@ -545,10 +552,10 @@ while True:
                 
                 
     if shop_mode == "sell" and pozadi == pozadi_shop:
-        if plechovka_sell.collidepoint(mys_pozice) and klik[0]:
-                jmeno = "plechovka"
+        if plechovka_sell.collidepoint(mys_pozice) and mouse_click:
+                jmeno = "Plechovka"
                 
-                if obsah_inventare["plechovka"] <= 0:
+                if obsah_inventare["Plechovka"] <= 0:
                     print("nemas plechovku lol", obsah_inventare)
                     
                 else:
@@ -557,7 +564,7 @@ while True:
                     obsah_inventare[jmeno] -= 1
                     coins += predmet["cena"]
         
-        if bota_sell.collidepoint(mys_pozice) and klik[0]:
+        if bota_sell.collidepoint(mys_pozice) and mouse_click:
             jmeno = "Bota"
             
             if obsah_inventare["Bota"] <= 0:
@@ -569,10 +576,10 @@ while True:
                 obsah_inventare[jmeno] -= 1
                 coins += predmet["cena"]
         
-        if kapr_sell.collidepoint(mys_pozice) and klik[0]:
-            jmeno = "kapr"
+        if kapr_sell.collidepoint(mys_pozice) and mouse_click:
+            jmeno = "Kapr"
             
-            if obsah_inventare["kapr"] <= 0:
+            if obsah_inventare["Kapr"] <= 0:
                 print("nemas kapra lol", obsah_inventare)
             
             else:
@@ -581,10 +588,10 @@ while True:
                 obsah_inventare[jmeno] -= 1
                 coins += predmet["cena"]
         
-        if stika_sell.collidepoint(mys_pozice) and klik[0]:
-            jmeno = "stika"
+        if stika_sell.collidepoint(mys_pozice) and mouse_click:
+            jmeno = "Stika"
             
-            if obsah_inventare["Stika"] <= 0:
+            if obsah_inventare["Štika"] <= 0:
                 print("nemas stiku lol", obsah_inventare)
                 
             else:
@@ -593,8 +600,8 @@ while True:
                 obsah_inventare[jmeno] -= 1
                 coins += predmet["cena"]
         
-        if sumec_sell.collidepoint(mys_pozice) and klik[0]:
-            jmeno = "sumec"
+        if sumec_sell.collidepoint(mys_pozice) and mouse_click:
+            jmeno = "Sumec"
             
             if obsah_inventare["Sumec"] <= 0:
                 print("nemas sumce lol", obsah_inventare)
@@ -605,8 +612,8 @@ while True:
                 obsah_inventare[jmeno] -= 1
                 coins += predmet["cena"]
 
-        if tajnaRyba_sell.collidepoint(mys_pozice) and klik[0]:
-            jmeno = "rak"
+        if tajnaRyba_sell.collidepoint(mys_pozice) and mouse_click:
+            jmeno = "Rak"
             
             if obsah_inventare["Rak"] <= 0:
                 print("nemas tajnou rybu lol", obsah_inventare)
@@ -621,12 +628,12 @@ while True:
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
         elif shop_mode == "buy":
-            if leave_buy.collidepoint(mys_pozice) and klik[0]:
+            if leave_buy.collidepoint(mys_pozice) and mouse_click:
                 shop_mode = None
                 pozadi = shop
         
         elif shop_mode == "sell":
-            if leave_sell.collidepoint(mys_pozice) and klik[0]:
+            if leave_sell.collidepoint(mys_pozice) and mouse_click:
                 shop_mode = None
                 pozadi = shop
 
@@ -634,11 +641,11 @@ while True:
     #Omezeni otevirani inv v shopu a v buy and sell
     
     if pozadi != shop and pozadi != pozadi_shop:
-        if ikona_inv_rect.collidepoint(mys_pozice) and klik[0]:
+        if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
             inventar = True
             hrac_rychlost = 0
         if inventar:
-            if tlacitko.collidepoint(mys_pozice) and klik[0]:
+            if tlacitko.collidepoint(mys_pozice) and mouse_click:
                 inventar = False
                 hrac_rychlost = 4
     
@@ -735,7 +742,7 @@ while True:
  
         
     if pozadi == pozadi_shop and shop_mode == "buy":
-        if leave_buy.collidepoint(mys_pozice) and klik[0]:
+        if leave_buy.collidepoint(mys_pozice) and mouse_click:
             pozadi = shop
             shop_mode = None
             pygame.draw.rect(okno, cerna, za_koupit)
@@ -748,6 +755,10 @@ while True:
             okno.blit(sell_text, (525, 425))
             okno.blit(leave_text, (687, 548))
             okno.blit(hlaska_text, (458, 262))
+    
+    
+    
+    
 
     if shop_mode == "sell":
         pozadi = pozadi_shop
@@ -758,6 +769,11 @@ while True:
         
         pygame.draw.rect(okno, cerna, za_plechovka_sell)
         pygame.draw.rect(okno, hneda, plechovka_sell)
+        pocet_plechovek = obsah_inventare["Plechovka"]
+        cislo_u_plechovky_text = cislo_u_plechovky_font.render(str(pocet_plechovek), True, cerna)
+        
+        okno.blit(cislo_u_plechovky_text, (sell_plechovka_pozice_x + polozky_velikost_x - 25, sell_plechovka_pozice_y + polozky_velikost_y -25))
+
         
         pygame.draw.rect(okno, cerna, za_bota_sell)
         pygame.draw.rect(okno, hneda, bota_sell)
@@ -777,7 +793,7 @@ while True:
         okno.blit(leave_sell_text, (57, 548))
     
     if pozadi == pozadi_shop and shop_mode == "sell":
-        if leave_sell.collidepoint(mys_pozice) and klik[0]:
+        if leave_sell.collidepoint(mys_pozice) and mouse_click:
             pozadi = shop
             shop_mode = None
             pygame.draw.rect(okno, cerna, za_koupit)
@@ -835,6 +851,7 @@ while True:
     #print(kamera_x, hrac_pozice_x)
     #print(inventar)
     #print(sekvence[poradi])
+    #print(mouse_click)
         
     clock.tick(60)
     pygame.display.update()
