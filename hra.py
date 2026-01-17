@@ -51,6 +51,7 @@ pocitadlo = 0
 
 okno = pygame.display.set_mode(rozliseni_okna)
 clock = pygame.time.Clock()
+pocitadlo += 1
 
 #BARVICKY
 zluta = (205, 235, 98)
@@ -59,15 +60,19 @@ bila = (255, 255, 255)
 seda = (94, 94, 94)
 hneda = (148, 96, 56)
 Sseda = (158, 158, 158)
+cervena = (191, 53, 21)
+zelena = (29, 166, 14)
+modra = (59, 64, 207)
+fialova = (130, 49, 196)
 
 
 #inventar
 inventar = False
 obsah_inventare = 0
-obsah_inventare_max = 7
+obsah_inventare_max = 1
 plny_inventar_upozorneni = False
 plny_inventar_cas = 0
-plny_inventar_doba = 2000
+plny_inventar_doba = 300
 
 #predmety
 coins = 100
@@ -94,7 +99,7 @@ predmety = [
         "cekani": 5000,
         "zmacknuti": 7,
         "limit_cekani": 2500,
-        "cena": 30,
+        "cena": 40,
     },
     {
         "jmeno": "Kapr",
@@ -118,15 +123,15 @@ predmety = [
         "cekani": 11000,
         "zmacknuti": 18,
         "limit_cekani": 1000,
-        "cena": 180,
+        "cena": 250,
     },
     {
         "jmeno": "Rak",
         "sance": 100,
         "cekani": 9000,
-        "zmacknuti": 25,
+        "zmacknuti": 20,
         "limit_cekani": 800,
-        "cena": 500,
+        "cena": 600,
     },
 ]
         
@@ -141,11 +146,12 @@ leave_sell_velikost = 40
 shop_hlaska = None
 hlaska_velikost = 25
 zpet_tlacitko_velikost = 40
-space_to_fish_velikost = 40
+space_to_fish_velikost = 60
 pismeno_velikost = 40
 plny_inventory_velikost = 60
-cislo_u_polozky_velikost = 20
-
+cislo_u_polozky_velikost = 30
+rarita_velikost = 25
+popis_polozky_velikost = 30
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -244,6 +250,16 @@ ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
 tlacitko = pygame.draw.rect(okno, Sseda, (392, 240, 30, 30))
 za_tlacitko = pygame.draw.rect(okno, seda, (391, 239, 32, 32))
 
+#obrazky shopu
+plechovka = pygame.image.load("plechovka.png")
+bota = pygame.image.load("bota.png")
+kapr = pygame.image.load("kapr.png")
+stika = pygame.image.load("stika.png")
+sumec = pygame.image.load("sumec.png")
+tajnaRyba = pygame.image.load("tajnaRyba.png")
+
+coin_ikona = pygame.image.load("coin_ikon.png")
+
 
 
 #priprava textu
@@ -266,12 +282,16 @@ leave_sell_font = pygame.font.SysFont("Aharoni", leave_sell_velikost)
 leave_sell_text = leave_sell_font.render("EXIT", True, cerna)
 zpet_tlacitko_font = pygame.font.SysFont("Aharoni", zpet_tlacitko_velikost)
 zpet_tlacitko_text = zpet_tlacitko_font.render("EXIT", True, cerna)
-space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
-space_to_fish_text = space_to_fish_font.render("Press space to cast", True, cerna)
 pismeno_font = pygame.font.SysFont("Aharoni", pismeno_velikost)
 plny_inv_font = pygame.font.SysFont("Aharoni", plny_inventory_velikost)
-plny_inv_text = plny_inv_font.render("FULL INVENTORY", True, cerna)
-cislo_u_plechovky_font = pygame.font.SysFont("Aharoni", cislo_u_polozky_velikost)
+plny_inv_text = plny_inv_font.render("!!FULL INVENTORY!!", True, cervena)
+cislo_u_polozky_font = pygame.font.SysFont("Aharoni", cislo_u_polozky_velikost)
+rarita_font = pygame.font.SysFont("Aharoni", rarita_velikost)
+popis_polozky_font = pygame.font.SysFont("Aharoni", popis_polozky_velikost)
+hodnota_polozky_font = pygame.font.Font("CHAOS16.otf", 30)
+space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
+space_to_fish_text = space_to_fish_font.render("PRESS SPACE TO CAST", True, cerna)
+
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -435,6 +455,7 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+            
     
     #Tlacitko exit k opusteni rybareni zpet na jezero
     
@@ -589,7 +610,7 @@ while True:
                 coins += predmet["cena"]
         
         if stika_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Stika"
+            jmeno = "Štika"
             
             if obsah_inventare["Štika"] <= 0:
                 print("nemas stiku lol", obsah_inventare)
@@ -766,31 +787,98 @@ while True:
         hrac_rychlost = 0
         pygame.draw.rect(okno, cerna, za_opustit_sell)
         pygame.draw.rect(okno, hneda, leave_sell)
+        okno.blit(leave_sell_text, (57, 548))
         
         pygame.draw.rect(okno, cerna, za_plechovka_sell)
         pygame.draw.rect(okno, hneda, plechovka_sell)
         pocet_plechovek = obsah_inventare["Plechovka"]
-        cislo_u_plechovky_text = cislo_u_plechovky_font.render(str(pocet_plechovek), True, cerna)
-        
-        okno.blit(cislo_u_plechovky_text, (sell_plechovka_pozice_x + polozky_velikost_x - 25, sell_plechovka_pozice_y + polozky_velikost_y -25))
-
+        cislo_u_plechovky_text = cislo_u_polozky_font.render(str(pocet_plechovek), True, cerna)
+        okno.blit(cislo_u_plechovky_text, (sell_plechovka_pozice_x + polozky_velikost_x - 25, sell_plechovka_pozice_y + polozky_velikost_y - 25))
+        okno.blit(plechovka, (sell_plechovka_pozice_x, sell_plechovka_pozice_y + 5))
+        rarita_text_common_plechovka = rarita_font.render("COMMON", True, Sseda)
+        okno.blit(rarita_text_common_plechovka, (sell_plechovka_pozice_x + 8, sell_plechovka_pozice_y + 102))
+        popis_plechovky_text = popis_polozky_font.render("TIN", True, cerna)
+        okno.blit(popis_plechovky_text, (sell_plechovka_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_plechovka_pozice_y + 10))
+        predmet_plechovka = najdi_predmet_podle_jmena(predmety, "Plechovka")
+        hodnota_plechovky_text = hodnota_polozky_font.render(str(predmet_plechovka["cena"]), True, zluta)
+        okno.blit(hodnota_plechovky_text, (sell_plechovka_pozice_x + polozky_velikost_x / 2 + 42, sell_plechovka_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_plechovka_pozice_x + polozky_velikost_x / 2 + 72, sell_plechovka_pozice_y + 45))
         
         pygame.draw.rect(okno, cerna, za_bota_sell)
         pygame.draw.rect(okno, hneda, bota_sell)
-        
+        pocet_bot = obsah_inventare["Bota"]
+        cislo_u_boty_text = cislo_u_polozky_font.render(str(pocet_bot), True, cerna)
+        okno.blit(cislo_u_boty_text, (sell_bota_pozice_x + polozky_velikost_x - 25, sell_bota_pozice_y + polozky_velikost_y - 25))
+        okno.blit(bota, (sell_bota_pozice_x + 8, sell_bota_pozice_y ))
+        rarita_text_uncommon_bota = rarita_font.render("UNCOMMON", True, zelena)
+        okno.blit(rarita_text_uncommon_bota, (sell_bota_pozice_x + 8, sell_bota_pozice_y + 102))
+        popis_boty_text = popis_polozky_font.render("BOOT", True, cerna)
+        okno.blit(popis_boty_text, (sell_bota_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_bota_pozice_y + 10))
+        predmet_bota = najdi_predmet_podle_jmena(predmety, "Bota")
+        hodnota_boty_text = hodnota_polozky_font.render(str(predmet_bota["cena"]), True, zluta)
+        okno.blit(hodnota_boty_text, (sell_bota_pozice_x + polozky_velikost_x / 2 + 42, sell_bota_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_bota_pozice_x + polozky_velikost_x / 2 + 72, sell_bota_pozice_y + 45))
+
         pygame.draw.rect(okno, cerna, za_kapr_sell)
         pygame.draw.rect(okno, hneda, kapr_sell)
-        
+        pocet_kapru = obsah_inventare["Kapr"]
+        cislo_u_kapra_text = cislo_u_polozky_font.render(str(pocet_kapru), True, cerna)
+        okno.blit(cislo_u_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x - 25, sell_kapr_pozice_y + polozky_velikost_y - 25))
+        okno.blit(kapr, (sell_kapr_pozice_x + 5 , sell_kapr_pozice_y ))
+        rarita_text_rare_kapr = rarita_font.render("RARE", True, modra)
+        okno.blit(rarita_text_rare_kapr, (sell_kapr_pozice_x + 8, sell_kapr_pozice_y + 102))
+        popis_kapra_text = popis_polozky_font.render("CARP", True, cerna)
+        okno.blit(popis_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_kapr_pozice_y + 10))
+        predmet_kapr = najdi_predmet_podle_jmena(predmety, "Kapr")
+        hodnota_kapra_text = hodnota_polozky_font.render(str(predmet_kapr["cena"]), True, zluta)
+        okno.blit(hodnota_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x / 2 + 42, sell_kapr_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_kapr_pozice_x + polozky_velikost_x / 2 + 72, sell_kapr_pozice_y + 45))
+
         pygame.draw.rect(okno, cerna, za_stika_sell)
         pygame.draw.rect(okno, hneda, stika_sell)
+        pocet_stik = obsah_inventare["Štika"]
+        cislo_u_stiky_text = cislo_u_polozky_font.render(str(pocet_stik), True, cerna)
+        okno.blit(cislo_u_stiky_text, (sell_stika_pozice_x + polozky_velikost_x - 25, sell_stika_pozice_y + polozky_velikost_y -25))
+        okno.blit(stika, (sell_stika_pozice_x + 5 , sell_stika_pozice_y))
+        rarita_text_epic_stika = rarita_font.render("EPIC", True, fialova)
+        okno.blit(rarita_text_epic_stika, (sell_stika_pozice_x + 8, sell_stika_pozice_y + 102))   
+        popis_stiky_text = popis_polozky_font.render("PIKE", True, cerna)
+        okno.blit(popis_stiky_text, (sell_stika_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_stika_pozice_y + 10))
+        predmet_stika = najdi_predmet_podle_jmena(predmety, "Štika")
+        hodnota_stiky_text = hodnota_polozky_font.render(str(predmet_stika["cena"]), True, zluta)
+        okno.blit(hodnota_stiky_text, (sell_stika_pozice_x + polozky_velikost_x / 2 + 30, sell_stika_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_stika_pozice_x + polozky_velikost_x / 2 + 75, sell_stika_pozice_y + 45))
         
         pygame.draw.rect(okno, cerna, za_sumec_sell)
         pygame.draw.rect(okno, hneda, sumec_sell)
+        pocet_sumcu = obsah_inventare["Sumec"]
+        cislo_u_sumce_text = cislo_u_polozky_font.render(str(pocet_sumcu), True, cerna)
+        okno.blit(cislo_u_sumce_text, (sell_sumec_pozice_x + polozky_velikost_x -25, sell_sumec_pozice_y + polozky_velikost_y - 25))
+        okno.blit(sumec, (sell_sumec_pozice_x + 5 , sell_sumec_pozice_y ))
+        rarita_text_epic_sumec = rarita_font.render("EPIC", True, fialova)
+        okno.blit(rarita_text_epic_sumec, (sell_sumec_pozice_x + 8, sell_sumec_pozice_y + 102))
+        popis_sumce_text = popis_polozky_font.render("CATFISH", True, cerna)
+        okno.blit(popis_sumce_text, (sell_sumec_pozice_x + polozky_velikost_x - popis_polozky_velikost - 60, sell_sumec_pozice_y + 10))
+        predmet_sumec = najdi_predmet_podle_jmena(predmety, "Sumec")
+        hodnota_sumce_text = hodnota_polozky_font.render(str(predmet_sumec["cena"]), True, zluta)
+        okno.blit(hodnota_sumce_text, (sell_sumec_pozice_x + polozky_velikost_x / 2 + 30, sell_sumec_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_sumec_pozice_x + polozky_velikost_x / 2 + 75, sell_sumec_pozice_y + 45))
         
         pygame.draw.rect(okno, cerna, za_tajnaRyba_sell)
         pygame.draw.rect(okno, hneda, tajnaRyba_sell)
+        pocet_raku = obsah_inventare["Rak"]
+        cislo_u_raka_text = cislo_u_polozky_font.render(str(pocet_raku), True, cerna)
+        okno.blit(cislo_u_raka_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x - 25, sell_tajnaRyba_pozice_y + polozky_velikost_y - 25))
+        okno.blit(tajnaRyba, (sell_tajnaRyba_pozice_x + 5 , sell_tajnaRyba_pozice_y ))
+        rarita_text_legendary_rak = rarita_font.render("LEGENDARY", True, zluta)
+        okno.blit(rarita_text_legendary_rak, (sell_tajnaRyba_pozice_x + 8, sell_tajnaRyba_pozice_y + 102))
+        popis_tajnaRyba_text = popis_polozky_font.render("???", True, cerna)
+        okno.blit(popis_tajnaRyba_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_tajnaRyba_pozice_y + 10))
+        predmet_tajnaRyba = najdi_predmet_podle_jmena(predmety, "Rak")
+        hodnota_tajnaRyba_text = hodnota_polozky_font.render(str(predmet_tajnaRyba["cena"]), True, zluta)
+        okno.blit(hodnota_tajnaRyba_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x / 2 + 30, sell_tajnaRyba_pozice_y + 45))
+        okno.blit(coin_ikona, (sell_tajnaRyba_pozice_x + polozky_velikost_x / 2 + 75, sell_tajnaRyba_pozice_y + 45))
         
-        okno.blit(leave_sell_text, (57, 548))
     
     if pozadi == pozadi_shop and shop_mode == "sell":
         if leave_sell.collidepoint(mys_pozice) and mouse_click:
@@ -808,8 +896,9 @@ while True:
             okno.blit(hlaska_text, (458, 262))
 
     
-    coins_text = coins_font.render(f"golds:{coins}", True, zluta)
-    okno.blit(coins_text, (30, 20))
+    coins_text = coins_font.render(f":{coins}", True, zluta)
+    okno.blit(coins_text, (55, 20))
+    okno.blit(coin_ikona, (20, 20))
     
     if not inventar and pozadi != shop and pozadi != pozadi_shop:
         okno.blit(ikona_inv, (700, 20))
@@ -840,11 +929,25 @@ while True:
         text_rect = pismeno_text.get_rect(center=center)
         okno.blit(pismeno_text, text_rect)
     
-    if plny_inventar_upozorneni:
-        plny_inventar_upozorneni_rect = plny_inv_text.get_rect(center=(okno_sirka // 2, 50))
+    if plny_inventar_upozorneni and pozadi == rybareni and not inventar:
+        plny_inventar_upozorneni_rect = plny_inv_text.get_rect(center=(okno_sirka // 2, 280))
         okno.blit(plny_inv_text, plny_inventar_upozorneni_rect)
         if pygame.time.get_ticks() - plny_inventar_cas > plny_inventar_doba:
             plny_inventar_upozorneni = False
+    
+    
+    if pozadi == rybareni and not prut and not minihra and not inventar:
+        pocet_snimku = 10
+        faktor_zpozdeni = 10
+        
+        space_to_fish_text_rect = space_to_fish_text.get_rect(center=(okno_sirka // 2, 80))
+        
+        if pocitadlo % (pocet_snimku * faktor_zpozdeni) < 5 * faktor_zpozdeni:
+            okno.blit(space_to_fish_text, space_to_fish_text_rect)
+
+        elif pocitadlo % (pocet_snimku * faktor_zpozdeni) < 6 * faktor_zpozdeni:
+            okno.blit(space_to_fish_text, (1000, 1000))
+
 
     
     #print(shop_mode)
