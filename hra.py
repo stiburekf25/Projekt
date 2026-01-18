@@ -14,8 +14,23 @@ def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
         if p["jmeno"] == jmeno:
             return p
-        
 
+def odeber_z_inventare(jmeno_predmetu):
+    for i, p in enumerate(inventar_order):
+        if p["jmeno"] == jmeno_predmetu:
+            del inventar_order[i]
+            break
+def prodej_predmet(jmeno):
+    if obsah_inventare[jmeno] <= 0:
+        return
+    
+    predmet = najdi_predmet_podle_jmena(predmety,jmeno)
+    obsah_inventare[jmeno] -= 1
+    coins_add = predmet["cena"]
+    odeber_z_inventare(jmeno)
+    return coins_add
+
+    
 okno_sirka = 800
 okno_vyska = 600
 
@@ -39,10 +54,7 @@ for radek in soubor:
 
 soubor.close()
 
-
-
 rozliseni_okna = (okno_sirka, okno_vyska)
-
 
 leva_zona = 300
 prava_zona = 400
@@ -65,7 +77,6 @@ zelena = (29, 166, 14)
 modra = (59, 64, 207)
 fialova = (130, 49, 196)
 
-
 #inventar
 inventar = False
 obsah_inventare = 0
@@ -82,8 +93,7 @@ mezera = 1
 sloty_v_rade = 6
 odemcene_sloty = 24
 rady = 4
-
-
+inventar_order = []
 
 for i in range(odemcene_sloty):
     slot_x = start_slotu_x + (i % sloty_v_rade) * (slot_sirka + mezera)
@@ -95,15 +105,10 @@ vylovene_predmety = []
 
 slot = sloty[i]
 
-
-
-
-
-
 #predmety
 coins = 100
 obsah_inventare = {
-    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":6}
 
 #Rybareni
 prut = False
@@ -160,14 +165,19 @@ predmety = [
         "jmeno": "Rak",
         "sance": 100,
         "cekani": 9000,
-        "zmacknuti": 20,
-        "limit_cekani": 800,
+        "zmacknuti": 23,
+        "limit_cekani": 1100,
         "cena": 600,
         "obrazek": pygame.image.load("tajnaRyba.png"),
     },
 ]
         
-
+inventar_order = []  # nejdriv prazdny seznam
+for jmeno, pocet in obsah_inventare.items():
+    if pocet > 0:
+        predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+        for _ in range(pocet):
+            inventar_order.append(predmet)
 
 #velikosti
 buy_velikost = 60
@@ -219,6 +229,15 @@ sell_tajnaRyba_pozice_x = 470
 sell_tajnaRyba_pozice_y = 400
 za_tajnaRyba_sell = pygame.draw.rect(okno, cerna, (sell_tajnaRyba_pozice_x - 1, sell_tajnaRyba_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
 tajnaRyba_sell = pygame.draw.rect(okno, hneda, (sell_tajnaRyba_pozice_x, sell_tajnaRyba_pozice_y, polozky_velikost_x, polozky_velikost_y))
+
+sell_items = [
+    (plechovka_sell, "Plechovka"),
+    (bota_sell, "Bota"),
+    (kapr_sell, "Kapr"),
+    (stika_sell, "Štika"),
+    (sumec_sell, "Sumec"),
+    (tajnaRyba_sell, "Rak"),
+]
 
 
 za_koupit = pygame.draw.rect(okno, (cerna), (124, 394, 202, 102))
@@ -292,8 +311,6 @@ sumec = pygame.image.load("sumec.png")
 tajnaRyba = pygame.image.load("tajnaRyba.png")
 
 coin_ikona = pygame.image.load("coin_ikon.png")
-
-
 
 #priprava textu
 E_font = pygame.font.SysFont("Aharoni", 40)
@@ -537,8 +554,6 @@ while True:
         okraj_random_y = random.randint(20, 580 - pismeno_velikost)
         zacatek_limitu = pygame.time.get_ticks()
         
-        
-        
 
     #System minihry, scitani poradi, ziskani ulovku
     
@@ -555,7 +570,6 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-            print(obsah_inventare)
     
         elif stisknuto[ord(sekvence[poradi])]:
             poradi += 1
@@ -566,9 +580,9 @@ while True:
                 
                 zacatek_limitu = pygame.time.get_ticks()
             else:
+                inventar_order.append(ulovek)
                 obsah_inventare[ulovek["jmeno"]] += 1
-                if len(vylovene_predmety) < odemcene_sloty:
-                    vylovene_predmety.append(ulovek["obrazek"])
+                
                     
                 minihra = False
                 zpet_tlacitko = True
@@ -608,83 +622,17 @@ while True:
                 pozadi_vyska = pozadi.get_height()
                 
                 
-    if shop_mode == "sell" and pozadi == pozadi_shop:
-        if plechovka_sell.collidepoint(mys_pozice) and mouse_click:
-                jmeno = "Plechovka"
-                
-                if obsah_inventare["Plechovka"] <= 0:
-                    print("nemas plechovku lol", obsah_inventare)
-                    
-                else:
-                    predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                    
-                    obsah_inventare[jmeno] -= 1
-                    coins += predmet["cena"]
-        
-        if bota_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Bota"
-            
-            if obsah_inventare["Bota"] <= 0:
-                print("nemas botu lol", obsah_inventare)
-                
-            else:
-                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                
-                obsah_inventare[jmeno] -= 1
-                coins += predmet["cena"]
-        
-        if kapr_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Kapr"
-            
-            if obsah_inventare["Kapr"] <= 0:
-                print("nemas kapra lol", obsah_inventare)
-            
-            else:
-                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                
-                obsah_inventare[jmeno] -= 1
-                coins += predmet["cena"]
-        
-        if stika_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Štika"
-            
-            if obsah_inventare["Štika"] <= 0:
-                print("nemas stiku lol", obsah_inventare)
-                
-            else:
-                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                
-                obsah_inventare[jmeno] -= 1
-                coins += predmet["cena"]
-        
-        if sumec_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Sumec"
-            
-            if obsah_inventare["Sumec"] <= 0:
-                print("nemas sumce lol", obsah_inventare)
-                
-            else:
-                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                
-                obsah_inventare[jmeno] -= 1
-                coins += predmet["cena"]
-
-        if tajnaRyba_sell.collidepoint(mys_pozice) and mouse_click:
-            jmeno = "Rak"
-            
-            if obsah_inventare["Rak"] <= 0:
-                print("nemas tajnou rybu lol", obsah_inventare)
-                
-            else:
-                predmet = najdi_predmet_podle_jmena(predmety, jmeno)
-                
-                obsah_inventare[jmeno] -= 1
-                coins += predmet["cena"]
-
+    if shop_mode == "sell" and pozadi == pozadi_shop and mouse_click:
+        for rect, jmeno in sell_items:
+            if rect.collidepoint(mys_pozice):
+                zisk = prodej_predmet(jmeno)
+                if zisk:
+                    coins += zisk
+                break
             
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
-        elif shop_mode == "buy":
+        if shop_mode == "buy":
             if leave_buy.collidepoint(mys_pozice) and mouse_click:
                 shop_mode = None
                 pozadi = shop
@@ -705,7 +653,17 @@ while True:
             if tlacitko.collidepoint(mys_pozice) and mouse_click:
                 inventar = False
                 hrac_rychlost = 4
+    if prut:
+        if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
+            inventar = False
+            hrac_rychlost = 0
     
+    if minihra:
+        if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
+            inventar = False
+            hrac_rychlost = 0
+
+
     #Kurzor na hand nebo arrow podle urciteho pozadi ci podminky
     
     kurzor_hand = False 
@@ -716,7 +674,7 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and leave_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop:
+    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop and not minihra and not prut:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -740,7 +698,6 @@ while True:
     # VYKRESLENI PRVKU HRY
     
 
-    
     if pozadi != shop:
         okno.blit(pozadi, (-kamera_x, 0))
     else:
@@ -814,9 +771,6 @@ while True:
             okno.blit(hlaska_text, (458, 262))
     
     
-    
-    
-
     if shop_mode == "sell":
         pozadi = pozadi_shop
         okno.blit(pozadi_shop, (0,0))
@@ -936,7 +890,7 @@ while True:
     okno.blit(coins_text, (55, 20))
     okno.blit(coin_ikona, (20, 20))
     
-    if not inventar and pozadi != shop and pozadi != pozadi_shop:
+    if not inventar and pozadi != shop and pozadi != pozadi_shop and not prut and not minihra:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
@@ -990,28 +944,15 @@ while True:
     
     if inventar:
         vylovene_predmety = []
-        for predmet in predmety:
-            pocet = obsah_inventare[predmet["jmeno"]]
-            for _ in range(pocet):
+        for p in inventar_order:
                 if len(vylovene_predmety) < odemcene_sloty:
-                    vylovene_predmety.append(predmet["obrazek"])
+                    vylovene_predmety.append(p["obrazek"])
 
     if inventar:
         for i, obrazek in enumerate(sloty):
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
-
-
-            
-    
-
-    
-    #print(shop_mode)
-    #print(kamera_x, hrac_pozice_x)
-    #print(inventar)
-    #print(sekvence[poradi])
-    #print(mouse_click)
         
     clock.tick(60)
     pygame.display.update()
