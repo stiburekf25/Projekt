@@ -69,10 +69,36 @@ fialova = (130, 49, 196)
 #inventar
 inventar = False
 obsah_inventare = 0
-obsah_inventare_max = 1
+obsah_inventare_max = 6
 plny_inventar_upozorneni = False
 plny_inventar_cas = 0
 plny_inventar_doba = 300
+sloty = []
+start_slotu_x = 50
+start_slotu_y = 20
+slot_sirka = 115
+slot_vyska = 95
+mezera = 1
+sloty_v_rade = 6
+odemcene_sloty = 24
+rady = 4
+
+
+
+for i in range(odemcene_sloty):
+    slot_x = start_slotu_x + (i % sloty_v_rade) * (slot_sirka + mezera)
+    slot_y = start_slotu_y + (i // sloty_v_rade) * (slot_vyska + mezera)
+    sloty.append(pygame.Rect(slot_x, slot_y, slot_sirka, slot_vyska))
+
+odemcene_sloty = min(odemcene_sloty + 6, 24)
+vylovene_predmety = []
+
+slot = sloty[i]
+
+
+
+
+
 
 #predmety
 coins = 100
@@ -92,6 +118,7 @@ predmety = [
         "zmacknuti": 5,
         "limit_cekani": 3000,
         "cena": 20,
+        "obrazek": pygame.image.load("plechovka.png"),
     },
     {
         "jmeno": "Bota",
@@ -100,6 +127,7 @@ predmety = [
         "zmacknuti": 7,
         "limit_cekani": 2500,
         "cena": 40,
+        "obrazek": pygame.image.load("bota.png"),
     },
     {
         "jmeno": "Kapr",
@@ -108,6 +136,7 @@ predmety = [
         "zmacknuti": 12,
         "limit_cekani": 2000,
         "cena": 80,
+        "obrazek": pygame.image.load("kapr.png"),
     },
     {
         "jmeno": "Štika",
@@ -116,6 +145,7 @@ predmety = [
         "zmacknuti": 15,
         "limit_cekani": 1300,
         "cena": 130,
+        "obrazek": pygame.image.load("stika.png"),
     },
     {
         "jmeno": "Sumec",
@@ -124,6 +154,7 @@ predmety = [
         "zmacknuti": 18,
         "limit_cekani": 1000,
         "cena": 250,
+        "obrazek": pygame.image.load("sumec.png"),
     },
     {
         "jmeno": "Rak",
@@ -132,6 +163,7 @@ predmety = [
         "zmacknuti": 20,
         "limit_cekani": 800,
         "cena": 600,
+        "obrazek": pygame.image.load("tajnaRyba.png"),
     },
 ]
         
@@ -152,6 +184,7 @@ plny_inventory_velikost = 60
 cislo_u_polozky_velikost = 30
 rarita_velikost = 25
 popis_polozky_velikost = 30
+inventory_tlacitko_velikost = 30
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -244,11 +277,11 @@ TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_vel
 
 #obrazek inv
 inv = pygame.image.load("inventar.png")
-TEXTURAinv = pygame.transform.scale(inv, (500, 300))
+#TEXTURAinv = pygame.transform.scale(inv, (500, 300))
 ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
 ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
-tlacitko = pygame.draw.rect(okno, Sseda, (392, 240, 30, 30))
-za_tlacitko = pygame.draw.rect(okno, seda, (391, 239, 32, 32))
+tlacitko = pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517 ,inventory_tlacitko_velikost, inventory_tlacitko_velikost))
+za_tlacitko = pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost, inventory_tlacitko_velikost))
 
 #obrazky shopu
 plechovka = pygame.image.load("plechovka.png")
@@ -373,7 +406,7 @@ while True:
         
         #Vstup na jezero
         
-        if stojim_u_jezera and stisknuto[pygame.K_e]:
+        if stojim_u_jezera and stisknuto[pygame.K_e] and not inventar:
             pozadi = jezero
             
             pozadi_sirka = pozadi.get_width()
@@ -390,7 +423,7 @@ while True:
         
         #Vstup do shopu
         
-        if stojim_u_shopu and stisknuto[pygame.K_e]:
+        if stojim_u_shopu and stisknuto[pygame.K_e] and not inventar:
             pozice_pred_shopem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
             pozadi = shop
             hrac_rychlost = 0
@@ -431,7 +464,7 @@ while True:
         
         #Vystup z lode na jezere zpatky ven
         
-        if stojim_u_leva_lod and stisknuto[pygame.K_e]:
+        if stojim_u_leva_lod and stisknuto[pygame.K_e] and not inventar:
             pozadi = venek
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
@@ -449,7 +482,7 @@ while True:
         
         #Vstup z lode na jezere do rybareni
         
-        if stojim_u_prava_lod and stisknuto[pygame.K_e] and pozadi != rybareni:
+        if stojim_u_prava_lod and stisknuto[pygame.K_e] and pozadi != rybareni and not inventar:
             pozadi = rybareni
             zpet_tlacitko = True
             hrac_rychlost = 0
@@ -459,7 +492,7 @@ while True:
     
     #Tlacitko exit k opusteni rybareni zpet na jezero
     
-    if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and mouse_click:
+    if zpet_tlacitko and pozadi == rybareni and zpet_tlacitko_rect.collidepoint(mys_pozice) and mouse_click and not inventar:
         pozadi = jezero
         zpet_tlacitko = False
         hrac_rychlost = 4
@@ -469,7 +502,7 @@ while True:
 
     #SPACE k zapnuti naprahu
    
-    if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra):
+    if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar:
         if sum(obsah_inventare.values()) < obsah_inventare_max:
             pozadi = rybareni_dole
             hrac_rychlost = 0
@@ -534,6 +567,9 @@ while True:
                 zacatek_limitu = pygame.time.get_ticks()
             else:
                 obsah_inventare[ulovek["jmeno"]] += 1
+                if len(vylovene_predmety) < odemcene_sloty:
+                    vylovene_predmety.append(ulovek["obrazek"])
+                    
                 minihra = False
                 zpet_tlacitko = True
                 pozadi = rybareni
@@ -684,7 +720,7 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell":
+    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell" and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "sell" and plechovka_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -904,16 +940,20 @@ while True:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
-        okno.blit(TEXTURAinv, ( 350 - (500 - hrac_velikostX) / 2, 10,))
-        pygame.draw.rect(okno, seda, (391, 239, 32, 32)) # za tlacitko
-        pygame.draw.rect(okno, Sseda, (392, 240, 30, 30)) # tlacitko
+        okno.blit(inv, (0, 0,))
+        pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost + 2, inventory_tlacitko_velikost + 2)) # za tlacitko
+        pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517, inventory_tlacitko_velikost, inventory_tlacitko_velikost)) # tlacitko
+        coins_text = coins_font.render(f":{coins}", True, zluta)
+        okno.blit(coins_text, (700, 550))
+        okno.blit(coin_ikona, (670, 550))
+
     
     if not inventar and pozadi == rybareni:
         hrac_rychlost = 0
     if inventar and pozadi == rybareni:
         hrac_rychlost = 0
     
-    if zpet_tlacitko:
+    if zpet_tlacitko and not inventar:
         pygame.draw.rect(okno, cerna, (349, 529, 102, 52))
         zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
         okno.blit(zpet_tlacitko_text, (367, 543))
@@ -947,7 +987,24 @@ while True:
 
         elif pocitadlo % (pocet_snimku * faktor_zpozdeni) < 6 * faktor_zpozdeni:
             okno.blit(space_to_fish_text, (1000, 1000))
+    
+    if inventar:
+        vylovene_predmety = []
+        for predmet in predmety:
+            pocet = obsah_inventare[predmet["jmeno"]]
+            for _ in range(pocet):
+                if len(vylovene_predmety) < odemcene_sloty:
+                    vylovene_predmety.append(predmet["obrazek"])
 
+    if inventar:
+        for i, obrazek in enumerate(sloty):
+            if i < len(vylovene_predmety):
+                obrazek = vylovene_predmety[i]
+                okno.blit(obrazek, sloty[i].topleft)
+
+
+            
+    
 
     
     #print(shop_mode)
