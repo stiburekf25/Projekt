@@ -106,9 +106,9 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 100
+coins = 50000000
 obsah_inventare = {
-    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":6}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
 prut = False
@@ -229,6 +229,34 @@ sell_tajnaRyba_pozice_x = 470
 sell_tajnaRyba_pozice_y = 400
 za_tajnaRyba_sell = pygame.draw.rect(okno, cerna, (sell_tajnaRyba_pozice_x - 1, sell_tajnaRyba_pozice_y - 1, polozky_velikost_x + 2, polozky_velikost_y + 2))
 tajnaRyba_sell = pygame.draw.rect(okno, hneda, (sell_tajnaRyba_pozice_x, sell_tajnaRyba_pozice_y, polozky_velikost_x, polozky_velikost_y))
+
+upgrady_velikost_x = 170
+upgrady_velikost_y = 150
+
+kyblik_buy_pozice_x = 100
+kyblik_buy_pozice_y = 80
+za_kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x - 1, kyblik_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
+kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x, kyblik_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
+kyblik_cena = 500
+
+zmacknuti_buy_pozice_x = 315
+zmacknuti_buy_pozice_y = 80
+za_zmacknuti_buy = pygame.draw.rect(okno, cerna, (zmacknuti_buy_pozice_x - 1, zmacknuti_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
+zmacknuti_buy = pygame.draw.rect(okno, hneda, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
+zmacknuti_cena = 500
+
+cekani_buy_pozice_x = 530
+cekani_buy_pozice_y = 80
+za_cekani_buy = pygame.draw.rect(okno, cerna, (cekani_buy_pozice_x -1, cekani_buy_pozice_y -1, upgrady_velikost_x +2, upgrady_velikost_y +2))
+cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
+cekani_cena = 500
+
+#kolikrat koupeno
+kyblik_lvl = 0
+zmacknuti_lvl = 0
+cekani_lvl = 0
+
+max_upgrade = 5
 
 sell_items = [
     (plechovka_sell, "Plechovka"),
@@ -590,7 +618,7 @@ while True:
                 hrac_rychlost = 0
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
-                print(obsah_inventare)
+                
         elif any(stisknuto) and not (poradi > 0 and stisknuto[ord(sekvence[poradi - 1])]):
             minihra = False
             zpet_tlacitko = True
@@ -629,7 +657,54 @@ while True:
                 if zisk:
                     coins += zisk
                 break
+    
+    if shop_mode == "buy" and pozadi == pozadi_shop:
+        if kyblik_buy.collidepoint(mys_pozice) and mouse_click:
+            if kyblik_lvl < max_upgrade and coins >= kyblik_cena:
+                obsah_inventare_max += 6
+                coins -= kyblik_cena
+                
+                kyblik_lvl += 1
+                kyblik_cena *= 2
+                
+                print("KYBLÍK LVL:", kyblik_lvl, "DALŠÍ CENA:", kyblik_cena)
+                
+        if zmacknuti_buy.collidepoint(mys_pozice) and mouse_click:
+            if zmacknuti_lvl < max_upgrade and coins >= zmacknuti_cena:
+                for predmet in predmety:
+                    if predmet["zmacknuti"] > 1:
+                        predmet["zmacknuti"] -= 1
+                        
+                coins -= zmacknuti_cena
+                zmacknuti_lvl += 1
+                zmacknuti_cena *= 2
+                
+                print("ZMÁČKNUTÍ LVL:", zmacknuti_lvl, "DALŠÍ CENA:", zmacknuti_cena)
+                
+        if cekani_buy.collidepoint(mys_pozice) and mouse_click:
+            if cekani_lvl < max_upgrade and coins >= cekani_cena:
+                for predmet in predmety:
+                    if predmet["cekani"] > 500:
+                        predmet["cekani"] -= 500
+                coins -= cekani_cena
+                cekani_lvl += 1
+                cekani_cena *= 2
+                
+                print("cekani LVL:", cekani_lvl, "DALŠÍ CENA:", cekani_cena)
+                
+        if kyblik_lvl == max_upgrade:
+            pass
             
+        if zmacknuti_lvl == max_upgrade:
+            print("max")
+            
+        if cekani_lvl == max_upgrade:
+            print("max")
+           
+
+
+        
+    
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
         if shop_mode == "buy":
@@ -692,6 +767,12 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "sell" and tajnaRyba_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and kyblik_buy.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and zmacknuti_buy.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and cekani_buy.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
@@ -753,6 +834,15 @@ while True:
         pygame.draw.rect(okno, cerna, za_opustit_buy)
         pygame.draw.rect(okno, hneda, leave_buy)
         okno.blit(leave_buy_text, (57, 548))
+        
+        pygame.draw.rect(okno, cerna, za_kyblik_buy)
+        pygame.draw.rect(okno, hneda, kyblik_buy)
+        
+        pygame.draw.rect(okno, cerna, za_zmacknuti_buy)
+        pygame.draw.rect(okno, hneda, zmacknuti_buy)
+        
+        pygame.draw.rect(okno, cerna, za_cekani_buy)
+        pygame.draw.rect(okno, hneda, cekani_buy)
  
         
     if pozadi == pozadi_shop and shop_mode == "buy":
@@ -953,7 +1043,8 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
-        
+    
     clock.tick(60)
     pygame.display.update()
+    
     
