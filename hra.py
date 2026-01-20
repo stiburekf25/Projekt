@@ -196,6 +196,7 @@ rarita_velikost = 25
 popis_polozky_velikost = 30
 inventory_tlacitko_velikost = 30
 cislo_u_upgradu_velikost = 30
+inventory_info_velikost = 20
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -238,21 +239,21 @@ kyblik_buy_pozice_x = 100
 kyblik_buy_pozice_y = 80
 za_kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x - 1, kyblik_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x, kyblik_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-kyblik_cena = 500
+kyblik_cena = 3000
 kyblik_buy_ikona = pygame.image.load("buy_kyblik.png")
 
 zmacknuti_buy_pozice_x = 315
 zmacknuti_buy_pozice_y = 80
 za_zmacknuti_buy = pygame.draw.rect(okno, cerna, (zmacknuti_buy_pozice_x - 1, zmacknuti_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 zmacknuti_buy = pygame.draw.rect(okno, hneda, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-zmacknuti_cena = 500
+zmacknuti_cena = 700
 zmacknuti_buy_ikona = pygame.image.load("buy_zmacknuti.png")
 
 cekani_buy_pozice_x = 530
 cekani_buy_pozice_y = 80
 za_cekani_buy = pygame.draw.rect(okno, cerna, (cekani_buy_pozice_x -1, cekani_buy_pozice_y -1, upgrady_velikost_x +2, upgrady_velikost_y +2))
 cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-cekani_cena = 500
+cekani_cena = 200
 cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
 
@@ -261,7 +262,9 @@ kyblik_lvl = 0
 zmacknuti_lvl = 0
 cekani_lvl = 0
 
-max_upgrade = 5
+max_upgrade_kybliku = 3
+max_upgrade_zmacknuti = 6
+max_upgrade_cekani = 8
 
 sell_items = [
     (plechovka_sell, "Plechovka"),
@@ -329,6 +332,9 @@ TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_vel
 
 #obrazek inv
 inv = pygame.image.load("inventar.png")
+inv2 = pygame.image.load("inventar_2.png")
+inv3 = pygame.image.load("inventar_3.png")
+inv4 = pygame.image.load("inventar_4.png")
 #TEXTURAinv = pygame.transform.scale(inv, (500, 300))
 ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
 ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
@@ -376,6 +382,7 @@ space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
 space_to_fish_text = space_to_fish_font.render("PRESS SPACE TO CAST", True, cerna)
 pocet_upgradu_font = pygame.font.SysFont("Aharoni", cislo_u_upgradu_velikost)
 coins_cena_buy_font = pygame.font.Font("CHAOS16.otf",  30)
+inventory_info_font = pygame.font.SysFont("Aharoni", inventory_info_velikost)
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -666,17 +673,16 @@ while True:
     
     if shop_mode == "buy" and pozadi == pozadi_shop:
         if kyblik_buy.collidepoint(mys_pozice) and mouse_click:
-            if kyblik_lvl < max_upgrade and coins >= kyblik_cena:
+            if kyblik_lvl < max_upgrade_kybliku and coins >= kyblik_cena:
                 obsah_inventare_max += 6
                 coins -= kyblik_cena
                 
                 kyblik_lvl += 1
                 kyblik_cena *= 2
                 
-                print("KYBLÍK LVL:", kyblik_lvl, "DALŠÍ CENA:", kyblik_cena)
                 
         if zmacknuti_buy.collidepoint(mys_pozice) and mouse_click:
-            if zmacknuti_lvl < max_upgrade and coins >= zmacknuti_cena:
+            if zmacknuti_lvl < max_upgrade_zmacknuti and coins >= zmacknuti_cena:
                 for predmet in predmety:
                     if predmet["zmacknuti"] > 1:
                         predmet["zmacknuti"] -= 1
@@ -685,32 +691,19 @@ while True:
                 zmacknuti_lvl += 1
                 zmacknuti_cena *= 2
                 
-                print("ZMÁČKNUTÍ LVL:", zmacknuti_lvl, "DALŠÍ CENA:", zmacknuti_cena)
+
                 
         if cekani_buy.collidepoint(mys_pozice) and mouse_click:
-            if cekani_lvl < max_upgrade and coins >= cekani_cena:
+            if cekani_lvl < max_upgrade_cekani and coins >= cekani_cena:
                 for predmet in predmety:
-                    if predmet["cekani"] > 500:
-                        predmet["cekani"] -= 500
+                    if predmet["cekani"] > 200:
+                        predmet["cekani"] -= 200
+                        
                 coins -= cekani_cena
                 cekani_lvl += 1
                 cekani_cena *= 2
                 
-                print("cekani LVL:", cekani_lvl, "DALŠÍ CENA:", cekani_cena)
-                
-        if kyblik_lvl == max_upgrade:
-            pass
             
-        if zmacknuti_lvl == max_upgrade:
-            pass
-            
-        if cekani_lvl == max_upgrade:
-            pass
-           
-
-
-        
-    
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
         if shop_mode == "buy":
@@ -845,8 +838,8 @@ while True:
         pygame.draw.rect(okno, cerna, za_kyblik_buy)
         pygame.draw.rect(okno, hneda, kyblik_buy)
         okno.blit(kyblik_buy_ikona, (kyblik_buy_pozice_x, kyblik_buy_pozice_y))
-        pocet_upgradu_pro_kyblik = pocet_upgradu_font.render(f"{kyblik_lvl}/{max_upgrade}", True, cerna)
-        if kyblik_lvl < max_upgrade:
+        pocet_upgradu_pro_kyblik = pocet_upgradu_font.render(f"{kyblik_lvl}/{max_upgrade_kybliku}", True, cerna)
+        if kyblik_lvl < max_upgrade_kybliku:
             cena_buy_upgradu_kyblik = coins_cena_buy_font.render(f"{kyblik_cena}", True, zluta)
             okno.blit(cena_buy_upgradu_kyblik, (kyblik_buy_pozice_x + 70, kyblik_buy_pozice_y + upgrady_velikost_y -50))
             okno.blit(coin_ikona, (kyblik_buy_pozice_x + 40, kyblik_buy_pozice_y + upgrady_velikost_y -50))
@@ -860,8 +853,8 @@ while True:
         pygame.draw.rect(okno, cerna, za_zmacknuti_buy)
         pygame.draw.rect(okno, hneda, zmacknuti_buy)
         okno.blit(zmacknuti_buy_ikona, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y))
-        pocet_upgradu_pro_zmacknuti = pocet_upgradu_font.render(f"{zmacknuti_lvl}/{max_upgrade}", True, cerna)
-        if zmacknuti_lvl < max_upgrade:
+        pocet_upgradu_pro_zmacknuti = pocet_upgradu_font.render(f"{zmacknuti_lvl}/{max_upgrade_zmacknuti}", True, cerna)
+        if zmacknuti_lvl < max_upgrade_zmacknuti:
             cena_buy_upgradu_zmacknuti = coins_cena_buy_font.render(f"{zmacknuti_cena}", True, zluta)
             okno.blit(cena_buy_upgradu_zmacknuti, (zmacknuti_buy_pozice_x + 70, zmacknuti_buy_pozice_y + upgrady_velikost_y -50))
             okno.blit(coin_ikona, (zmacknuti_buy_pozice_x + 40, zmacknuti_buy_pozice_y + upgrady_velikost_y -50))
@@ -875,8 +868,8 @@ while True:
         pygame.draw.rect(okno, cerna, za_cekani_buy)
         pygame.draw.rect(okno, hneda, cekani_buy)
         okno.blit(cekani_buy_ikona, (cekani_buy_pozice_x, cekani_buy_pozice_y))
-        pocet_upgradu_pro_cekani = pocet_upgradu_font.render(f"{cekani_lvl}/{max_upgrade}", True, cerna)
-        if cekani_lvl < max_upgrade:
+        pocet_upgradu_pro_cekani = pocet_upgradu_font.render(f"{cekani_lvl}/{max_upgrade_cekani}", True, cerna)
+        if cekani_lvl < max_upgrade_cekani:
             cena_buy_upgradu_cekani = coins_cena_buy_font.render(f"{cekani_cena}", True, zluta)
             okno.blit(cena_buy_upgradu_cekani, (cekani_buy_pozice_x + 70, cekani_buy_pozice_y + upgrady_velikost_y -50))
             okno.blit(coin_ikona, (cekani_buy_pozice_x + 40, cekani_buy_pozice_y + upgrady_velikost_y - 50))
@@ -1025,12 +1018,29 @@ while True:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
-        okno.blit(inv, (0, 0,))
+        if kyblik_lvl == 0:   
+            okno.blit(inv, (0, 0,))
+        if kyblik_lvl == 1:
+            okno.blit(inv2, (0, 0))
+        if kyblik_lvl == 2:
+            okno.blit(inv3, (0,0))
+        if kyblik_lvl == 3:
+            okno.blit(inv4, (0,0))
         pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost + 2, inventory_tlacitko_velikost + 2)) # za tlacitko
         pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517, inventory_tlacitko_velikost, inventory_tlacitko_velikost)) # tlacitko
         coins_text = coins_font.render(f":{coins}", True, zluta)
         okno.blit(coins_text, (700, 550))
         okno.blit(coin_ikona, (670, 550))
+        inventory_info_kyblik_cislo = inventory_info_font.render(f"{obsah_inventare_max}", True, cerna)
+        inventory_info_kyblik_text = inventory_info_font.render("Maximum inventory slot:", True, cerna)
+        okno.blit(inventory_info_kyblik_cislo, (51 +  200, 422 + 10))
+        okno.blit(inventory_info_kyblik_text, (51 + 10, 422+ 10))
+        inventory_info_zmacknuti_cislo = inventory_info_font.render(f"{zmacknuti_lvl}", True, cerna)
+        inventory_info_kyblik_text = inventory_info_font.render("Fewer presses:", True, cerna)
+        okno.blit(inventory_info_zmacknuti_cislo, (51 + 200, 432 + 20))
+        okno.blit(inventory_info_kyblik_text, (51+ 10, 432+ 20))
+        mensi_doba_cekani = 
+        inventory_info_cekani_cislo = inventory_info_font.render(f"{
 
     
     if not inventar and pozadi == rybareni:
@@ -1084,6 +1094,7 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
+    
     
     clock.tick(60)
     pygame.display.update()
