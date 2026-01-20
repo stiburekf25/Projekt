@@ -106,7 +106,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 50000000
+coins = 100
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -197,6 +197,10 @@ popis_polozky_velikost = 30
 inventory_tlacitko_velikost = 30
 cislo_u_upgradu_velikost = 30
 inventory_info_velikost = 20
+upgrades_shop_velikost = 60
+upgrades_inventory_velikost = 20
+baits_shop_velikost = 60
+
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -256,6 +260,15 @@ cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozi
 cekani_cena = 200
 cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
+#BAITS
+baits_pozadi_velikost_x = 600
+baits_pozadi_velikost_y = 225
+
+baits_pozadi_pozice_x = 100
+baits_pozadi_pozice_y = 290
+za_baits_pozadi = pygame.draw.rect(okno, cerna, (baits_pozadi_pozice_x - 1, baits_pozadi_pozice_y - 1, baits_pozadi_velikost_x + 2, baits_pozadi_velikost_y + 2))
+baits_pozadi = pygame.draw.rect(okno, hneda, (baits_pozadi_pozice_x, baits_pozadi_pozice_y, baits_pozadi_velikost_x, baits_pozadi_velikost_y))
+
 
 #kolikrat koupeno
 kyblik_lvl = 0
@@ -265,6 +278,8 @@ cekani_lvl = 0
 max_upgrade_kybliku = 3
 max_upgrade_zmacknuti = 6
 max_upgrade_cekani = 8
+
+momentalni_cekani = 0
 
 sell_items = [
     (plechovka_sell, "Plechovka"),
@@ -383,7 +398,9 @@ space_to_fish_text = space_to_fish_font.render("PRESS SPACE TO CAST", True, cern
 pocet_upgradu_font = pygame.font.SysFont("Aharoni", cislo_u_upgradu_velikost)
 coins_cena_buy_font = pygame.font.Font("CHAOS16.otf",  30)
 inventory_info_font = pygame.font.SysFont("Aharoni", inventory_info_velikost)
-
+upgrades_shop_font = pygame.font.SysFont("Aharoni", upgrades_shop_velikost)
+upgrades_inventory_font = pygame.font.SysFont("Aharoni", upgrades_inventory_velikost)
+baits_shop_font = pygame.font.SysFont("Aharoni", baits_shop_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -698,6 +715,8 @@ while True:
                 for predmet in predmety:
                     if predmet["cekani"] > 200:
                         predmet["cekani"] -= 200
+
+                momentalni_cekani += 2
                         
                 coins -= cekani_cena
                 cekani_lvl += 1
@@ -833,6 +852,13 @@ while True:
         pygame.draw.rect(okno, cerna, za_opustit_buy)
         pygame.draw.rect(okno, hneda, leave_buy)
         okno.blit(leave_buy_text, (57, 548))
+        upgrades_shop_text = upgrades_shop_font.render("UPGRADES", True, cerna)
+        okno.blit(upgrades_shop_text, (282, 25))
+        baits_shop_text = baits_shop_font.render("BAITS",  True, cerna)
+        okno.blit(baits_shop_text, (335, 245))
+        pygame.draw.rect(okno, cerna, za_baits_pozadi)
+        pygame.draw.rect(okno, hneda, baits_pozadi)
+        
         
         
         pygame.draw.rect(okno, cerna, za_kyblik_buy)
@@ -1031,16 +1057,22 @@ while True:
         coins_text = coins_font.render(f":{coins}", True, zluta)
         okno.blit(coins_text, (700, 550))
         okno.blit(coin_ikona, (670, 550))
+        inventory_upgrades_text = upgrades_inventory_font.render("Upgrades:", True, cerna)
+        okno.blit(inventory_upgrades_text, (51 + 10, 422 + 10))
+        
         inventory_info_kyblik_cislo = inventory_info_font.render(f"{obsah_inventare_max}", True, cerna)
         inventory_info_kyblik_text = inventory_info_font.render("Maximum inventory slot:", True, cerna)
-        okno.blit(inventory_info_kyblik_cislo, (51 +  200, 422 + 10))
-        okno.blit(inventory_info_kyblik_text, (51 + 10, 422+ 10))
+        okno.blit(inventory_info_kyblik_text, (51 + 10, 442 + 10))
+        okno.blit(inventory_info_kyblik_cislo, (51 +  200, 442 + 10 ))
         inventory_info_zmacknuti_cislo = inventory_info_font.render(f"{zmacknuti_lvl}", True, cerna)
         inventory_info_kyblik_text = inventory_info_font.render("Fewer presses:", True, cerna)
-        okno.blit(inventory_info_zmacknuti_cislo, (51 + 200, 432 + 20))
-        okno.blit(inventory_info_kyblik_text, (51+ 10, 432+ 20))
-        mensi_doba_cekani = 
-        inventory_info_cekani_cislo = inventory_info_font.render(f"{
+        okno.blit(inventory_info_kyblik_text, (51+ 10, 452 + 20))
+        okno.blit(inventory_info_zmacknuti_cislo, (51 + 200, 452 + 20))
+
+        inventory_info_cekani_cislo = inventory_info_font.render(f"- {momentalni_cekani / 10} s", True, cerna)
+        inventory_info_cekani_text = inventory_info_font.render("Shorter waiting time:", True, cerna)
+        okno.blit(inventory_info_cekani_text, (51 + 10, 472 + 20))
+        okno.blit(inventory_info_cekani_cislo, (51 + 193, 472 + 20))
 
     
     if not inventar and pozadi == rybareni:
