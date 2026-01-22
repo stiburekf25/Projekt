@@ -106,7 +106,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 100
+coins = 1000000000
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -269,6 +269,23 @@ baits_pozadi_pozice_y = 290
 za_baits_pozadi = pygame.draw.rect(okno, cerna, (baits_pozadi_pozice_x - 1, baits_pozadi_pozice_y - 1, baits_pozadi_velikost_x + 2, baits_pozadi_velikost_y + 2))
 baits_pozadi = pygame.draw.rect(okno, hneda, (baits_pozadi_pozice_x, baits_pozadi_pozice_y, baits_pozadi_velikost_x, baits_pozadi_velikost_y))
 
+baits_okenko_velikost_x = 100
+baits_okenko_velikost_y = 205
+
+bread_bait_pozice_x = 120 
+bread_bait_pozice_y = 300
+za_bread_bait = pygame.draw.rect(okno, cerna, (bread_bait_pozice_x -1, bread_bait_pozice_y -1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y +2))
+bread_bait = pygame.draw.rect(okno, hneda, (bread_bait_pozice_x, bread_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+
+corn_bait_pozice_x = 240
+corn_bait_pozice_y = 300
+za_corn_bait = pygame.draw.rect(okno, cerna, (corn_bait_pozice_x - 1, corn_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
+corn_bait = pygame.draw.rect(okno, hneda, (corn_bait_pozice_x, corn_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+
+fish_head_bait_pozice_x = 360
+fish_head_bait_pozice_y = 300
+za_fish_head_bait =pygame.draw.rect(okno, cerna, (fish_head_bait_pozice_x - 1, fish_head_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
+fish_head_bait = pygame.draw.rect(okno, hneda, (fish_head_bait_pozice_x, fish_head_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 
 #kolikrat koupeno
 kyblik_lvl = 0
@@ -854,12 +871,6 @@ while True:
         okno.blit(leave_buy_text, (57, 548))
         upgrades_shop_text = upgrades_shop_font.render("UPGRADES", True, cerna)
         okno.blit(upgrades_shop_text, (282, 25))
-        baits_shop_text = baits_shop_font.render("BAITS",  True, cerna)
-        okno.blit(baits_shop_text, (335, 245))
-        pygame.draw.rect(okno, cerna, za_baits_pozadi)
-        pygame.draw.rect(okno, hneda, baits_pozadi)
-        
-        
         
         pygame.draw.rect(okno, cerna, za_kyblik_buy)
         pygame.draw.rect(okno, hneda, kyblik_buy)
@@ -904,6 +915,29 @@ while True:
             okno.blit(Max_cekani, (cekani_buy_pozice_x + 60, cekani_buy_pozice_y + upgrady_velikost_y - 40))
  
         okno.blit(pocet_upgradu_pro_cekani,(cekani_buy_pozice_x + 135, cekani_buy_pozice_y + upgrady_velikost_y - 20))
+        
+        baits_shop_text = baits_shop_font.render("BAITS",  True, cerna)
+        okno.blit(baits_shop_text, (335, 245))
+        pygame.draw.rect(okno, cerna, za_baits_pozadi)
+        pygame.draw.rect(okno, hneda, baits_pozadi)
+        
+        
+        pygame.draw.rect(okno, cerna, za_bread_bait)
+        pygame.draw.rect(okno, hneda, bread_bait)
+        
+        
+        pygame.draw.rect(okno, cerna, za_corn_bait)
+        pygame.draw.rect(okno, hneda, corn_bait)
+        
+        
+        pygame.draw.rect(okno, cerna, za_fish_head_bait)
+        pygame.draw.rect(okno, hneda, fish_head_bait)
+        
+        
+        
+        
+        
+        
         
     if pozadi == pozadi_shop and shop_mode == "buy":
         if leave_buy.collidepoint(mys_pozice) and mouse_click:
@@ -1130,5 +1164,4 @@ while True:
     
     clock.tick(60)
     pygame.display.update()
-    
     
