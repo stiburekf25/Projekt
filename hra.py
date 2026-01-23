@@ -23,6 +23,8 @@ def odeber_z_inventare(jmeno_predmetu):
 def prodej_predmet(jmeno):
     if obsah_inventare[jmeno] <= 0:
         return
+def soucet_vsech_baits():
+    return sum(bait["pocet"] for bait in baits.values())
     
     predmet = najdi_predmet_podle_jmena(predmety,jmeno)
     obsah_inventare[jmeno] -= 1
@@ -261,10 +263,10 @@ cekani_cena = 200
 cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
 #BAITS
-baits_pozadi_velikost_x = 600
+baits_pozadi_velikost_x = 640
 baits_pozadi_velikost_y = 225
 
-baits_pozadi_pozice_x = 100
+baits_pozadi_pozice_x = 80
 baits_pozadi_pozice_y = 290
 za_baits_pozadi = pygame.draw.rect(okno, cerna, (baits_pozadi_pozice_x - 1, baits_pozadi_pozice_y - 1, baits_pozadi_velikost_x + 2, baits_pozadi_velikost_y + 2))
 baits_pozadi = pygame.draw.rect(okno, hneda, (baits_pozadi_pozice_x, baits_pozadi_pozice_y, baits_pozadi_velikost_x, baits_pozadi_velikost_y))
@@ -272,20 +274,67 @@ baits_pozadi = pygame.draw.rect(okno, hneda, (baits_pozadi_pozice_x, baits_pozad
 baits_okenko_velikost_x = 100
 baits_okenko_velikost_y = 205
 
-bread_bait_pozice_x = 120 
+bread_bait_pozice_x = 100 
 bread_bait_pozice_y = 300
 za_bread_bait = pygame.draw.rect(okno, cerna, (bread_bait_pozice_x -1, bread_bait_pozice_y -1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y +2))
 bread_bait = pygame.draw.rect(okno, hneda, (bread_bait_pozice_x, bread_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+bread_bait_cena = 20
 
-corn_bait_pozice_x = 240
+worm_bait_pozice_x = 220
+worm_bait_pozice_y = 300
+za_worm_bait = pygame.draw.rect(okno, cerna, (worm_bait_pozice_x - 1, worm_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
+worm_bait = pygame.draw.rect(okno, hneda, (worm_bait_pozice_x, worm_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+worm_bait_cena = 40
+
+baits_upgrade_pozice_x = 340
+baits_upgrade_pozice_y = 300
+za_baits_upgrade = pygame.draw.rect(okno, cerna, (baits_upgrade_pozice_x - 1, baits_upgrade_pozice_y - 1, baits_okenko_velikost_x + 22, baits_okenko_velikost_y + 2))
+baits_upgrade = pygame.draw.rect(okno, hneda, (baits_upgrade_pozice_x, baits_upgrade_pozice_y, baits_okenko_velikost_x +20, baits_okenko_velikost_y))
+
+
+corn_bait_pozice_x = 480
 corn_bait_pozice_y = 300
 za_corn_bait = pygame.draw.rect(okno, cerna, (corn_bait_pozice_x - 1, corn_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 corn_bait = pygame.draw.rect(okno, hneda, (corn_bait_pozice_x, corn_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+corn_bait_cena = 45
 
-fish_head_bait_pozice_x = 360
+fish_head_bait_pozice_x = 600
 fish_head_bait_pozice_y = 300
 za_fish_head_bait =pygame.draw.rect(okno, cerna, (fish_head_bait_pozice_x - 1, fish_head_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 fish_head_bait = pygame.draw.rect(okno, hneda, (fish_head_bait_pozice_x, fish_head_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
+fish_head_bait_cena = 100
+
+
+obsah_baits_max = 5
+
+baits = {
+    "bread": {
+        "pocet":0,
+        "lepsi_sance":-5, #horsi
+        "kratsi_cekani":500, #horsi
+        "mene_zmacknuti": 0,     #normal  
+    },
+    "worm": {
+        "pocet":0,
+        "lepsi_sance":+5, #lepsi
+        "kratsi_cekani":-200, # lepsi
+        "mene_zmacknuti": 0, #normal   
+    },
+    "corn": {
+        "pocet":0,
+        "lepsi_sance":+5,
+        "kratsi_cekani": 500, # horsi
+        "mene_zmacknuti": - 1,  # lepsi
+        
+    },
+    "fish_head": {
+        "pocet":0,
+        "lepsi_sance": +10, # lepsi
+        "kratsi_cekani": - 1000, # lepsi
+        "mene_zmacknuti": - 2, # lepsi
+    },
+
+}
 
 #kolikrat koupeno
 kyblik_lvl = 0
@@ -738,6 +787,31 @@ while True:
                 coins -= cekani_cena
                 cekani_lvl += 1
                 cekani_cena *= 2
+        
+        if bread_bait.collidepoint(mys_pozice) and mouse_click:
+            if coins >= bread_bait_cena:
+                if soucet_vsech_baits() < obsah_baits_max:
+                    baits["bread"]["pocet"] += 1
+                    coins -= bread_bait_cena
+        
+        if worm_bait.collidepoint(mys_pozice) and mouse_click:
+            if coins >= worm_bait_cena:
+                if soucet_vsech_baits() < obsah_baits_max:
+                    baits["worm"]["pocet"] += 1
+                    coins -= worm_bait_cena
+                
+        if corn_bait.collidepoint(mys_pozice) and mouse_click:
+            if coins >= corn_bait_cena:
+                if soucet_vsech_baits() < obsah_baits_max:
+                    baits["corn"]["pocet"] += 1
+                    coins -= corn_bait_cena
+            
+        if fish_head_bait.collidepoint(mys_pozice) and mouse_click:
+            if coins >= fish_head_bait_cena:
+                if soucet_vsech_baits() < obsah_baits_max:
+                    baits["fish_head"]["pocet"] += 1 
+                    coins -= fish_head_bait_cena
+                    
                 
             
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
@@ -807,6 +881,16 @@ while True:
     elif pozadi == pozadi_shop and shop_mode == "buy" and zmacknuti_buy.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "buy" and cekani_buy.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and bread_bait.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and worm_bait.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and corn_bait.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and fish_head_bait.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif pozadi == pozadi_shop and shop_mode == "buy" and baits_upgrade.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -925,6 +1009,8 @@ while True:
         pygame.draw.rect(okno, cerna, za_bread_bait)
         pygame.draw.rect(okno, hneda, bread_bait)
         
+        pygame.draw.rect(okno, cerna, za_worm_bait)
+        pygame.draw.rect(okno, hneda, worm_bait)
         
         pygame.draw.rect(okno, cerna, za_corn_bait)
         pygame.draw.rect(okno, hneda, corn_bait)
@@ -934,8 +1020,8 @@ while True:
         pygame.draw.rect(okno, hneda, fish_head_bait)
         
         
-        
-        
+        pygame.draw.rect(okno, cerna, za_baits_upgrade)
+        pygame.draw.rect(okno, hneda, baits_upgrade)
         
         
         
