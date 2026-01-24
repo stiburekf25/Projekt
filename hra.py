@@ -22,15 +22,15 @@ def odeber_z_inventare(jmeno_predmetu):
             break
 def prodej_predmet(jmeno):
     if obsah_inventare[jmeno] <= 0:
-        return
-def soucet_vsech_baits():
-    return sum(bait["pocet"] for bait in baits.values())
-    
+        return 
     predmet = najdi_predmet_podle_jmena(predmety,jmeno)
     obsah_inventare[jmeno] -= 1
     coins_add = predmet["cena"]
     odeber_z_inventare(jmeno)
     return coins_add
+
+def soucet_vsech_baits():
+    return sum(bait["pocet"] for bait in baits.values())
 
     
 okno_sirka = 800
@@ -79,6 +79,7 @@ zelena = (29, 166, 14)
 modra = (59, 64, 207)
 fialova = (130, 49, 196)
 
+
 #inventar
 inventar = False
 obsah_inventare = 0
@@ -108,7 +109,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 1000000000
+coins = 100
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -264,6 +265,46 @@ cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozi
 cekani_cena = 200
 cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
+def vykresli_popis_baitu(bait_data, x, y):
+    for i, (klic, text) in enumerate(bait_popisy):
+        hodnota = bait_data[klic]
+
+        surface = info_o_baits_font.render(
+            f"{text}: {hodnota}", True, cerna
+        )
+
+        okno.blit(surface, (x, y + 40 +i * 20))
+
+
+baits = {
+    "bread": {
+        "pocet":0,
+        "lepsi_sance":-5, #horsi
+        "kratsi_cekani":0.5, #horsi
+        "mene_zmacknuti": 0,     #normal  
+    },
+    "worm": {
+        "pocet":0,
+        "lepsi_sance":+5, #lepsi
+        "kratsi_cekani":-0.2, # lepsi
+        "mene_zmacknuti": 0, #normal   
+    },
+    "corn": {
+        "pocet":0,
+        "lepsi_sance":+5,
+        "kratsi_cekani": 0.5, # horsi
+        "mene_zmacknuti": - 1,  # lepsi
+        
+    },
+    "fish_head": {
+        "pocet":0,
+        "lepsi_sance": +10, # lepsi
+        "kratsi_cekani": - 1, # lepsi
+        "mene_zmacknuti": - 2, # lepsi
+    },
+
+}
+
 #BAITS
 baits_pozadi_velikost_x = 640
 baits_pozadi_velikost_y = 225
@@ -281,62 +322,60 @@ bread_bait_pozice_y = 300
 za_bread_bait = pygame.draw.rect(okno, cerna, (bread_bait_pozice_x -1, bread_bait_pozice_y -1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y +2))
 bread_bait = pygame.draw.rect(okno, hneda, (bread_bait_pozice_x, bread_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 bread_bait_cena = 20
+bread_bait_ikona = pygame.image.load("bread_bait_ikona.png")
 
 worm_bait_pozice_x = 220
 worm_bait_pozice_y = 300
 za_worm_bait = pygame.draw.rect(okno, cerna, (worm_bait_pozice_x - 1, worm_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 worm_bait = pygame.draw.rect(okno, hneda, (worm_bait_pozice_x, worm_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 worm_bait_cena = 40
+worm_bait_ikona = pygame.image.load("worm_bait_ikona.png")
 
 baits_upgrade_pozice_x = 340
 baits_upgrade_pozice_y = 300
 za_baits_upgrade = pygame.draw.rect(okno, cerna, (baits_upgrade_pozice_x - 1, baits_upgrade_pozice_y - 1, baits_okenko_velikost_x + 22, baits_okenko_velikost_y + 2))
 baits_upgrade = pygame.draw.rect(okno, hneda, (baits_upgrade_pozice_x, baits_upgrade_pozice_y, baits_okenko_velikost_x +20, baits_okenko_velikost_y))
-
+baits_upgrade_cena = 200
+baits_upgrade_ikona = pygame.image.load("baits_upgrade_ikona.png")
 
 corn_bait_pozice_x = 480
 corn_bait_pozice_y = 300
 za_corn_bait = pygame.draw.rect(okno, cerna, (corn_bait_pozice_x - 1, corn_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 corn_bait = pygame.draw.rect(okno, hneda, (corn_bait_pozice_x, corn_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 corn_bait_cena = 45
+corn_bait_ikona = pygame.image.load("corn_bait_ikona.png")
 
 fish_head_bait_pozice_x = 600
 fish_head_bait_pozice_y = 300
 za_fish_head_bait =pygame.draw.rect(okno, cerna, (fish_head_bait_pozice_x - 1, fish_head_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 fish_head_bait = pygame.draw.rect(okno, hneda, (fish_head_bait_pozice_x, fish_head_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 fish_head_bait_cena = 100
+fish_head_bait_ikona = pygame.image.load("fish_head_bait.png")
 
+baits_lvl = 0
+max_upgrade_baits = 5
+obsah_baits_max = 4
 
-obsah_baits_max = 5
+bait_ui = [
+    ("bread", bread_bait_pozice_x, bread_bait_pozice_y),
+    ("worm", worm_bait_pozice_x, worm_bait_pozice_y),
+    ("corn", corn_bait_pozice_x, corn_bait_pozice_y),
+    ("fish_head", fish_head_bait_pozice_x, fish_head_bait_pozice_y),
+]
 
-baits = {
-    "bread": {
-        "pocet":0,
-        "lepsi_sance":-5, #horsi
-        "kratsi_cekani":500, #horsi
-        "mene_zmacknuti": 0,     #normal  
-    },
-    "worm": {
-        "pocet":0,
-        "lepsi_sance":+5, #lepsi
-        "kratsi_cekani":-200, # lepsi
-        "mene_zmacknuti": 0, #normal   
-    },
-    "corn": {
-        "pocet":0,
-        "lepsi_sance":+5,
-        "kratsi_cekani": 500, # horsi
-        "mene_zmacknuti": - 1,  # lepsi
-        
-    },
-    "fish_head": {
-        "pocet":0,
-        "lepsi_sance": +10, # lepsi
-        "kratsi_cekani": - 1000, # lepsi
-        "mene_zmacknuti": - 2, # lepsi
-    },
+bait_ui_inv = [
+    ("bread", 505, 420),
+    ("worm", 565, 420),
+    ("corn", 625, 420),
+    ("fish_head", 685, 420),
+]
 
-}
+bait_popisy = [
+    ("lepsi_sance", "Luck"),
+    ("kratsi_cekani", "Wait time"),
+    ("mene_zmacknuti", "presses"),
+]
+
 
 #kolikrat koupeno
 kyblik_lvl = 0
@@ -815,8 +854,15 @@ while True:
                 if soucet_vsech_baits() < obsah_baits_max:
                     baits["fish_head"]["pocet"] += 1 
                     coins -= fish_head_bait_cena
-                    
-                
+        
+        if baits_upgrade.collidepoint(mys_pozice) and mouse_click:
+            if coins >= baits_upgrade_cena:
+                if baits_lvl < max_upgrade_baits:
+                    baits_lvl += 1
+                    coins -= baits_upgrade_cena
+                    baits_upgrade_cena *= 2
+                    obsah_baits_max += 4
+
             
         #Prechod z buy nebo sell na none (uvitaci stranka shopu)
         
@@ -1015,34 +1061,71 @@ while True:
         cena_buy_bait_bread = buy_baits_cena_font.render(f"{bread_bait_cena}", True, zluta)
         okno.blit(cena_buy_bait_bread, (bread_bait_pozice_x + 50, bread_bait_pozice_y + 170))
         okno.blit(coin_ikona, ( bread_bait_pozice_x + 15, bread_bait_pozice_y +170))
-        informace_o_baits_pocet =
+        vykresli_popis_baitu(
+            baits["bread"],
+            bread_bait_pozice_x + 5,
+            bread_bait_pozice_y + 50
+        )
+        okno.blit(bread_bait_ikona, (bread_bait_pozice_x + 10, bread_bait_pozice_y + 20))
         
         pygame.draw.rect(okno, cerna, za_worm_bait)
         pygame.draw.rect(okno, hneda, worm_bait)
         cena_buy_bait_worm = buy_baits_cena_font.render(f"{worm_bait_cena}", True, zluta)
         okno.blit(cena_buy_bait_worm, (worm_bait_pozice_x + 50, worm_bait_pozice_y + 170))
         okno.blit(coin_ikona, (worm_bait_pozice_x + 15, worm_bait_pozice_y + 170))
-        
-        
+        vykresli_popis_baitu(
+            baits["worm"],
+            worm_bait_pozice_x + 5,
+            worm_bait_pozice_y + 50
+        )
+        okno.blit(worm_bait_ikona, (worm_bait_pozice_x + 10, worm_bait_pozice_y + 20))
         
         pygame.draw.rect(okno, cerna, za_corn_bait)
         pygame.draw.rect(okno, hneda, corn_bait)
         cena_buy_bait_corn = buy_baits_cena_font.render(f"{corn_bait_cena}", True, zluta)
         okno.blit(cena_buy_bait_corn, (corn_bait_pozice_x + 50, corn_bait_pozice_y + 170))
         okno.blit(coin_ikona, (corn_bait_pozice_x + 15, corn_bait_pozice_y + 170))
+        vykresli_popis_baitu(
+            baits["corn"],
+            corn_bait_pozice_x + 5,
+            corn_bait_pozice_y + 50
+        )
+        okno.blit(corn_bait_ikona, (corn_bait_pozice_x + 10, corn_bait_pozice_y + 20))
         
-    
         pygame.draw.rect(okno, cerna, za_fish_head_bait)
         pygame.draw.rect(okno, hneda, fish_head_bait)
         cena_buy_bait_fish_head = buy_baits_cena_font.render(f"{fish_head_bait_cena}", True, zluta)
         okno.blit(cena_buy_bait_fish_head, (fish_head_bait_pozice_x + 50, fish_head_bait_pozice_y + 170))
         okno.blit(coin_ikona, (fish_head_bait_pozice_x + 15, fish_head_bait_pozice_y + 170))
+        vykresli_popis_baitu(
+            baits["fish_head"],
+            fish_head_bait_pozice_x + 5,
+            fish_head_bait_pozice_y + 50
+        )
+        okno.blit(fish_head_bait_ikona, (fish_head_bait_pozice_x + 10, fish_head_bait_pozice_y + 20))
         
         pygame.draw.rect(okno, cerna, za_baits_upgrade)
         pygame.draw.rect(okno, hneda, baits_upgrade)
-        
-        
-        
+        okno.blit(baits_upgrade_ikona, (baits_upgrade_pozice_x + 12, baits_upgrade_pozice_y + 20))
+        baits_upgrade_cena_text = buy_baits_cena_font.render(f"{baits_upgrade_cena}", True, zluta)
+        max_baits_v_shopu = info_o_baits_font.render(f"Current: x{obsah_baits_max}", True, cerna)
+        okno.blit(max_baits_v_shopu, (baits_upgrade_pozice_x + 23, baits_pozadi_pozice_y + 140))
+        if baits_lvl < max_upgrade_baits:
+            okno.blit(baits_upgrade_cena_text, (baits_upgrade_pozice_x + 50, baits_upgrade_pozice_y +170))
+            okno.blit(coin_ikona, (baits_upgrade_pozice_x + 15, baits_upgrade_pozice_y + 170))
+        else:
+            Max_cekani = pocet_upgradu_font.render("MAX", True, cervena)
+            okno.blit(Max_cekani, (baits_upgrade_pozice_x + 37, baits_upgrade_pozice_y + 170))
+            
+        pocet_upgradu_pro_baits = pocet_upgradu_font.render(f"{baits_lvl}/{max_upgrade_baits}", True, cerna)
+        okno.blit(pocet_upgradu_pro_baits, (baits_upgrade_pozice_x + 90, baits_upgrade_pozice_y))
+            
+            
+        for jmeno, x, y in bait_ui:
+            pocet = baits[jmeno]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (x + 5, y + 5))
+          
     if pozadi == pozadi_shop and shop_mode == "buy":
         if leave_buy.collidepoint(mys_pozice) and mouse_click:
             pozadi = shop
@@ -1193,8 +1276,8 @@ while True:
         pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost + 2, inventory_tlacitko_velikost + 2)) # za tlacitko
         pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517, inventory_tlacitko_velikost, inventory_tlacitko_velikost)) # tlacitko
         coins_text = coins_font.render(f":{coins}", True, zluta)
-        okno.blit(coins_text, (700, 550))
-        okno.blit(coin_ikona, (670, 550))
+        okno.blit(coins_text, (530, 545))
+        okno.blit(coin_ikona, (500, 545))
         inventory_upgrades_text = upgrades_inventory_font.render("Upgrades:", True, cerna)
         okno.blit(inventory_upgrades_text, (51 + 10, 422 + 10))
         
@@ -1202,6 +1285,7 @@ while True:
         inventory_info_kyblik_text = inventory_info_font.render("Maximum inventory slot:", True, cerna)
         okno.blit(inventory_info_kyblik_text, (51 + 10, 442 + 10))
         okno.blit(inventory_info_kyblik_cislo, (51 +  200, 442 + 10 ))
+        
         inventory_info_zmacknuti_cislo = inventory_info_font.render(f"{zmacknuti_lvl}", True, cerna)
         inventory_info_kyblik_text = inventory_info_font.render("Fewer presses:", True, cerna)
         okno.blit(inventory_info_kyblik_text, (51+ 10, 452 + 20))
@@ -1211,8 +1295,26 @@ while True:
         inventory_info_cekani_text = inventory_info_font.render("Shorter waiting time:", True, cerna)
         okno.blit(inventory_info_cekani_text, (51 + 10, 472 + 20))
         okno.blit(inventory_info_cekani_cislo, (51 + 193, 472 + 20))
+        
+        pocet_upgradu_pro_baits = inventory_info_font.render(f"{obsah_baits_max}", True, cerna)
+        pocet_upgradu_pro_baits_text = inventory_info_font.render("Max baits amount:", True, cerna)
+        okno.blit(pocet_upgradu_pro_baits, (51 + 200, 492 + 20))
+        okno.blit(pocet_upgradu_pro_baits_text, (51 + 10, 492 + 20))
+        
+        fish_head_inventory_ikona = pygame.image.load("fish_head_inventory_ikona.png")
+        corn_inventory_ikona = pygame.image.load("corn_inventory_ikona.png")
+        bread_inventory_ikona = pygame.image.load("bread_inventory_ikona.png")
+        worm_inventory_ikona = pygame.image.load("worm_inventory_ikona.png")
+        okno.blit(bread_inventory_ikona, (510, 440))
+        okno.blit(worm_inventory_ikona, (570, 440))
+        okno.blit(corn_inventory_ikona, (630, 440))
+        okno.blit(fish_head_inventory_ikona, (690, 440))
+        for jmeno, x, y in bait_ui_inv:
+            pocet = baits[jmeno]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (x + 5, y + 5))
+            
 
-    
     if not inventar and pozadi == rybareni:
         hrac_rychlost = 0
     if inventar and pozadi == rybareni:
