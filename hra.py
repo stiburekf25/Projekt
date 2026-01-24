@@ -202,6 +202,8 @@ inventory_info_velikost = 20
 upgrades_shop_velikost = 60
 upgrades_inventory_velikost = 20
 baits_shop_velikost = 60
+buy_baits_velikost = 30
+info_o_baits_velikost = 20
 
 
 #pozice polozek v shopu + velikost
@@ -467,6 +469,8 @@ inventory_info_font = pygame.font.SysFont("Aharoni", inventory_info_velikost)
 upgrades_shop_font = pygame.font.SysFont("Aharoni", upgrades_shop_velikost)
 upgrades_inventory_font = pygame.font.SysFont("Aharoni", upgrades_inventory_velikost)
 baits_shop_font = pygame.font.SysFont("Aharoni", baits_shop_velikost)
+buy_baits_cena_font = pygame.font.Font("CHAOS16.otf", buy_baits_velikost)
+info_o_baits_font = pygame.font.SysFont("Aharoni", info_o_baits_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -1008,17 +1012,31 @@ while True:
         
         pygame.draw.rect(okno, cerna, za_bread_bait)
         pygame.draw.rect(okno, hneda, bread_bait)
+        cena_buy_bait_bread = buy_baits_cena_font.render(f"{bread_bait_cena}", True, zluta)
+        okno.blit(cena_buy_bait_bread, (bread_bait_pozice_x + 50, bread_bait_pozice_y + 170))
+        okno.blit(coin_ikona, ( bread_bait_pozice_x + 15, bread_bait_pozice_y +170))
+        informace_o_baits_pocet =
         
         pygame.draw.rect(okno, cerna, za_worm_bait)
         pygame.draw.rect(okno, hneda, worm_bait)
+        cena_buy_bait_worm = buy_baits_cena_font.render(f"{worm_bait_cena}", True, zluta)
+        okno.blit(cena_buy_bait_worm, (worm_bait_pozice_x + 50, worm_bait_pozice_y + 170))
+        okno.blit(coin_ikona, (worm_bait_pozice_x + 15, worm_bait_pozice_y + 170))
+        
+        
         
         pygame.draw.rect(okno, cerna, za_corn_bait)
         pygame.draw.rect(okno, hneda, corn_bait)
+        cena_buy_bait_corn = buy_baits_cena_font.render(f"{corn_bait_cena}", True, zluta)
+        okno.blit(cena_buy_bait_corn, (corn_bait_pozice_x + 50, corn_bait_pozice_y + 170))
+        okno.blit(coin_ikona, (corn_bait_pozice_x + 15, corn_bait_pozice_y + 170))
         
-        
+    
         pygame.draw.rect(okno, cerna, za_fish_head_bait)
         pygame.draw.rect(okno, hneda, fish_head_bait)
-        
+        cena_buy_bait_fish_head = buy_baits_cena_font.render(f"{fish_head_bait_cena}", True, zluta)
+        okno.blit(cena_buy_bait_fish_head, (fish_head_bait_pozice_x + 50, fish_head_bait_pozice_y + 170))
+        okno.blit(coin_ikona, (fish_head_bait_pozice_x + 15, fish_head_bait_pozice_y + 170))
         
         pygame.draw.rect(okno, cerna, za_baits_upgrade)
         pygame.draw.rect(okno, hneda, baits_upgrade)
