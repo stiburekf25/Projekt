@@ -81,6 +81,7 @@ fialova = (130, 49, 196)
 
 
 #inventar
+baits_mode = None
 inventar = False
 obsah_inventare = 0
 obsah_inventare_max = 6
@@ -205,6 +206,7 @@ upgrades_inventory_velikost = 20
 baits_shop_velikost = 60
 buy_baits_velikost = 30
 info_o_baits_velikost = 20
+inventory_baits_tlacitko_velikost = 30
 
 
 #pozice polozek v shopu + velikost
@@ -377,6 +379,26 @@ bait_popisy = [
 ]
 
 
+#inv baits ctverecky a obrazky baitu
+za_bread_tlacitko_inventory =pygame.draw.rect(okno, cerna,(514, 484, inventory_baits_tlacitko_velikost + 2, inventory_baits_tlacitko_velikost + 2)) 
+bread_tlacitko_inventory =pygame.draw.rect(okno, zelena,(515, 485, inventory_baits_tlacitko_velikost, inventory_baits_tlacitko_velikost))
+
+za_worm_tlacitko_inventory =pygame.draw.rect(okno, cerna,(574, 484, inventory_baits_tlacitko_velikost + 2, inventory_baits_tlacitko_velikost + 2)) 
+worm_tlacitko_inventory =pygame.draw.rect(okno, zelena,(575, 485, inventory_baits_tlacitko_velikost, inventory_baits_tlacitko_velikost))
+
+za_corn_tlacitko_inventory =pygame.draw.rect(okno, cerna,(634, 484, inventory_baits_tlacitko_velikost + 2, inventory_baits_tlacitko_velikost + 2)) 
+corn_tlacitko_inventory =pygame.draw.rect(okno, zelena,(635, 485, inventory_baits_tlacitko_velikost, inventory_baits_tlacitko_velikost))
+
+za_fish_head_tlacitko_inventory =pygame.draw.rect(okno, cerna,(694, 484, inventory_baits_tlacitko_velikost + 2, inventory_baits_tlacitko_velikost + 2)) 
+fish_head_tlacitko_inventory =pygame.draw.rect(okno, zelena,(695, 485, inventory_baits_tlacitko_velikost, inventory_baits_tlacitko_velikost)) 
+
+fish_head_inventory_ikona = pygame.image.load("fish_head_inventory_ikona.png")
+corn_inventory_ikona = pygame.image.load("corn_inventory_ikona.png")
+bread_inventory_ikona = pygame.image.load("bread_inventory_ikona.png")
+worm_inventory_ikona = pygame.image.load("worm_inventory_ikona.png")
+
+
+
 #kolikrat koupeno
 kyblik_lvl = 0
 zmacknuti_lvl = 0
@@ -462,6 +484,12 @@ ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
 ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
 tlacitko = pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517 ,inventory_tlacitko_velikost, inventory_tlacitko_velikost))
 za_tlacitko = pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost, inventory_tlacitko_velikost))
+
+
+        #okno.blit(worm_inventory_ikona, (570, 440))
+        #okno.blit(corn_inventory_ikona, (630, 440))
+        #okno.blit(fish_head_inventory_ikona, (690, 440))
+                                      
 
 #obrazky shopu
 plechovka = pygame.image.load("plechovka.png")
@@ -896,6 +924,19 @@ while True:
         if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
             inventar = False
             hrac_rychlost = 0
+    
+    
+    if inventar:
+        if bread_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click and not baits_mode == "bait_worm" and not baits_mode == "bait_corn" and not baits_mode == "bait_fish_head":
+            baits_mode = "bait_bread"
+        elif worm_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click and not baits_mode == "bait_bread" and not baits_mode == "bait_corn" and not baits_mode == "bait_fish_head":
+            baits_mode = "bait_worm"
+        elif corn_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click and not baits_mode == "bait_worm" and not baits_mode == "bait_bread" and not baits_mode == "bait_fish_head":
+            baits_mode = "bait_corn"
+        elif fish_head_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click and not baits_mode == "bait_worm" and not baits_mode == "bait_corn" and not baits_mode == "bait_bread":
+            baits_mode = "bait_fish_head"
+            
+        
 
 
     #Kurzor na hand nebo arrow podle urciteho pozadi ci podminky
@@ -941,6 +982,14 @@ while True:
     elif pozadi == pozadi_shop and shop_mode == "buy" and fish_head_bait.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "buy" and baits_upgrade.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif bread_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif worm_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif corn_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif fish_head_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -1301,19 +1350,55 @@ while True:
         okno.blit(pocet_upgradu_pro_baits, (51 + 200, 492 + 20))
         okno.blit(pocet_upgradu_pro_baits_text, (51 + 10, 492 + 20))
         
-        fish_head_inventory_ikona = pygame.image.load("fish_head_inventory_ikona.png")
-        corn_inventory_ikona = pygame.image.load("corn_inventory_ikona.png")
-        bread_inventory_ikona = pygame.image.load("bread_inventory_ikona.png")
-        worm_inventory_ikona = pygame.image.load("worm_inventory_ikona.png")
-        okno.blit(bread_inventory_ikona, (510, 440))
-        okno.blit(worm_inventory_ikona, (570, 440))
-        okno.blit(corn_inventory_ikona, (630, 440))
-        okno.blit(fish_head_inventory_ikona, (690, 440))
-        for jmeno, x, y in bait_ui_inv:
-            pocet = baits[jmeno]["pocet"]
-            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
-            okno.blit(text, (x + 5, y + 5))
+        
+        if baits_mode == None:
+            okno.blit(bread_inventory_ikona, (510, 440))
+            okno.blit(worm_inventory_ikona, (570, 440))
+            okno.blit(corn_inventory_ikona, (630, 440))
+            okno.blit(fish_head_inventory_ikona, (690, 440))
+            for jmeno, x, y in bait_ui_inv:
+                pocet = baits[jmeno]["pocet"]
+                text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+                okno.blit(text, (x + 5, y + 5))
+            pygame.draw.rect(okno, cerna, za_bread_tlacitko_inventory)
+            pygame.draw.rect(okno, zelena, bread_tlacitko_inventory)
             
+            pygame.draw.rect(okno, cerna, za_worm_tlacitko_inventory)
+            pygame.draw.rect(okno, zelena, worm_tlacitko_inventory)
+
+            pygame.draw.rect(okno, cerna, za_corn_tlacitko_inventory)
+            pygame.draw.rect(okno, zelena, corn_tlacitko_inventory)
+            
+            pygame.draw.rect(okno, cerna, za_fish_head_tlacitko_inventory)
+            pygame.draw.rect(okno, zelena, fish_head_tlacitko_inventory)
+        
+        if baits_mode == "bait_bread":
+            okno.blit(bread_inventory_ikona, (510, 440))
+            pocet = baits["bread"]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (510, 425))
+                
+        if baits_mode == "bait_worm":
+            okno.blit(worm_inventory_ikona, (510, 440))
+            pocet = baits["worm"]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (510, 425))
+            
+        if baits_mode == "bait_corn":
+            okno.blit(corn_inventory_ikona, (510, 440))
+            pocet = baits["corn"]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (510, 425))
+        
+        if baits_mode == "bait_fish_head":
+            okno.blit(fish_head_inventory_ikona, (510, 440))
+            pocet = baits["fish_head"]["pocet"]
+            text = info_o_baits_font.render(f"x{pocet}", True, cerna)
+            okno.blit(text, (510, 425))
+
+
+
+
 
     if not inventar and pozadi == rybareni:
         hrac_rychlost = 0
@@ -1367,7 +1452,7 @@ while True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     
-    
+    print(baits_mode)
     clock.tick(60)
     pygame.display.update()
     
