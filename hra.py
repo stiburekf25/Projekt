@@ -5,11 +5,11 @@ pygame.init()
 
 # PRIPRAVA HRY
 
-def vyber_predmet(predmety):
+def vyber_predmet(predmety, bait):
     los = random.randint(1, 100)
     for p in predmety:
-        if p["sance"] >= los:
-            return p
+        if p["sance"] - bait["sance"] >= los:
+            return p.copy()
 def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
         if p["jmeno"] == jmeno:
@@ -281,28 +281,28 @@ def vykresli_popis_baitu(bait_data, x, y):
 baits = {
     "bread": {
         "pocet":0,
-        "lepsi_sance":-5, #horsi
-        "kratsi_cekani":0.5, #horsi
-        "mene_zmacknuti": 0,     #normal  
+        "sance":-5, #horsi
+        "cekani": 500, #horsi
+        "zmacknuti": -1,     #normal  
     },
     "worm": {
         "pocet":0,
-        "lepsi_sance":+5, #lepsi
-        "kratsi_cekani":-0.2, # lepsi
-        "mene_zmacknuti": 0, #normal   
+        "sance":+5, #lepsi
+        "cekani":-200, # lepsi
+        "zmacknuti": 0, #normal   
     },
     "corn": {
         "pocet":0,
-        "lepsi_sance":+5,
-        "kratsi_cekani": 0.5, # horsi
-        "mene_zmacknuti": - 1,  # lepsi
+        "sance":+5,
+        "cekani": 500, # horsi
+        "zmacknuti": - 1,  # lepsi
         
     },
     "fish_head": {
         "pocet":0,
-        "lepsi_sance": +10, # lepsi
-        "kratsi_cekani": - 1, # lepsi
-        "mene_zmacknuti": - 2, # lepsi
+        "sance": +10, # lepsi
+        "cekani": - 1000, # lepsi
+        "zmacknuti": - 2, # lepsi
     },
 
 }
@@ -373,10 +373,11 @@ bait_ui_inv = [
 ]
 
 bait_popisy = [
-    ("lepsi_sance", "Luck"),
-    ("kratsi_cekani", "Wait time"),
-    ("mene_zmacknuti", "presses"),
+    ("sance", "Luck"),
+    ("cekani", "Wait time"),
+    ("zmacknuti", "presses"),
 ]
+
 
 
 #inv baits ctverecky a obrazky baitu
@@ -493,10 +494,6 @@ tlacitko = pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517
 za_tlacitko = pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost, inventory_tlacitko_velikost))
 
 
-        #okno.blit(worm_inventory_ikona, (570, 440))
-        #okno.blit(corn_inventory_ikona, (630, 440))
-        #okno.blit(fish_head_inventory_ikona, (690, 440))
-                                      
 
 #obrazky shopu
 plechovka = pygame.image.load("plechovka.png")
@@ -720,8 +717,12 @@ while True:
         aktualni_sprite = TEXTURApepa_lod
 
     #SPACE k zapnuti naprahu
+    
+    if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar and (baits_mode is None or baits_mode["pocet"] == 0):
+        print("nemas nic")
    
-    if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar:
+    elif pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar:
+          
         if sum(obsah_inventare.values()) < obsah_inventare_max:
             pozadi = rybareni_dole
             hrac_rychlost = 0
@@ -729,7 +730,9 @@ while True:
             pozadi_vyska = pozadi.get_height()
             prut = True
             zpet_tlacitko = False
-            ulovek = vyber_predmet(predmety)
+            ulovek = vyber_predmet(predmety, baits_mode)
+            ulovek["cekani"] += baits_mode["cekani"]
+            ulovek["zmacknuti"] += baits_mode["zmacknuti"]
             cas_nahozeni = pygame.time.get_ticks()
         else:
             plny_inventar_upozorneni = True
@@ -800,7 +803,7 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-            print(obsah_inventare)
+
                    
     #Funkcnost shopu, klik na buy, sell a moznost opusteni shopu
             
@@ -935,16 +938,16 @@ while True:
     
     if inventar and baits_mode is None:
         if bread_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click:
-            baits_mode = "bait_bread"
+            baits_mode = baits["bread"]
 
         elif worm_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click:
-            baits_mode = "bait_worm"
+            baits_mode = baits["worm"]
 
         elif corn_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click:
-            baits_mode = "bait_corn"
+            baits_mode = baits["corn"]
         
         elif fish_head_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click:
-            baits_mode = "bait_fish_head"
+            baits_mode = baits["fish_head"]
     
     if inventar and baits_mode is not None:
         if bait_leave_tlacitko_inventory.collidepoint(mys_pozice) and mouse_click:
@@ -1394,7 +1397,7 @@ while True:
             pygame.draw.rect(okno, cerna, za_fish_head_tlacitko_inventory)
             pygame.draw.rect(okno, zelena, fish_head_tlacitko_inventory)
         
-        if baits_mode == "bait_bread":
+        if baits_mode == baits["bread"]:
             okno.blit(bread_inventory_ikona, (510, 440))
             pocet = baits["bread"]["pocet"]
             text = info_o_baits_font.render(f"x{pocet}", True, cerna)
@@ -1402,7 +1405,7 @@ while True:
             pygame.draw.rect(okno, cerna, za_bait_leave_tlacitko_inventory)
             pygame.draw.rect(okno, cervena, (bait_leave_tlacitko_inventory))
                 
-        if baits_mode == "bait_worm":
+        if baits_mode == baits["worm"]:
             okno.blit(worm_inventory_ikona, (510, 440))
             pocet = baits["worm"]["pocet"]
             text = info_o_baits_font.render(f"x{pocet}", True, cerna)
@@ -1410,7 +1413,7 @@ while True:
             pygame.draw.rect(okno, cerna, za_bait_leave_tlacitko_inventory)
             pygame.draw.rect(okno, cervena, bait_leave_tlacitko_inventory)
             
-        if baits_mode == "bait_corn":
+        if baits_mode == baits["corn"]:
             okno.blit(corn_inventory_ikona, (510, 440))
             pocet = baits["corn"]["pocet"]
             text = info_o_baits_font.render(f"x{pocet}", True, cerna)
@@ -1418,7 +1421,7 @@ while True:
             pygame.draw.rect(okno, cerna, za_bait_leave_tlacitko_inventory)
             pygame.draw.rect(okno, cervena, bait_leave_tlacitko_inventory)
         
-        if baits_mode == "bait_fish_head":
+        if baits_mode == baits["fish_head"]:
             okno.blit(fish_head_inventory_ikona, (510, 440))
             pocet = baits["fish_head"]["pocet"]
             text = info_o_baits_font.render(f"x{pocet}", True, cerna)
@@ -1481,7 +1484,6 @@ while True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     
-    print(baits_mode)
     clock.tick(60)
     pygame.display.update()
     
