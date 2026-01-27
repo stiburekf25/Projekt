@@ -7,9 +7,14 @@ pygame.init()
 
 def vyber_predmet(predmety, bait):
     los = random.randint(1, 100)
-    for p in predmety:
+    los = 100
+    print(f"to je los {los}")
+    for p in predmety[:-1]:
         if p["sance"] - bait["sance"] >= los:
             return p.copy()
+    else:
+        return p[-1]
+    
 def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
         if p["jmeno"] == jmeno:
@@ -110,7 +115,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 100
+coins = 100000
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -270,7 +275,13 @@ cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 def vykresli_popis_baitu(bait_data, x, y):
     for i, (klic, text) in enumerate(bait_popisy):
         hodnota = bait_data[klic]
-
+        
+        if klic == "cekani":
+            hodnota = hodnota / 1000
+            hodnota = f"{hodnota:.1f} s"   # třeba 0.5 s
+        else:
+            hodnota = str(hodnota) 
+        
         surface = info_o_baits_font.render(
             f"{text}: {hodnota}", True, cerna
         )
@@ -731,6 +742,7 @@ while True:
             prut = True
             zpet_tlacitko = False
             ulovek = vyber_predmet(predmety, baits_mode)
+            print(ulovek, baits_mode,) 
             ulovek["cekani"] += baits_mode["cekani"]
             ulovek["zmacknuti"] += baits_mode["zmacknuti"]
             cas_nahozeni = pygame.time.get_ticks()
@@ -747,13 +759,12 @@ while True:
         poradi = 0
         
         #Pridani pismena do sekvence a opatreni proti opakujicimu pismenu
-        
-        for pismeno in range(ulovek["zmacknuti"]):
+        delka_sekvence = max(ulovek["zmacknuti"], 1)
+        for pismeno in range(delka_sekvence):
             pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
             while sekvence != "" and sekvence[-1] == pismneko_ktere_zkousime_davat_do_sekvence:
                 pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
             sekvence += pismneko_ktere_zkousime_davat_do_sekvence
-        #print(sekvence)
         pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
         okraj_random_x = random.randint(20, 780 - pismeno_velikost)
         okraj_random_y = random.randint(20, 580 - pismeno_velikost)
@@ -787,6 +798,7 @@ while True:
             else:
                 inventar_order.append(ulovek)
                 obsah_inventare[ulovek["jmeno"]] += 1
+                baits_mode["pocet"] -= 1
                 
                     
                 minihra = False
@@ -803,6 +815,7 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+            baits_mode["pocet"] -= 1
 
                    
     #Funkcnost shopu, klik na buy, sell a moznost opusteni shopu
