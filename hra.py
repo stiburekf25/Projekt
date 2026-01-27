@@ -7,13 +7,17 @@ pygame.init()
 
 def vyber_predmet(predmety, bait):
     los = random.randint(1, 100)
-    los = 100
-    print(f"to je los {los}")
+    
     for p in predmety[:-1]:
-        if p["sance"] - bait["sance"] >= los:
+        realna_sance = p["sance"]
+        
+        if p["jmeno"] not in ("Plechovka", "Bota"):
+            realna_sance += bait["sance"]
+            
+        if los <= realna_sance:
             return p.copy()
     else:
-        return p[-1]
+        return predmety[-1].copy()
     
 def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
@@ -120,6 +124,10 @@ obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
+posledni_ulovek = None
+plus_ikona = pygame.image.load("plus_ikona.png")
+posledni_ulovek_cas = 0
+posledni_ulovek_doba = 2000
 prut = False
 zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
 minihra = False
@@ -210,7 +218,7 @@ upgrades_shop_velikost = 60
 upgrades_inventory_velikost = 20
 baits_shop_velikost = 60
 buy_baits_velikost = 30
-info_o_baits_velikost = 20
+info_o_baits_velikost = 18
 inventory_baits_tlacitko_velikost = 30
 
 
@@ -277,8 +285,16 @@ def vykresli_popis_baitu(bait_data, x, y):
         hodnota = bait_data[klic]
         
         if klic == "cekani":
-            hodnota = hodnota / 1000
-            hodnota = f"{hodnota:.1f} s"   # třeba 0.5 s
+            sekundy = hodnota / 1000
+            
+            if sekundy > 0:
+                hodnota = f"+{sekundy:.1f}s"
+            elif sekundy < 0:
+                hodnota = f"{sekundy:.1f}s"
+                
+        elif klic == "sance":
+            if hodnota > 0:
+                hodnota = f"+{hodnota}"
         else:
             hodnota = str(hodnota) 
         
@@ -286,15 +302,15 @@ def vykresli_popis_baitu(bait_data, x, y):
             f"{text}: {hodnota}", True, cerna
         )
 
-        okno.blit(surface, (x, y + 40 +i * 20))
+        okno.blit(surface, (x - 3, y + 40 +i * 20))
 
 
 baits = {
     "bread": {
         "pocet":0,
         "sance":-5, #horsi
-        "cekani": 500, #horsi
-        "zmacknuti": -1,     #normal  
+        "cekani": +500, #horsi
+        "zmacknuti": 0,     #normal  
     },
     "worm": {
         "pocet":0,
@@ -305,15 +321,15 @@ baits = {
     "corn": {
         "pocet":0,
         "sance":+5,
-        "cekani": 500, # horsi
-        "zmacknuti": - 1,  # lepsi
+        "cekani": +500, # horsi
+        "zmacknuti": -1,  # lepsi
         
     },
     "fish_head": {
         "pocet":0,
         "sance": +10, # lepsi
-        "cekani": - 1000, # lepsi
-        "zmacknuti": - 2, # lepsi
+        "cekani": -1000, # lepsi
+        "zmacknuti": -2, # lepsi
     },
 
 }
@@ -730,7 +746,7 @@ while True:
     #SPACE k zapnuti naprahu
     
     if pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar and (baits_mode is None or baits_mode["pocet"] == 0):
-        print("nemas nic")
+        None
    
     elif pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar:
           
@@ -800,7 +816,9 @@ while True:
                 obsah_inventare[ulovek["jmeno"]] += 1
                 baits_mode["pocet"] -= 1
                 
-                    
+                posledni_ulovek = ulovek
+                posledni_ulovek_cas = pygame.time.get_ticks()
+                
                 minihra = False
                 zpet_tlacitko = True
                 pozadi = rybareni
@@ -1410,6 +1428,13 @@ while True:
             pygame.draw.rect(okno, cerna, za_fish_head_tlacitko_inventory)
             pygame.draw.rect(okno, zelena, fish_head_tlacitko_inventory)
         
+        if inventar and baits_mode is not None:
+            vykresli_popis_baitu(
+                baits_mode,
+                580,   # X – uprav si podle UI
+                400    # Y – klidně níž/výš
+            )
+        
         if baits_mode == baits["bread"]:
             okno.blit(bread_inventory_ikona, (510, 440))
             pocet = baits["bread"]["pocet"]
@@ -1466,6 +1491,11 @@ while True:
         text_rect = pismeno_text.get_rect(center=center)
         okno.blit(pismeno_text, text_rect)
     
+    if pozadi == rybareni and not prut and not minihra and not inventar and (baits_mode is None or baits_mode["pocet"] == 0) and stisknuto[pygame.K_SPACE]:
+        no_baits_text = plny_inv_font.render("NO BAITS!", True, cervena)
+        no_baits_upozorneni_rect = no_baits_text.get_rect(center=(okno_sirka // 2, 340))
+        okno.blit(no_baits_text, no_baits_upozorneni_rect)
+    
     if plny_inventar_upozorneni and pozadi == rybareni and not inventar:
         plny_inventar_upozorneni_rect = plny_inv_text.get_rect(center=(okno_sirka // 2, 280))
         okno.blit(plny_inv_text, plny_inventar_upozorneni_rect)
@@ -1474,6 +1504,14 @@ while True:
     
     
     if pozadi == rybareni and not prut and not minihra and not inventar:
+        if posledni_ulovek and pygame.time.get_ticks() - posledni_ulovek_cas < posledni_ulovek_doba:
+                x = 640
+                y = 480
+                okno.blit(posledni_ulovek["obrazek"], (x, y))
+                okno.blit(plus_ikona, (x - 40, y + 25))
+ 
+        else:
+            posledni_ulovek = None
         pocet_snimku = 10
         faktor_zpozdeni = 10
         
