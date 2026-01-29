@@ -54,6 +54,7 @@ hrac_velikostY = 170
 info_jezero = 1570
 info_shop = 920
 info_dum = 198
+info_vnitrek_domu = 750
 
 kamera_x = 0
 
@@ -689,23 +690,35 @@ while True:
             pozadi = dum
             hrac_rychlost = 4
             hrac_pozice_x = 400
-            kamera = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            kamera_x = 0
         
     #DUM
+    info_vnitrek_domu_obrazovka_x = info_vnitrek_domu - kamera_x
     stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800        
     
     if pozadi == dum:
         
-        
         if hrac_pozice_x < 50:
             hrac_pozice_x = 50
-        if hrac_pozice_x > 750 - hrac_velikostX:
-            hrac_pozice_x = 750 - hrac_velikostX
+        if hrac_pozice_x > 700 - hrac_velikostX:
+            hrac_pozice_x = 700 - hrac_velikostX
         
         if stojim_u_dveri and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
             pozadi = venek
+
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+
+            hrac_pozice_x = 360
+            hrac_pozice_y = 315
+
+            hrac_velikostX = 110
+            hrac_velikostY = 170
             hrac_rychlost = 4
-            hrac_pozice_x = 350
+
+            kamera_x = 0
             
         
     #JEZERO
@@ -1118,7 +1131,13 @@ while True:
         pygame.draw.rect(okno, cerna, (info_dum_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_dum_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1373, 352))
-
+    
+    stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800       
+    
+    if pozadi == dum and stojim_u_dveri:
+        pygame.draw.rect(okno, cerna, (729, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (730, 340, 50, 50))
+        okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 20, 352))
 
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
