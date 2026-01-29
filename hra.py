@@ -119,7 +119,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 100000
+coins = 100
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -478,6 +478,7 @@ rybareni = pygame.image.load("rybareni.png")
 ikona_prut = pygame.image.load("ikona_prut.png")
 rybareni_dole = pygame.image.load("rybareni_dole.png")
 rybareni_pozor = pygame.image.load("rybareni_pozor.png")
+dum = pygame.image.load("dum.png")
 
 pozadi = venek
 pozadi_sirka = pozadi.get_width()
@@ -577,6 +578,7 @@ hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
 while True:
+    print(hrac_pozice_x)
 
     # OVLADANI HRY HRACEM
     
@@ -678,6 +680,22 @@ while True:
             
             shop_hlaska = random.choice(seznam_vet)
             hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
+        
+        stojim_u_domu = hrac_pozice_x > 100 and hrac_pozice_x < 340
+        
+        if stojim_u_domu and stisknuto[pygame.K_e] and not inventar:
+            pozadi = dum
+            hrac_rychlost = 4
+        
+    #DUM
+    if pozadi == dum:
+        kamera_x = 0
+        
+        if hrac_pozice_x < 50:
+            hrac_pozice_x = 50
+        if hrac_pozice_x > 750 - hrac_velikostX:
+            hrac_pozice_x = 750 - hrac_velikostX
+            
             
         
     #JEZERO
@@ -758,7 +776,6 @@ while True:
             prut = True
             zpet_tlacitko = False
             ulovek = vyber_predmet(predmety, baits_mode)
-            print(ulovek, baits_mode,) 
             ulovek["cekani"] += baits_mode["cekani"]
             ulovek["zmacknuti"] += baits_mode["zmacknuti"]
             cas_nahozeni = pygame.time.get_ticks()
@@ -1001,7 +1018,7 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell" and not inventar:
+    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell" and not inventar and not pozadi == dum:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "sell" and plechovka_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -1084,6 +1101,13 @@ while True:
         pygame.draw.rect(okno, cerna, za_space_u_jezera)
         pygame.draw.rect(okno, bila, (722, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
+    
+    stojim_u_domu = hrac_pozice_x > 100 and hrac_pozice_x < 340
+
+    if pozadi == venek and stojim_u_domu:
+        pygame.draw.rect(okno, cerna, (196, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (197, 340, 50, 50))
+        okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1373, 352))
 
 
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
