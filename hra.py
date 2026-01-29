@@ -683,21 +683,29 @@ while True:
             hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
         
         stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
-        info_dum_obrazovka_x = 
+        info_dum_obrazovka_x = info_dum - kamera_x
         
         if stojim_u_domu and stisknuto[pygame.K_e] and not inventar:
             pozadi = dum
             hrac_rychlost = 4
-            hrac_pozice_x = 560
+            hrac_pozice_x = 400
+            kamera = 0
         
     #DUM
+    stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800        
+    
     if pozadi == dum:
+        
         
         if hrac_pozice_x < 50:
             hrac_pozice_x = 50
         if hrac_pozice_x > 750 - hrac_velikostX:
             hrac_pozice_x = 750 - hrac_velikostX
-            
+        
+        if stojim_u_dveri and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
+            pozadi = venek
+            hrac_rychlost = 4
+            hrac_pozice_x = 350
             
         
     #JEZERO
@@ -1107,7 +1115,7 @@ while True:
     stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
 
     if pozadi == venek and stojim_u_domu:
-        pygame.draw.rect(okno, cerna, (i, 339, 52, 52))
+        pygame.draw.rect(okno, cerna, (info_dum_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_dum_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1373, 352))
 
