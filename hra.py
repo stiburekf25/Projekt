@@ -53,6 +53,7 @@ hrac_velikostY = 170
 
 info_jezero = 1570
 info_shop = 920
+info_dum = 198
 
 kamera_x = 0
 
@@ -628,8 +629,8 @@ while True:
     #VENEK
     
     if pozadi == venek:
-        if hrac_pozice_x < 190:
-            hrac_pozice_x = 190
+        if hrac_pozice_x < 0:
+            hrac_pozice_x = 0
         if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 170:
             hrac_pozice_x = pozadi_sirka - hrac_velikostX - 170
                 
@@ -681,15 +682,16 @@ while True:
             shop_hlaska = random.choice(seznam_vet)
             hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
         
-        stojim_u_domu = hrac_pozice_x > 100 and hrac_pozice_x < 340
+        stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
+        info_dum_obrazovka_x = 
         
         if stojim_u_domu and stisknuto[pygame.K_e] and not inventar:
             pozadi = dum
             hrac_rychlost = 4
+            hrac_pozice_x = 560
         
     #DUM
     if pozadi == dum:
-        kamera_x = 0
         
         if hrac_pozice_x < 50:
             hrac_pozice_x = 50
@@ -1102,11 +1104,11 @@ while True:
         pygame.draw.rect(okno, bila, (722, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    stojim_u_domu = hrac_pozice_x > 100 and hrac_pozice_x < 340
+    stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
 
     if pozadi == venek and stojim_u_domu:
-        pygame.draw.rect(okno, cerna, (196, 339, 52, 52))
-        pygame.draw.rect(okno, bila, (197, 340, 50, 50))
+        pygame.draw.rect(okno, cerna, (i, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_dum_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1373, 352))
 
 
