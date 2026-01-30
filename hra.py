@@ -696,12 +696,13 @@ while True:
         
     #DUM
     info_vnitrek_domu_obrazovka_x = info_vnitrek_domu - kamera_x
-    stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800        
+    stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800
+    stojim_u_postele = hrac_pozice_x > 400 and hrac_pozice_x < 540
     
     if pozadi == dum:
         
-        if hrac_pozice_x < 50:
-            hrac_pozice_x = 50
+        if hrac_pozice_x < 120:
+            hrac_pozice_x = 120
         if hrac_pozice_x > 700 - hrac_velikostX:
             hrac_pozice_x = 700 - hrac_velikostX
         
@@ -1138,6 +1139,11 @@ while True:
         pygame.draw.rect(okno, cerna, (729, 339, 52, 52))
         pygame.draw.rect(okno, bila, (730, 340, 50, 50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 20, 352))
+    if pozadi == dum and stojim_u_postele:
+        pygame.draw.rect(okno, cerna,(info_vnitrek_domu_obrazovka_x - 225, 249,52,52))
+        pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 224, 250,50,50))
+        okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 224, 263))
+        
 
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
@@ -1590,4 +1596,5 @@ while True:
     
     clock.tick(60)
     pygame.display.update()
+    
     
