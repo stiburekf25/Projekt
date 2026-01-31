@@ -45,7 +45,7 @@ def soucet_vsech_baits():
 okno_sirka = 800
 okno_vyska = 600
 
-hrac_pozice_x = 400
+hrac_pozice_x = 500
 hrac_pozice_y = 315
 hrac_rychlost = 4
 hrac_velikostX= 110
@@ -53,10 +53,11 @@ hrac_velikostY = 170
 
 info_jezero = 1570
 info_shop = 920
-info_dum = 198
+info_dum = 190
 info_vnitrek_domu = 750
+info_cesta_rozcestnik = 1575
 
-kamera_x = 0
+kamera_x = 100
 
 soubor = open("shop.txt", "r", encoding="utf-8")
 
@@ -481,8 +482,9 @@ ikona_prut = pygame.image.load("ikona_prut.png")
 rybareni_dole = pygame.image.load("rybareni_dole.png")
 rybareni_pozor = pygame.image.load("rybareni_pozor.png")
 dum = pygame.image.load("dum.png")
+rozcestnik = pygame.image.load("rozcestnik.png")
 
-pozadi = venek
+pozadi = rozcestnik
 pozadi_sirka = pozadi.get_width()
 pozadi_vyska = pozadi.get_height()
 
@@ -580,7 +582,7 @@ hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
 while True:
-    print(hrac_pozice_x)
+    print(hrac_pozice_x, kamera_x)
 
     # OVLADANI HRY HRACEM
     
@@ -626,12 +628,42 @@ while True:
         else:
             aktualni_sprite = TEXTURApepa_2
         hrac_pozice_x -= hrac_rychlost
-    
+        
+        
+    # ROZCESTNIK
+    if pozadi == rozcestnik:
+        if hrac_pozice_x < 250:
+            hrac_pozice_x = 250
+        if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 118 :
+            hrac_pozice_x = pozadi_sirka - hrac_velikostX - 118
+            
+        if hrac_obrazovka_x > prava_zona:
+            kamera_x += hrac_rychlost
+        if hrac_obrazovka_x < leva_zona:
+            kamera_x -= hrac_rychlost
+            
+        if kamera_x < 0:
+            kamera_x = 0
+        if kamera_x > pozadi_sirka - okno_sirka:
+            kamera_x = pozadi_sirka - okno_sirka
+        
+        stojim_u_cesty_rozcestnik = hrac_pozice_x > 1360 and hrac_pozice_x < 1500
+        
+        info_rozcestnik_obrazovka_x = info_cesta_rozcestnik - kamera_x
+        
+        if stojim_u_cesty_rozcestnik and stisknuto[pygame.K_e] and not inventar:
+            pozadi = venek
+            hrac_pozice_x = 340
+            kamera_x = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            hrac_rychlost = 4
+        
     #VENEK
     
     if pozadi == venek:
-        if hrac_pozice_x < 0:
-            hrac_pozice_x = 0
+        if hrac_pozice_x < 60:
+            hrac_pozice_x = 60
         if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 170:
             hrac_pozice_x = pozadi_sirka - hrac_velikostX - 170
                 
@@ -648,7 +680,15 @@ while True:
 
         info_shop_obrazovka_x = info_shop - kamera_x
 
+        stojim_u_cesty_venek = hrac_pozice_x > 1 and hrac_pozice_x < 80
         
+        if stojim_u_cesty_venek and stisknuto[pygame.K_e] and not inventar:
+            pozadi = rozcestnik
+            #hrac_rychlost = 4
+            hrac_pozice_x = 1300
+            kamera_x = 848
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
         
         #Vstup na jezero
@@ -683,7 +723,7 @@ while True:
             shop_hlaska = random.choice(seznam_vet)
             hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
         
-        stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
+        stojim_u_domu = hrac_pozice_x > 90 and hrac_pozice_x < 340
         info_dum_obrazovka_x = info_dum - kamera_x
         
         if stojim_u_domu and stisknuto[pygame.K_e] and not inventar:
@@ -693,6 +733,8 @@ while True:
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             kamera_x = 0
+        
+
         
     #DUM
     info_vnitrek_domu_obrazovka_x = info_vnitrek_domu - kamera_x
@@ -1042,7 +1084,7 @@ while True:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif tlacitko.collidepoint(mys_pozice) and inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and not pozadi == jezero and not pozadi == shop and not pozadi == venek and not shop_mode == "buy" and not shop_mode == "sell" and not inventar and not pozadi == dum:
+    elif zpet_tlacitko_rect.collidepoint(mys_pozice) and not prut and not minihra and pozadi == rybareni and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif pozadi == pozadi_shop and shop_mode == "sell" and plechovka_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -1098,6 +1140,11 @@ while True:
         okno.blit(pozadi, (-kamera_x, 0))
     else:
         okno.blit(pozadi, (0, 0))
+        
+    if pozadi == rozcestnik and stojim_u_cesty_rozcestnik:
+        pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x, 340, 50, 50))
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))    
     
     if pozadi == venek and stojim_u_jezera:
         pygame.draw.rect(okno, cerna, za_e_u_jezera)
@@ -1111,40 +1158,37 @@ while True:
         pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
         okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
     
-    stojim_u_leva_lod = hrac_pozice_x > 329 and hrac_pozice_x < 350
-
     if pozadi == jezero and stojim_u_leva_lod:
         pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
         pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
     
-    stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
-
     if pozadi == jezero and stojim_u_prava_lod:
         okno.blit(ikona_prut, (722, 290))
         pygame.draw.rect(okno, cerna, za_space_u_jezera)
         pygame.draw.rect(okno, bila, (722, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    stojim_u_domu = hrac_pozice_x > 25 and hrac_pozice_x < 340
-
     if pozadi == venek and stojim_u_domu:
         pygame.draw.rect(okno, cerna, (info_dum_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_dum_obrazovka_x, 340, 50, 50))
-        okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1373, 352))
-    
-    stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800       
-    
+        okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1380, 352))
+        
     if pozadi == dum and stojim_u_dveri:
         pygame.draw.rect(okno, cerna, (729, 339, 52, 52))
         pygame.draw.rect(okno, bila, (730, 340, 50, 50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 20, 352))
+        
     if pozadi == dum and stojim_u_postele:
         pygame.draw.rect(okno, cerna,(info_vnitrek_domu_obrazovka_x - 225, 249,52,52))
         pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 224, 250,50,50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 224, 263))
-        
-
+    
+    if pozadi == venek and stojim_u_cesty_venek:
+        pygame.draw.rect(okno, cerna, (info_jezero_obrazovka_x - 1565, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_jezero_obrazovka_x - 1564, 340, 50, 50))
+        okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
+    
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
