@@ -224,6 +224,7 @@ baits_shop_velikost = 60
 buy_baits_velikost = 30
 info_o_baits_velikost = 18
 inventory_baits_tlacitko_velikost = 30
+krb_leave_velikost = 40
 
 
 #pozice polozek v shopu + velikost
@@ -484,6 +485,7 @@ ikona_prut = pygame.image.load("ikona_prut.png")
 rybareni_dole = pygame.image.load("rybareni_dole.png")
 rybareni_pozor = pygame.image.load("rybareni_pozor.png")
 dum = pygame.image.load("dum.png")
+krb = pygame.image.load("krb.png")
 
 pozadi = rozcestnik
 
@@ -575,6 +577,7 @@ upgrades_inventory_font = pygame.font.SysFont("Aharoni", upgrades_inventory_veli
 baits_shop_font = pygame.font.SysFont("Aharoni", baits_shop_velikost)
 buy_baits_cena_font = pygame.font.Font("CHAOS16.otf", buy_baits_velikost)
 info_o_baits_font = pygame.font.SysFont("Aharoni", info_o_baits_velikost)
+krb_leave_font = pygame.font.SysFont("Aharoni", krb_leave_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -750,11 +753,14 @@ while True:
     info_vnitrek_domu_obrazovka_x = info_vnitrek_domu - kamera_x
     stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800
     stojim_u_postele = hrac_pozice_x > 400 and hrac_pozice_x < 540
+    stojim_u_krbu = hrac_pozice_x > 110 and hrac_pozice_x < 230
+    za_krb_leave = pygame.draw.rect(okno, cerna, (679, 529, 102, 52))
+    krb_leave = pygame.draw.rect(okno, hneda, (680, 530, 100, 50))
     
     if pozadi == dum:
         
-        if hrac_pozice_x < 120:
-            hrac_pozice_x = 120
+        if hrac_pozice_x < 200:
+            hrac_pozice_x = 200
         if hrac_pozice_x > 700 - hrac_velikostX:
             hrac_pozice_x = 700 - hrac_velikostX
         
@@ -772,7 +778,26 @@ while True:
             hrac_rychlost = 4
 
             kamera_x = 0
+        
+        if stojim_u_postele and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
+            pass
+        
+        if stojim_u_krbu and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
+            pozadi = krb
             
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
+            hrac_rychlost = 0
+            
+    if pozadi == krb and krb_leave.collidepoint(mys_pozice) and mouse_click:
+        pozadi = dum
+        hrac_rychlost = 4
+        hrac_pozice_x = 240
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+        kamera_x = 0
+        
         
     #JEZERO
     if pozadi == jezero:
@@ -1142,6 +1167,8 @@ while True:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         else:         
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+    elif pozadi == krb and krb_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
@@ -1196,12 +1223,26 @@ while True:
         pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 224, 250,50,50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 224, 263))
     
+    if pozadi == dum and stojim_u_krbu:
+        pygame.draw.rect(okno, cerna,(info_vnitrek_domu_obrazovka_x - 625, 359,52,52))
+        pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 624, 360,50,50))
+        okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 624, 372))
+    
+    if pozadi == krb:
+        pygame.draw.rect(okno, cerna, za_krb_leave)
+        pygame.draw.rect(okno, hneda, krb_leave)
+        krb_leave_text = krb_leave_font.render("EXIT", True, cerna)
+        okno.blit(krb_leave_text, (697, 543))
+    
+
+    print(hrac_pozice_x)
+    
     if pozadi == venek and stojim_u_cesty_venek and not prechod_lock:
         pygame.draw.rect(okno, cerna, (info_jezero_obrazovka_x - 1565, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_jezero_obrazovka_x - 1564, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor:
+    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
     if pozadi == shop and shop_mode is None:
