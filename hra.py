@@ -51,11 +51,12 @@ hrac_rychlost = 4
 hrac_velikostX= 110
 hrac_velikostY = 170
 
+info_cesta_rozcestnik = 1575
 info_jezero = 1570
 info_shop = 920
 info_dum = 190
 info_vnitrek_domu = 750
-info_cesta_rozcestnik = 1575
+
 
 kamera_x = 100
 
@@ -142,7 +143,7 @@ predmety = [
         "cekani": 4000,
         "zmacknuti": 5,
         "limit_cekani": 3000,
-        "cena": 20,
+        "cena": 30,
         "obrazek": pygame.image.load("plechovka.png"),
     },
     {
@@ -151,7 +152,7 @@ predmety = [
         "cekani": 5000,
         "zmacknuti": 7,
         "limit_cekani": 2500,
-        "cena": 40,
+        "cena": 50,
         "obrazek": pygame.image.load("bota.png"),
     },
     {
@@ -160,7 +161,7 @@ predmety = [
         "cekani": 6000,
         "zmacknuti": 12,
         "limit_cekani": 2000,
-        "cena": 80,
+        "cena": 140,
         "obrazek": pygame.image.load("kapr.png"),
     },
     {
@@ -169,7 +170,7 @@ predmety = [
         "cekani": 7000,
         "zmacknuti": 15,
         "limit_cekani": 1300,
-        "cena": 130,
+        "cena": 280,
         "obrazek": pygame.image.load("stika.png"),
     },
     {
@@ -178,7 +179,7 @@ predmety = [
         "cekani": 11000,
         "zmacknuti": 18,
         "limit_cekani": 1000,
-        "cena": 250,
+        "cena": 500,
         "obrazek": pygame.image.load("sumec.png"),
     },
     {
@@ -187,7 +188,7 @@ predmety = [
         "cekani": 9000,
         "zmacknuti": 23,
         "limit_cekani": 1100,
-        "cena": 600,
+        "cena": 1000,
         "obrazek": pygame.image.load("tajnaRyba.png"),
     },
 ]
@@ -473,6 +474,7 @@ leave_sell = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
 shop_mode = None # nic / buy / sell
 
 # obrazky levelu
+rozcestnik = pygame.image.load("rozcestnik.png")
 venek = pygame.image.load("venek.png")
 jezero = pygame.image.load("level_2.png")
 shop = pygame.image.load("shop.png")
@@ -482,9 +484,9 @@ ikona_prut = pygame.image.load("ikona_prut.png")
 rybareni_dole = pygame.image.load("rybareni_dole.png")
 rybareni_pozor = pygame.image.load("rybareni_pozor.png")
 dum = pygame.image.load("dum.png")
-rozcestnik = pygame.image.load("rozcestnik.png")
 
 pozadi = rozcestnik
+
 pozadi_sirka = pozadi.get_width()
 pozadi_vyska = pozadi.get_height()
 
@@ -519,7 +521,6 @@ inv = pygame.image.load("inventar.png")
 inv2 = pygame.image.load("inventar_2.png")
 inv3 = pygame.image.load("inventar_3.png")
 inv4 = pygame.image.load("inventar_4.png")
-#TEXTURAinv = pygame.transform.scale(inv, (500, 300))
 ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
 ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
 tlacitko = pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517 ,inventory_tlacitko_velikost, inventory_tlacitko_velikost))
@@ -579,10 +580,11 @@ hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
 hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 
+prechod_lock = False
+
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
 while True:
-    print(hrac_pozice_x, kamera_x)
 
     # OVLADANI HRY HRACEM
     
@@ -651,13 +653,17 @@ while True:
         
         info_rozcestnik_obrazovka_x = info_cesta_rozcestnik - kamera_x
         
-        if stojim_u_cesty_rozcestnik and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_cesty_rozcestnik and stisknuto[pygame.K_e] and not inventar and not prechod_lock:
             pozadi = venek
+            prechod_lock = True
             hrac_pozice_x = 340
             kamera_x = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             hrac_rychlost = 4
+            
+        if not stojim_u_cesty_rozcestnik:
+            prechod_lock = False
         
     #VENEK
     
@@ -682,14 +688,18 @@ while True:
 
         stojim_u_cesty_venek = hrac_pozice_x > 1 and hrac_pozice_x < 80
         
-        if stojim_u_cesty_venek and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_cesty_venek and stisknuto[pygame.K_e] and not inventar and not prechod_lock:
             pozadi = rozcestnik
-            #hrac_rychlost = 4
+            prechod_lock = True
+            hrac_rychlost = 4
             hrac_pozice_x = 1300
             kamera_x = 848
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
+        
+        if not stojim_u_cesty_venek:
+            prechod_lock = False 
         
         #Vstup na jezero
         
@@ -885,6 +895,7 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+            baits_mode["pocet"] -= 1
     
         elif stisknuto[ord(sekvence[poradi])]:
             poradi += 1
@@ -917,6 +928,7 @@ while True:
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             baits_mode["pocet"] -= 1
+        
 
                    
     #Funkcnost shopu, klik na buy, sell a moznost opusteni shopu
@@ -1141,7 +1153,7 @@ while True:
     else:
         okno.blit(pozadi, (0, 0))
         
-    if pozadi == rozcestnik and stojim_u_cesty_rozcestnik:
+    if pozadi == rozcestnik and stojim_u_cesty_rozcestnik and not prechod_lock:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))    
@@ -1184,7 +1196,7 @@ while True:
         pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 224, 250,50,50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 224, 263))
     
-    if pozadi == venek and stojim_u_cesty_venek:
+    if pozadi == venek and stojim_u_cesty_venek and not prechod_lock:
         pygame.draw.rect(okno, cerna, (info_jezero_obrazovka_x - 1565, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_jezero_obrazovka_x - 1564, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
@@ -1400,7 +1412,7 @@ while True:
         okno.blit(popis_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_kapr_pozice_y + 10))
         predmet_kapr = najdi_predmet_podle_jmena(predmety, "Kapr")
         hodnota_kapra_text = hodnota_polozky_font.render(str(predmet_kapr["cena"]), True, zluta)
-        okno.blit(hodnota_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x / 2 + 42, sell_kapr_pozice_y + 45))
+        okno.blit(hodnota_kapra_text, (sell_kapr_pozice_x + polozky_velikost_x / 2 + 30, sell_kapr_pozice_y + 45))
         okno.blit(coin_ikona, (sell_kapr_pozice_x + polozky_velikost_x / 2 + 72, sell_kapr_pozice_y + 45))
 
         pygame.draw.rect(okno, cerna, za_stika_sell)
@@ -1445,7 +1457,7 @@ while True:
         okno.blit(popis_tajnaRyba_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x - popis_polozky_velikost - 42, sell_tajnaRyba_pozice_y + 10))
         predmet_tajnaRyba = najdi_predmet_podle_jmena(predmety, "Rak")
         hodnota_tajnaRyba_text = hodnota_polozky_font.render(str(predmet_tajnaRyba["cena"]), True, zluta)
-        okno.blit(hodnota_tajnaRyba_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x / 2 + 30, sell_tajnaRyba_pozice_y + 45))
+        okno.blit(hodnota_tajnaRyba_text, (sell_tajnaRyba_pozice_x + polozky_velikost_x / 2 + 25, sell_tajnaRyba_pozice_y + 45))
         okno.blit(coin_ikona, (sell_tajnaRyba_pozice_x + polozky_velikost_x / 2 + 75, sell_tajnaRyba_pozice_y + 45))
         
     
@@ -1637,7 +1649,6 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
-    
     clock.tick(60)
     pygame.display.update()
     
