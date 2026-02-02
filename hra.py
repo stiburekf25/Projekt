@@ -1242,6 +1242,7 @@ while True:
         pygame.draw.rect(okno, bila, (info_jezero_obrazovka_x - 1564, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
     
+    hrac_obrazovka_x = hrac_pozice_x - kamera_x
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
