@@ -45,7 +45,7 @@ def soucet_vsech_baits():
 okno_sirka = 800
 okno_vyska = 600
 
-hrac_pozice_x = 500
+hrac_pozice_x = 380
 hrac_pozice_y = 315
 hrac_rychlost = 4
 hrac_velikostX= 110
@@ -58,7 +58,7 @@ info_dum = 190
 info_vnitrek_domu = 750
 
 
-kamera_x = 100
+kamera_x = 0
 
 soubor = open("shop.txt", "r", encoding="utf-8")
 
@@ -671,6 +671,21 @@ while True:
         if not stojim_u_cesty_rozcestnik:
             prechod_lock_venek_a_rozcestnik = False
         
+        stojim_u_baru = hrac_pozice_x > 890 and hrac_pozice_x < 1130
+        
+        if stojim_u_baru and stisknuto[pygame.K_e] and not inventar:
+            pass
+        
+        stojim_u_auta = hrac_pozice_x > 249 and hrac_pozice_x < 320
+        
+        if stojim_u_auta and stisknuto[pygame.K_e] and not inventar:
+            pass
+        
+        stojim_u_cesty_mezi_bar_a_auto = hrac_pozice_x > 515 and hrac_pozice_x < 770
+        
+        if stojim_u_cesty_mezi_bar_a_auto and stisknuto[pygame.K_e] and not inventar:
+            pass
+        
     #VENEK
     
     if pozadi == venek:
@@ -1199,11 +1214,26 @@ while True:
         okno.blit(pozadi, (-kamera_x, 0))
     else:
         okno.blit(pozadi, (0, 0))
+    
+    if pozadi == rozcestnik and stojim_u_auta:
+        pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 1400, 340, 50, 50))
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x - 1400 + (50/2 - E_text.get_size()[0] / 2), 352))
+    
+    if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto:
+        pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 898, 340, 50, 50))
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x - 898 + (50/2 - E_text.get_size()[0] / 2), 352))
         
     if pozadi == rozcestnik and stojim_u_cesty_rozcestnik and not prechod_lock_venek_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x, 340, 50, 50))
-        okno.blit(E_text, (info_rozcestnik_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))    
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
+    
+    if pozadi == rozcestnik and stojim_u_baru:
+        pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 539, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 538, 340, 50, 50))
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x - 538 + (50/2 - E_text.get_size()[0] / 2), 352))
     
     if pozadi == venek and stojim_u_jezera and not prechod_lock_venek_a_jezero:
         pygame.draw.rect(okno, cerna, za_e_u_jezera)
@@ -1708,6 +1738,8 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
+    
+    print(hrac_pozice_x)
     clock.tick(60)
     pygame.display.flip()
     
