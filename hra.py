@@ -583,7 +583,10 @@ hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
 hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 
-prechod_lock = False
+prechod_lock_venek_a_rozcestnik = False
+prechod_lock_venek_a_jezero = False
+prechod_lock_dum_a_venek = False
+prechod_lock_dum_a_krb = False 
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
@@ -656,9 +659,9 @@ while True:
         
         info_rozcestnik_obrazovka_x = info_cesta_rozcestnik - kamera_x
         
-        if stojim_u_cesty_rozcestnik and stisknuto[pygame.K_e] and not inventar and not prechod_lock:
+        if stojim_u_cesty_rozcestnik and stisknuto[pygame.K_e] and not inventar and not prechod_lock_venek_a_rozcestnik:
             pozadi = venek
-            prechod_lock = True
+            prechod_lock_venek_a_rozcestnik = True
             hrac_pozice_x = 340
             kamera_x = 0
             pozadi_sirka = pozadi.get_width()
@@ -666,7 +669,7 @@ while True:
             hrac_rychlost = 4
             
         if not stojim_u_cesty_rozcestnik:
-            prechod_lock = False
+            prechod_lock_venek_a_rozcestnik = False
         
     #VENEK
     
@@ -691,9 +694,9 @@ while True:
 
         stojim_u_cesty_venek = hrac_pozice_x > 1 and hrac_pozice_x < 80
         
-        if stojim_u_cesty_venek and stisknuto[pygame.K_e] and not inventar and not prechod_lock:
+        if stojim_u_cesty_venek and stisknuto[pygame.K_e] and not inventar and not prechod_lock_venek_a_rozcestnik:
             pozadi = rozcestnik
-            prechod_lock = True
+            prechod_lock_venek_a_rozcestnik = True
             hrac_rychlost = 4
             hrac_pozice_x = 1300
             kamera_x = 848
@@ -702,13 +705,13 @@ while True:
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
         
         if not stojim_u_cesty_venek:
-            prechod_lock = False 
+            prechod_lock_venek_a_rozcestnik = False 
         
         #Vstup na jezero
         
-        if stojim_u_jezera and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_jezera and stisknuto[pygame.K_e] and not inventar and not prechod_lock_venek_a_jezero:
             pozadi = jezero
-            
+            prechod_lock_venek_a_jezero = True
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             hrac_pozice_x = 370
@@ -716,6 +719,9 @@ while True:
             hrac_velikostX= 110
             hrac_velikostY = 170
             hrac_rychlost = 4
+        
+        if not stojim_u_jezera:
+            prechod_lock_venek_a_jezero = False
             
         info_jezero_obrazovka_x = info_jezero - kamera_x
 
@@ -739,13 +745,17 @@ while True:
         stojim_u_domu = hrac_pozice_x > 90 and hrac_pozice_x < 340
         info_dum_obrazovka_x = info_dum - kamera_x
         
-        if stojim_u_domu and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_domu and stisknuto[pygame.K_e] and not inventar and not prechod_lock_dum_a_venek:
             pozadi = dum
+            prechod_lock_dum_a_venek = True
             hrac_rychlost = 4
             hrac_pozice_x = 400
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             kamera_x = 0
+        
+        if not stojim_u_domu:
+            prechod_lock_dum_a_venek = False
         
 
         
@@ -764,9 +774,9 @@ while True:
         if hrac_pozice_x > 700 - hrac_velikostX:
             hrac_pozice_x = 700 - hrac_velikostX
         
-        if stojim_u_dveri and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
+        if stojim_u_dveri and stisknuto[pygame.K_e] and not inventar and not prechod_lock_dum_a_venek:
             pozadi = venek
-
+            prechod_lock_dum_a_venek = True
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
 
@@ -779,16 +789,22 @@ while True:
 
             kamera_x = 0
         
+        if not stojim_u_dveri:
+            prechod_lock_dum_a_venek = False
+        
         if stojim_u_postele and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
             pass
         
-        if stojim_u_krbu and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
+        if stojim_u_krbu and stisknuto[pygame.K_e] and not inventar and not prechod_lock_dum_a_krb:
             pozadi = krb
-            
+            prechod_lock_dum_a_krb = True
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             
             hrac_rychlost = 0
+        
+        if not stojim_u_krbu:
+            prechod_lock_dum_a_krb = False
             
     if pozadi == krb and krb_leave.collidepoint(mys_pozice) and mouse_click:
         pozadi = dum
@@ -826,8 +842,9 @@ while True:
         
         #Vystup z lode na jezere zpatky ven
         
-        if stojim_u_leva_lod and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_leva_lod and stisknuto[pygame.K_e] and not inventar and not prechod_lock_venek_a_jezero:
             pozadi = venek
+            prechod_lock_venek_a_jezero = True
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
 
@@ -839,6 +856,9 @@ while True:
             hrac_rychlost = 4
 
             kamera_x = 848
+        
+        if not stojim_u_leva_lod:
+            prechod_lock_venek_a_jezero = False
 
         stojim_u_prava_lod = hrac_pozice_x > 395 and hrac_pozice_x < 423
         
@@ -1180,12 +1200,12 @@ while True:
     else:
         okno.blit(pozadi, (0, 0))
         
-    if pozadi == rozcestnik and stojim_u_cesty_rozcestnik and not prechod_lock:
+    if pozadi == rozcestnik and stojim_u_cesty_rozcestnik and not prechod_lock_venek_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))    
     
-    if pozadi == venek and stojim_u_jezera:
+    if pozadi == venek and stojim_u_jezera and not prechod_lock_venek_a_jezero:
         pygame.draw.rect(okno, cerna, za_e_u_jezera)
         pygame.draw.rect(okno, (bila), (info_jezero_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
@@ -1197,7 +1217,7 @@ while True:
         pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
         okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
     
-    if pozadi == jezero and stojim_u_leva_lod:
+    if pozadi == jezero and stojim_u_leva_lod and not prechod_lock_venek_a_jezero:
         pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
         pygame.draw.rect(okno, (bila), (22, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 700, 352))
@@ -1208,12 +1228,12 @@ while True:
         pygame.draw.rect(okno, bila, (722, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    if pozadi == venek and stojim_u_domu:
+    if pozadi == venek and stojim_u_domu and not prechod_lock_dum_a_venek:
         pygame.draw.rect(okno, cerna, (info_dum_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_dum_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 1380, 352))
         
-    if pozadi == dum and stojim_u_dveri:
+    if pozadi == dum and stojim_u_dveri and not prechod_lock_dum_a_venek:
         pygame.draw.rect(okno, cerna, (729, 339, 52, 52))
         pygame.draw.rect(okno, bila, (730, 340, 50, 50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 20, 352))
@@ -1223,7 +1243,7 @@ while True:
         pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 224, 250,50,50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 224, 263))
     
-    if pozadi == dum and stojim_u_krbu:
+    if pozadi == dum and stojim_u_krbu and not prechod_lock_dum_a_krb:
         pygame.draw.rect(okno, cerna,(info_vnitrek_domu_obrazovka_x - 625, 359,52,52))
         pygame.draw.rect(okno, bila, (info_vnitrek_domu_obrazovka_x - 624, 360,50,50))
         okno.blit(E_text, (info_vnitrek_domu_obrazovka_x + (50/2 - E_text.get_size()[0] / 2) - 624, 372))
@@ -1234,10 +1254,7 @@ while True:
         krb_leave_text = krb_leave_font.render("EXIT", True, cerna)
         okno.blit(krb_leave_text, (697, 543))
     
-
-    print(hrac_pozice_x)
-    
-    if pozadi == venek and stojim_u_cesty_venek and not prechod_lock:
+    if pozadi == venek and stojim_u_cesty_venek and not prechod_lock_venek_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_jezero_obrazovka_x - 1565, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_jezero_obrazovka_x - 1564, 340, 50, 50))
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
@@ -1692,6 +1709,6 @@ while True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     clock.tick(60)
-    pygame.display.update()
+    pygame.display.flip()
     
     
