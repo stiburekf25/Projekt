@@ -57,7 +57,6 @@ info_shop = 920
 info_dum = 190
 info_vnitrek_domu = 750
 
-
 kamera_x = 0
 
 soubor = open("shop.txt", "r", encoding="utf-8")
@@ -225,6 +224,7 @@ buy_baits_velikost = 30
 info_o_baits_velikost = 18
 inventory_baits_tlacitko_velikost = 30
 krb_leave_velikost = 40
+statistika_velikost = 15
 
 
 #pozice polozek v shopu + velikost
@@ -578,6 +578,7 @@ baits_shop_font = pygame.font.SysFont("Aharoni", baits_shop_velikost)
 buy_baits_cena_font = pygame.font.Font("CHAOS16.otf", buy_baits_velikost)
 info_o_baits_font = pygame.font.SysFont("Aharoni", info_o_baits_velikost)
 krb_leave_font = pygame.font.SysFont("Aharoni", krb_leave_velikost)
+statistika_font = pygame.font.SysFont("Aharoni", statistika_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -590,10 +591,65 @@ prechod_lock_dum_a_krb = False
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
+zizen = 100
+hlad = 100
+deprese = 0
+deprese_lvl_1 = True
+deprese_lvl_2 = True
+deprese_lvl_3 = True
+deprese_lvl_4 = True
+deprese_lvl_5 = True
+
+
 while True:
 
-    # OVLADANI HRY HRACEM
+
+    if pozadi != krb:
+        # Postupné snižování hladu a žízně
+        hlad = max(0, hlad - 0.002)
+        zizen = max(0, zizen - 0.002)
+        
+        # Zvyšování deprese podle hladu a žízně
+        if hlad < 70 and zizen < 70 and deprese_lvl_1:
+            deprese_lvl_1 = False
+            deprese += 20
+        if hlad < 50 and zizen < 50 and deprese_lvl_2:
+            deprese_lvl_2 = False
+            deprese += 20
+        if hlad < 30 and zizen < 30 and deprese_lvl_3:
+            deprese_lvl_3 = False
+            deprese += 20
+        if hlad < 20 and zizen < 20 and deprese_lvl_4:
+            deprese_lvl_4 = False
+            deprese += 20
+        if hlad <= 0 and zizen <= 0 and deprese_lvl_5:
+            deprese_lvl_5 = False
+            deprese += 20
+        
+        # Snižování deprese, když se zlepší hlad/žízeň
+        if hlad > 70 and zizen > 70 and not deprese_lvl_1:
+            deprese_lvl_1 = True
+        if hlad > 50 and zizen > 50 and not deprese_lvl_2:
+            deprese_lvl_2 = True
+        if hlad > 30 and zizen > 30 and not deprese_lvl_3:
+            deprese_lvl_3 = True
+        if hlad > 20 and zizen > 20 and not deprese_lvl_4:
+            deprese_lvl_4 = True
+        
+        if hlad >= 100:
+            hlad = 100
+        if zizen >= 100:
+            zizen = 100
+        if deprese < 0:
+            deprese = 0
+                
+
+
+
+    print(hlad, zizen, deprese)
     
+    
+# OVLADANI HRY HRACEM
     mouse_click = False
     
     for udalost in pygame.event.get():
@@ -820,8 +876,13 @@ while True:
         
         if not stojim_u_krbu:
             prechod_lock_dum_a_krb = False
+    
+    if pozadi == krb:
+        if deprese > 0:
+            deprese -= 0.02
+
             
-    if pozadi == krb and krb_leave.collidepoint(mys_pozice) and mouse_click:
+    if pozadi == krb and krb_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
         pozadi = dum
         hrac_rychlost = 4
         hrac_pozice_x = 240
@@ -1214,6 +1275,25 @@ while True:
         okno.blit(pozadi, (-kamera_x, 0))
     else:
         okno.blit(pozadi, (0, 0))
+    
+    if pozadi != shop and pozadi != inventar and not minihra and not prut:
+        pygame.draw.rect(okno, cerna, (4 , 544, 102 , 52))
+        pygame.draw.rect(okno, hneda, (5 , 545, 100 , 50))
+        hlad_text = statistika_font.render(f"{int(hlad)}/100", True, cerna)
+        okno.blit(hlad_text, (5 , 545, 100 , 50))
+        
+        pygame.draw.rect(okno, cerna, (109 , 544, 102 , 52))
+        pygame.draw.rect(okno, modra, (110 , 545, 100 , 50))
+        zizen_text = statistika_font.render(f"{int(zizen)}/100", True, cerna)
+        okno.blit(zizen_text, (110, 545, 100, 50))
+    
+        pygame.draw.rect(okno, cerna, (214 , 544, 102 , 52))
+        pygame.draw.rect(okno, fialova, (215 , 545, 100 , 50))
+        deprese_text = statistika_font.render(f"{int(deprese)}/100", True, cerna)
+        okno.blit(deprese_text, (215, 545, 100, 50))
+
+
+
     
     if pozadi == rozcestnik and stojim_u_auta:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
@@ -1739,7 +1819,6 @@ while True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     
-    print(hrac_pozice_x)
     clock.tick(60)
     pygame.display.flip()
     
