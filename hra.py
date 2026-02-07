@@ -487,18 +487,22 @@ rybareni_dole = pygame.image.load("rybareni_dole.png")
 rybareni_pozor = pygame.image.load("rybareni_pozor.png")
 dum = pygame.image.load("dum.png")
 krb = pygame.image.load("krb.png")
-bar = pygame.image.load("bar.png")
 
+bar = pygame.image.load("bar.png")
 za_bar_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 bar_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
 
 zidle_bar = pygame.image.load("zidle_bar.png")
 zidle_bar_rect = zidle_bar.get_rect(bottomright=(699, 405))
 
-barman = pygame.image.load("barman.png")
+slot_bar = pygame.image.load("slot.png")
+slot_bar_rect = slot_bar.get_rect(topleft=(70, 180))
 
+barman = pygame.image.load("barman.png")
 za_barman_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 barman_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
+
+slotmachine = pygame.image.load("slotmachine.png")
 
 pozadi = rozcestnik
 
@@ -781,6 +785,14 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+        if slot_bar_rect.collidepoint(mys_pozice) and mouse_click and not inventar:
+            pozadi = slotmachine
+            hrac_pozice_x = 0
+            kamera_x = 0
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
     
     if pozadi == barman:
         if barman_exit.collidepoint(mys_pozice) and mouse_click and not inventar:
@@ -790,7 +802,9 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-            
+        
+
+    
         
     #VENEK
     
@@ -1212,9 +1226,9 @@ while True:
                 pozadi = shop
 
     
-    #Omezeni otevirani inv v shopu a v buy and sell
+    #Omezeni otevirani inv v shopu a v buy and sell a v slotmachine
     
-    if pozadi != shop and pozadi != pozadi_shop:
+    if pozadi != shop and pozadi != pozadi_shop and pozadi != slotmachine:
         if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
             inventar = True
             hrac_rychlost = 0
@@ -1268,6 +1282,10 @@ while True:
         
     elif pozadi == bar and zidle_bar_rect.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    elif pozadi == bar and slot_bar_rect.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
         
     elif pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -1275,7 +1293,7 @@ while True:
     elif pozadi == pozadi_shop and leave_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
-    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop and not minihra and not prut:
+    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop and not minihra and not prut and pozadi != slotmachine:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
     elif tlacitko.collidepoint(mys_pozice) and inventar:
@@ -1355,7 +1373,7 @@ while True:
     else:
         okno.blit(pozadi, (0, 0))
     
-    if pozadi != shop and pozadi != inventar and not minihra and not prut and pozadi != bar and pozadi != barman:
+    if pozadi != shop and pozadi != inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine:
         pygame.draw.rect(okno, cerna, (4 , 544, 102 , 52))
         pygame.draw.rect(okno, hneda, (5 , 545, 100 , 50))
         hlad_text = statistika_font.render(f"{int(hlad)}/100", True, cerna)
@@ -1378,6 +1396,7 @@ while True:
         okno.blit(exit_bar_text, (36, 543))
         
         okno.blit(zidle_bar, zidle_bar_rect)
+        okno.blit(slot_bar, slot_bar_rect)
     
     if pozadi == barman:
         pygame.draw.rect(okno, cerna, za_barman_exit)
@@ -1460,7 +1479,7 @@ while True:
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
-    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman:
+    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman and pozadi != slotmachine:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
           
     if pozadi == shop and shop_mode is None:
@@ -1740,7 +1759,7 @@ while True:
     okno.blit(coins_text, (55, 20))
     okno.blit(coin_ikona, (20, 20))
     
-    if not inventar and pozadi != shop and pozadi != pozadi_shop and not prut and not minihra:
+    if not inventar and pozadi != shop and pozadi != pozadi_shop and not prut and not minihra and pozadi != slotmachine:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
