@@ -623,9 +623,40 @@ hlad_ikona = pygame.image.load("hlad.png")
 zizen_ikona = pygame.image.load("zizen.png")
 deprese_ikona = pygame.image.load("deprese.png")
 
+za_zapnuti_statistik = pygame.draw.rect(okno, cerna, (359, 564, 82, 32))
+zapnuti_statistik = pygame.draw.rect(okno, hneda, (360, 565, 80, 30))
+zapnuti_statistik_ikona = pygame.image.load("zapnuti.png")
+zapnuti = False
+
+za_vypnuti_statistik = pygame.draw.rect(okno, cerna, (359, 4, 82, 32))
+vypnuti_statistik = pygame.draw.rect(okno, hneda, (360, 5, 80, 30))
+vypnuti_statistik_ikona = pygame.image.load("vypnuti.png")
+
+zapnuti_statistik_rybareni = pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
+
 
 while True:
 
+    
+    
+# OVLADANI HRY HRACEM
+    mouse_click = False
+    
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+            
+        if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
+            mouse_click = True
+    
+    hrac_obrazovka_x = hrac_pozice_x - kamera_x
+    
+    stisknuto = pygame.key.get_pressed()
+    mys_pozice = pygame.mouse.get_pos()
+
+    
+    
 
     if pozadi != krb:
         # Postupné snižování hladu a žízně
@@ -666,23 +697,14 @@ while True:
         if deprese < 0:
             deprese = 0
     
-    
-# OVLADANI HRY HRACEM
-    mouse_click = False
-    
-    for udalost in pygame.event.get():
-        if udalost.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-            
-        if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
-            mouse_click = True
-    
-    hrac_obrazovka_x = hrac_pozice_x - kamera_x
-    
-    stisknuto = pygame.key.get_pressed()
-    mys_pozice = pygame.mouse.get_pos()
-    #klik = pygame.mouse.get_pressed()
+    if pozadi == rybareni and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and mouse_click and not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+        zapnuti = True
+
+    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi != rybareni and not prut and not minihra:
+        zapnuti = True
+        
+    if zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy":
+        zapnuti = False
 
     
     # UPRAVA HRY MEZI FRAMY
@@ -904,8 +926,8 @@ while True:
     stojim_u_dveri = hrac_pozice_x > 560 and hrac_pozice_x < 800
     stojim_u_postele = hrac_pozice_x > 400 and hrac_pozice_x < 540
     stojim_u_krbu = hrac_pozice_x > 110 and hrac_pozice_x < 230
-    za_krb_leave = pygame.draw.rect(okno, cerna, (679, 529, 102, 52))
-    krb_leave = pygame.draw.rect(okno, hneda, (680, 530, 100, 50))
+    za_krb_leave = pygame.draw.rect(okno, cerna, (679, 479, 102, 52))
+    krb_leave = pygame.draw.rect(okno, hneda, (680, 480, 100, 50))
     
     if pozadi == dum:
         
@@ -1279,6 +1301,15 @@ while True:
     if pozadi == pozadi_shop and leave_buy.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
+    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif not zapnuti and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    elif zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+         
     elif pozadi == bar and bar_exit.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
@@ -1378,24 +1409,48 @@ while True:
     else:
         okno.blit(pozadi, (0, 0))
     
-    if pozadi != shop and pozadi != inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine:
+    if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut:
+        if pozadi == rybareni:
+            pygame.draw.rect(okno, cerna, (4, 564, 82, 32))
+            pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
+            okno.blit(zapnuti_statistik_ikona, (5, 565, 80, 30))
+        else:
+            pygame.draw.rect(okno, cerna, za_zapnuti_statistik)
+            pygame.draw.rect(okno, hneda, zapnuti_statistik)
+            okno.blit(zapnuti_statistik_ikona, (360, 565, 80, 30))
+
+            
+    
+    if zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+        pygame.draw.rect(okno, cerna, za_vypnuti_statistik)
+        pygame.draw.rect(okno, hneda, vypnuti_statistik)
+        okno.blit(vypnuti_statistik_ikona, (360, 5, 80, 30))
+
+    if zapnuti and pozadi != shop and not inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine:
         pygame.draw.rect(okno, cerna, (4 , 544, 102 , 52))
         pygame.draw.rect(okno, Shneda, (5 , 545, 100 , 50))
-        hlad_text = statistika_font.render(f"{int(hlad)}/100", True, cerna)
+        hlad_info = statistika_font.render(f"{int(hlad)}/100", True, cerna)
+        hlad_text = statistika_font.render("Hunger:", True, cerna)
         okno.blit(hlad_ikona, (5 , 542, 100 , 50))
-        okno.blit(hlad_text, (53 , 565, 100 , 50))
+        okno.blit(hlad_info, (53 , 565, 100 , 50))
+        okno.blit(hlad_text, (51 , 545, 100 , 50))
         
         pygame.draw.rect(okno, cerna, (109 , 544, 102 , 52))
         pygame.draw.rect(okno, modra, (110 , 545, 100 , 50))
-        zizen_text = statistika_font.render(f"{int(zizen)}/100", True, cerna)
+        zizen_info = statistika_font.render(f"{int(zizen)}/100", True, cerna)
+        zizen_text = statistika_font.render("Thirst:", True, cerna)
         okno.blit(zizen_ikona, (110 , 545, 100 , 50))
-        okno.blit(zizen_text, (158, 565, 100, 50))
+        okno.blit(zizen_info, (158, 565, 100, 50))
+        okno.blit(zizen_text, (158, 545, 100, 50))
     
         pygame.draw.rect(okno, cerna, (694 , 544, 102 , 52))
         pygame.draw.rect(okno, fialova, (695 , 545, 100 , 50))
-        deprese_text = statistika_font.render(f"{int(deprese)}/100", True, cerna)
+        deprese_info = statistika_font.render(f"{int(deprese)}/100", True, cerna)
+        deprese_text = statistika_font.render("Misery:", True, cerna)
         okno.blit(deprese_ikona, (695 , 545, 100 , 50))
-        okno.blit(deprese_text, (695 + 48, 565, 100, 50))
+        okno.blit(deprese_info, (695 + 48, 565, 100, 50))
+        okno.blit(deprese_text, (695 + 48, 545, 100, 50))
+
     
     if pozadi == bar:
         pygame.draw.rect(okno, cerna, za_bar_exit)
@@ -1479,7 +1534,7 @@ while True:
         pygame.draw.rect(okno, cerna, za_krb_leave)
         pygame.draw.rect(okno, hneda, krb_leave)
         krb_leave_text = krb_leave_font.render("EXIT", True, cerna)
-        okno.blit(krb_leave_text, (697, 543))
+        okno.blit(krb_leave_text, (697, 493))
     
     if pozadi == venek and stojim_u_cesty_venek and not prechod_lock_venek_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_jezero_obrazovka_x - 1565, 339, 52, 52))
@@ -1907,7 +1962,7 @@ while True:
     if pozadi == rybareni and not prut and not minihra and not inventar:
         if posledni_ulovek and pygame.time.get_ticks() - posledni_ulovek_cas < posledni_ulovek_doba:
                 x = 640
-                y = 480
+                y = 440
                 okno.blit(posledni_ulovek["obrazek"], (x, y))
                 okno.blit(plus_ikona, (x - 40, y + 25))
  
