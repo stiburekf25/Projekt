@@ -85,6 +85,7 @@ cerna = (0, 0, 0)
 bila = (255, 255, 255)
 seda = (94, 94, 94)
 hneda = (148, 96, 56)
+Shneda = (173, 112, 66)
 Sseda = (158, 158, 158)
 cervena = (191, 53, 21)
 zelena = (29, 166, 14)
@@ -224,7 +225,7 @@ buy_baits_velikost = 30
 info_o_baits_velikost = 18
 inventory_baits_tlacitko_velikost = 30
 krb_leave_velikost = 40
-statistika_velikost = 15
+statistika_velikost = 20
 exit_bar_velikost = 40
 
 
@@ -504,6 +505,7 @@ barman_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
 
+
 pozadi = rozcestnik
 
 pozadi_sirka = pozadi.get_width()
@@ -617,6 +619,9 @@ deprese_lvl_2 = True
 deprese_lvl_3 = True
 deprese_lvl_4 = True
 deprese_lvl_5 = True
+hlad_ikona = pygame.image.load("hlad.png")
+zizen_ikona = pygame.image.load("zizen.png")
+deprese_ikona = pygame.image.load("deprese.png")
 
 
 while True:
@@ -1375,19 +1380,22 @@ while True:
     
     if pozadi != shop and pozadi != inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine:
         pygame.draw.rect(okno, cerna, (4 , 544, 102 , 52))
-        pygame.draw.rect(okno, hneda, (5 , 545, 100 , 50))
+        pygame.draw.rect(okno, Shneda, (5 , 545, 100 , 50))
         hlad_text = statistika_font.render(f"{int(hlad)}/100", True, cerna)
-        okno.blit(hlad_text, (5 , 545, 100 , 50))
+        okno.blit(hlad_ikona, (5 , 542, 100 , 50))
+        okno.blit(hlad_text, (53 , 565, 100 , 50))
         
         pygame.draw.rect(okno, cerna, (109 , 544, 102 , 52))
         pygame.draw.rect(okno, modra, (110 , 545, 100 , 50))
         zizen_text = statistika_font.render(f"{int(zizen)}/100", True, cerna)
-        okno.blit(zizen_text, (110, 545, 100, 50))
+        okno.blit(zizen_ikona, (110 , 545, 100 , 50))
+        okno.blit(zizen_text, (158, 565, 100, 50))
     
-        pygame.draw.rect(okno, cerna, (214 , 544, 102 , 52))
-        pygame.draw.rect(okno, fialova, (215 , 545, 100 , 50))
+        pygame.draw.rect(okno, cerna, (694 , 544, 102 , 52))
+        pygame.draw.rect(okno, fialova, (695 , 545, 100 , 50))
         deprese_text = statistika_font.render(f"{int(deprese)}/100", True, cerna)
-        okno.blit(deprese_text, (215, 545, 100, 50))
+        okno.blit(deprese_ikona, (695 , 545, 100 , 50))
+        okno.blit(deprese_text, (695 + 48, 565, 100, 50))
     
     if pozadi == bar:
         pygame.draw.rect(okno, cerna, za_bar_exit)
