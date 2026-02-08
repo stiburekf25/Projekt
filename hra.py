@@ -500,8 +500,8 @@ slot_bar = pygame.image.load("slot.png")
 slot_bar_rect = slot_bar.get_rect(topleft=(70, 180))
 
 barman = pygame.image.load("barman.png")
-za_barman_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
-barman_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
+za_barman_exit = pygame.draw.rect(okno, cerna, (9, 539 , 102, 52))
+barman_exit = pygame.draw.rect(okno, hneda, (10, 540 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
 
@@ -634,6 +634,32 @@ vypnuti_statistik_ikona = pygame.image.load("vypnuti.png")
 
 zapnuti_statistik_rybareni = pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
 
+
+#BAR SHOP
+bar_polozky_velikost_x = 110
+bar_polozky_velikost_y = 110
+
+za_voda_buy = pygame.draw.rect(okno, cerna, (77, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+voda_buy = pygame.draw.rect(okno, hneda, (78, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+
+za_dzus_buy = pygame.draw.rect(okno, cerna, (255, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+dzus_buy = pygame.draw.rect(okno, hneda, (256, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+
+za_cola_buy = pygame.draw.rect(okno, cerna, (433, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+cola_buy = pygame.draw.rect(okno, hneda, (434, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+
+za_pivo_buy = pygame.draw.rect(okno, cerna, (611, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+pivo_buy = pygame.draw.rect(okno, hneda, (612, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+
+voda_cena = 15
+dzus_cena = 30
+cola_cena = 50
+pivo_cena = 75
+
+voda = pygame.image.load("voda.png")
+dzus = pygame.image.load("dzus.png")
+cola = pygame.image.load("cola.png")
+pivo = pygame.image.load("pivo.png")
 
 while True:
 
@@ -829,6 +855,29 @@ while True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+        if voda_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= voda_cena:
+                zizen += 20
+                coins -= voda_cena
+        
+        if dzus_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= dzus_cena:
+                zizen += 40
+                coins -= dzus_cena
+        
+        if cola_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= cola_cena:
+                zizen += 40
+                hlad += 10
+                coins -= cola_cena
+        
+        if pivo_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= pivo_cena:
+                zizen += 100
+                hlad += 20
+                coins -= pivo_cena
+            
         
 
     
@@ -1321,8 +1370,20 @@ while True:
 
     elif pozadi == bar and slot_bar_rect.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-
+    
+    elif pozadi == barman and voda_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
+    elif pozadi == barman and dzus_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == barman and cola_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    elif pozadi == barman and pivo_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    
     elif pozadi == shop and (buy.collidepoint(mys_pozice) or sell.collidepoint(mys_pozice) or leave.collidepoint(mys_pozice)):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
@@ -1465,7 +1526,39 @@ while True:
         pygame.draw.rect(okno, cerna, za_barman_exit)
         pygame.draw.rect(okno, hneda, barman_exit)
         exit_barman_text = exit_bar_font.render("EXIT", True, cerna)
-        okno.blit(exit_barman_text, (36, 543))
+        okno.blit(exit_barman_text, (26, 553))
+        
+        pygame.draw.rect(okno, cerna, za_voda_buy)
+        pygame.draw.rect(okno, hneda, voda_buy)
+        okno.blit(voda, (voda_buy))
+        
+        pygame.draw.rect(okno, cerna, za_dzus_buy)
+        pygame.draw.rect(okno, hneda, dzus_buy)
+        okno.blit(dzus, (dzus_buy))
+        
+        pygame.draw.rect(okno, cerna, za_cola_buy)
+        pygame.draw.rect(okno, hneda, cola_buy)
+        okno.blit(cola, (cola_buy))
+        
+        pygame.draw.rect(okno, cerna, za_pivo_buy)
+        pygame.draw.rect(okno, hneda, pivo_buy)
+        okno.blit(pivo, (620, 414))
+        
+        pygame.draw.rect(okno, cerna, (649 , 544, 102 , 52))
+        pygame.draw.rect(okno, Shneda, (650 , 545, 100 , 50))
+        hlad_info = statistika_font.render(f"{int(hlad)}/100", True, cerna)
+        hlad_text = statistika_font.render("Hunger:", True, cerna)
+        okno.blit(hlad_ikona, (650 , 542, 100 , 50))
+        okno.blit(hlad_info, (698 , 565, 100 , 50))
+        okno.blit(hlad_text, (696 , 545, 100 , 50))
+        
+        pygame.draw.rect(okno, cerna, (539 , 544, 102 , 52))
+        pygame.draw.rect(okno, modra, (540 , 545, 100 , 50))
+        zizen_info = statistika_font.render(f"{int(zizen)}/100", True, cerna)
+        zizen_text = statistika_font.render("Thirst:", True, cerna)
+        okno.blit(zizen_ikona, (540 , 545, 100 , 50))
+        okno.blit(zizen_info, (588, 565, 100, 50))
+        okno.blit(zizen_text, (586, 545, 100, 50))
         
     if pozadi == rozcestnik and stojim_u_auta:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
