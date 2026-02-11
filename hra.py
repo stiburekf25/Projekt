@@ -227,7 +227,8 @@ inventory_baits_tlacitko_velikost = 30
 krb_leave_velikost = 40
 statistika_velikost = 20
 exit_bar_velikost = 40
-
+info_barman_velikost = 30
+drink_cena_velikost = 30
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -494,14 +495,14 @@ za_bar_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 bar_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
 
 zidle_bar = pygame.image.load("zidle_bar.png")
-zidle_bar_rect = zidle_bar.get_rect(bottomright=(699, 405))
+zidle_bar_rect = zidle_bar.get_rect(bottomright=(699, 380))
 
 slot_bar = pygame.image.load("slot.png")
 slot_bar_rect = slot_bar.get_rect(topleft=(70, 180))
 
 barman = pygame.image.load("barman.png")
-za_barman_exit = pygame.draw.rect(okno, cerna, (9, 539 , 102, 52))
-barman_exit = pygame.draw.rect(okno, hneda, (10, 540 , 100, 50))
+za_barman_exit = pygame.draw.rect(okno, cerna, (9, 544 , 102, 52))
+barman_exit = pygame.draw.rect(okno, hneda, (10, 545 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
 
@@ -599,6 +600,8 @@ info_o_baits_font = pygame.font.SysFont("Aharoni", info_o_baits_velikost)
 krb_leave_font = pygame.font.SysFont("Aharoni", krb_leave_velikost)
 statistika_font = pygame.font.SysFont("Aharoni", statistika_velikost)
 exit_bar_font = pygame.font.SysFont("Aharoni", exit_bar_velikost)
+info_barman_font = pygame.font.SysFont("Aharoni", info_barman_velikost)
+drink_cena_font = pygame.font.Font("CHAOS16.otf", drink_cena_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -636,25 +639,37 @@ zapnuti_statistik_rybareni = pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
 
 
 #BAR SHOP
-bar_polozky_velikost_x = 110
-bar_polozky_velikost_y = 110
+bar_polozky_velikost_x = 120
+bar_polozky_velikost_y = 158
 
-za_voda_buy = pygame.draw.rect(okno, cerna, (77, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
-voda_buy = pygame.draw.rect(okno, hneda, (78, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+za_voda_buy = pygame.draw.rect(okno, cerna, (67, 379, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+voda_buy = pygame.draw.rect(okno, hneda, (68, 380, bar_polozky_velikost_x, bar_polozky_velikost_y))
 
-za_dzus_buy = pygame.draw.rect(okno, cerna, (255, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
-dzus_buy = pygame.draw.rect(okno, hneda, (256, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+za_dzus_buy = pygame.draw.rect(okno, cerna, (245, 379, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+dzus_buy = pygame.draw.rect(okno, hneda, (246, 380, bar_polozky_velikost_x, bar_polozky_velikost_y))
 
-za_cola_buy = pygame.draw.rect(okno, cerna, (433, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
-cola_buy = pygame.draw.rect(okno, hneda, (434, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+za_cola_buy = pygame.draw.rect(okno, cerna, (423, 379, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+cola_buy = pygame.draw.rect(okno, hneda, (424, 380, bar_polozky_velikost_x, bar_polozky_velikost_y))
 
-za_pivo_buy = pygame.draw.rect(okno, cerna, (611, 409, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
-pivo_buy = pygame.draw.rect(okno, hneda, (612, 410, bar_polozky_velikost_x, bar_polozky_velikost_y))
+za_pivo_buy = pygame.draw.rect(okno, cerna, (601, 379, bar_polozky_velikost_x + 2, bar_polozky_velikost_y + 2))
+pivo_buy = pygame.draw.rect(okno, hneda, (602, 380, bar_polozky_velikost_x, bar_polozky_velikost_y))
 
 voda_cena = 15
 dzus_cena = 30
 cola_cena = 50
 pivo_cena = 75
+
+zizen_voda = 20
+hlad_voda = 0
+
+zizen_dzus = 40
+hlad_dzus = 0
+
+zizen_cola = 40
+hlad_cola = 10
+
+zizen_pivo = 100
+hlad_pivo = 20
 
 voda = pygame.image.load("voda.png")
 dzus = pygame.image.load("dzus.png")
@@ -858,24 +873,26 @@ while True:
         
         if voda_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= voda_cena:
-                zizen += 20
+                zizen += zizen_voda
+                hlad += hlad_voda
                 coins -= voda_cena
         
         if dzus_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= dzus_cena:
-                zizen += 40
+                zizen += zizen_dzus
+                hlad += hlad_dzus
                 coins -= dzus_cena
         
         if cola_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= cola_cena:
-                zizen += 40
-                hlad += 10
+                zizen += zizen_cola
+                hlad += hlad_cola
                 coins -= cola_cena
         
         if pivo_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= pivo_cena:
-                zizen += 100
-                hlad += 20
+                zizen += zizen_pivo
+                hlad += hlad_pivo
                 coins -= pivo_cena
             
         
@@ -1526,23 +1543,59 @@ while True:
         pygame.draw.rect(okno, cerna, za_barman_exit)
         pygame.draw.rect(okno, hneda, barman_exit)
         exit_barman_text = exit_bar_font.render("EXIT", True, cerna)
-        okno.blit(exit_barman_text, (26, 553))
+        okno.blit(exit_barman_text, (26, 558))
         
         pygame.draw.rect(okno, cerna, za_voda_buy)
         pygame.draw.rect(okno, hneda, voda_buy)
-        okno.blit(voda, (voda_buy))
+        okno.blit(voda, (82, 380))
+        voda_text = info_barman_font.render("water", True, cerna)
+        okno.blit(voda_text, (100, 431))
+        voda_cena_text = drink_cena_font.render(f"{voda_cena}", True, zluta)
+        okno.blit(voda_cena_text, (102, 502))
+        okno.blit(coin_ikona, (132, 502))
+        statistika_zizne_voda_text = statistika_font.render(f"Thirst: +{zizen_voda}", True, cerna)
+        okno.blit(statistika_zizne_voda_text, (77, 458))
+        statistika_hladu_voda_text = statistika_font.render(f"Hunger: +{hlad_voda}", True, cerna)
+        okno.blit(statistika_hladu_voda_text, (77, 478))
         
         pygame.draw.rect(okno, cerna, za_dzus_buy)
         pygame.draw.rect(okno, hneda, dzus_buy)
-        okno.blit(dzus, (dzus_buy))
-        
+        okno.blit(dzus, (260, 380))
+        dzus_text = info_barman_font.render("juice", True, cerna)
+        okno.blit(dzus_text, (284, 431))
+        dzus_cena_text = drink_cena_font.render(f"{dzus_cena}", True, zluta)
+        okno.blit(dzus_cena_text, (280, 502))
+        okno.blit(coin_ikona, (310, 502))
+        statistika_zizne_dzus_text = statistika_font.render(f"Thirst: +{zizen_dzus}", True, cerna)
+        okno.blit(statistika_zizne_dzus_text, (255, 458))
+        statistika_hladu_dzus_text = statistika_font.render(f"Hunger: +{hlad_dzus}", True, cerna)
+        okno.blit(statistika_hladu_dzus_text,  (255, 478))
+
         pygame.draw.rect(okno, cerna, za_cola_buy)
         pygame.draw.rect(okno, hneda, cola_buy)
-        okno.blit(cola, (cola_buy))
+        okno.blit(cola, (438, 380))
+        cola_text = info_barman_font.render("cola", True, cerna)
+        okno.blit(cola_text, (464, 431))
+        cola_cena_text = drink_cena_font.render(f"{cola_cena}", True, zluta)
+        okno.blit(cola_cena_text, (460, 502))
+        okno.blit(coin_ikona, (490, 502))
+        statistika_zizne_cola_text = statistika_font.render(f"Thirst: +{zizen_cola}", True, cerna)
+        okno.blit(statistika_zizne_cola_text, (434, 458))
+        statistika_hladu_cola_text = statistika_font.render(f"Hunger: +{hlad_cola}", True, cerna)
+        okno.blit(statistika_hladu_cola_text, (434, 478))
         
         pygame.draw.rect(okno, cerna, za_pivo_buy)
         pygame.draw.rect(okno, hneda, pivo_buy)
-        okno.blit(pivo, (620, 414))
+        okno.blit(pivo, (616, 382))
+        pivo_text = info_barman_font.render("beer 0%", True, cerna)
+        okno.blit(pivo_text, (630, 431))
+        pivo_cena_text = drink_cena_font.render(f"{pivo_cena}", True, zluta)
+        okno.blit(pivo_cena_text, (640, 502))
+        okno.blit(coin_ikona, (670, 502))
+        statistika_zizne_piva_text = statistika_font.render(f"Thirst: +{zizen_pivo}", True, cerna)
+        okno.blit(statistika_zizne_piva_text, (610, 458))
+        statistika_hladu_pivo_text = statistika_font.render(f"Hunger: +{hlad_pivo}", True, cerna)
+        okno.blit(statistika_hladu_pivo_text, (610, 478))
         
         pygame.draw.rect(okno, cerna, (649 , 544, 102 , 52))
         pygame.draw.rect(okno, Shneda, (650 , 545, 100 , 50))
