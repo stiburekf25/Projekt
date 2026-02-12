@@ -48,6 +48,7 @@ okno_vyska = 600
 hrac_pozice_x = 380
 hrac_pozice_y = 315
 hrac_rychlost = 4
+hrac_aktualni_rychlost = 4
 hrac_velikostX= 110
 hrac_velikostY = 170
 
@@ -617,11 +618,19 @@ prechod_lock_dum_a_krb = False
 zizen = 100
 hlad = 100
 deprese = 0
-deprese_lvl_1 = True
-deprese_lvl_2 = True
-deprese_lvl_3 = True
-deprese_lvl_4 = True
-deprese_lvl_5 = True
+
+hlad_flag_60 = False
+hlad_flag_40 = False
+hlad_flag_30 = False
+hlad_flag_20 = False
+hlad_flag_0 = False
+
+zizen_flag_60 = False
+zizen_flag_40 = False
+zizen_flag_30 = False
+zizen_flag_20 = False
+zizen_flag_0 = False
+
 hlad_ikona = pygame.image.load("hlad.png")
 zizen_ikona = pygame.image.load("zizen.png")
 deprese_ikona = pygame.image.load("deprese.png")
@@ -701,42 +710,80 @@ while True:
 
     if pozadi != krb:
         # Postupné snižování hladu a žízně
-        hlad = max(0, hlad - 0.002)
-        zizen = max(0, zizen - 0.002)
-        
-        # Zvyšování deprese podle hladu a žízně
-        if hlad < 70 and zizen < 70 and deprese_lvl_1:
-            deprese_lvl_1 = False
-            deprese += 20
-        if hlad < 50 and zizen < 50 and deprese_lvl_2:
-            deprese_lvl_2 = False
-            deprese += 20
-        if hlad < 30 and zizen < 30 and deprese_lvl_3:
-            deprese_lvl_3 = False
-            deprese += 20
-        if hlad < 20 and zizen < 20 and deprese_lvl_4:
-            deprese_lvl_4 = False
-            deprese += 20
-        if hlad <= 0 and zizen <= 0 and deprese_lvl_5:
-            deprese_lvl_5 = False
-            deprese += 20
-        
-        # Snižování deprese, když se zlepší hlad/žízeň
-        if hlad > 70 and zizen > 70 and not deprese_lvl_1:
-            deprese_lvl_1 = True
-        if hlad > 50 and zizen > 50 and not deprese_lvl_2:
-            deprese_lvl_2 = True
-        if hlad > 30 and zizen > 30 and not deprese_lvl_3:
-            deprese_lvl_3 = True
-        if hlad > 20 and zizen > 20 and not deprese_lvl_4:
-            deprese_lvl_4 = True
-        
-        if hlad >= 100:
-            hlad = 100
-        if zizen >= 100:
-            zizen = 100
-        if deprese < 0:
-            deprese = 0
+        hlad = max(0, hlad - 0.02)
+        zizen = max(0, zizen - 0.02)
+
+    if hlad < 60 and not hlad_flag_60:
+            deprese += 5
+            hlad_flag_60 = True
+    if hlad < 40 and not hlad_flag_40:
+        deprese += 10
+        hlad_flag_40 = True
+    if hlad < 30 and not hlad_flag_30:
+        deprese += 20
+        hlad_flag_30 = True
+    if hlad < 20 and not hlad_flag_20:
+        deprese += 25
+        hlad_flag_20 = True
+    if hlad == 0 and not hlad_flag_0:
+        deprese += 50
+        hlad_flag_0 = True
+    
+    if zizen < 60 and not zizen_flag_60:
+        deprese += 5
+        zizen_flag_60 = True
+    if zizen < 40 and not zizen_flag_40:
+        deprese += 10
+        zizen_flag_40 = True
+    if zizen < 30 and not zizen_flag_30:
+        deprese += 20
+        zizen_flag_30 = True
+    if zizen < 20 and not zizen_flag_20:
+        deprese += 25
+        zizen_flag_20 = True
+    if zizen == 0 and not zizen_flag_0:
+        deprese += 50
+        zizen_flag_0 = True
+    
+    if hlad >= 60:
+        hlad_flag_60 = False
+    if hlad >= 40:
+        hlad_flag_40 = False
+    if hlad >= 30:
+        hlad_flag_30 = False
+    if hlad >= 20:
+        hlad_flag_20 = False
+    if hlad > 0:
+        hlad_flag_0 = False
+    
+    if zizen >= 60:
+        zizen_flag_60 = False
+    if zizen >= 40:
+        zizen_flag_40 = False
+    if zizen >= 30:
+        zizen_flag_30 = False
+    if zizen >= 20:
+        zizen_flag_20 = False
+    if zizen > 0:
+        zizen_flag_0 = False
+    
+    hlad = min(100, max(0, hlad))
+    zizen = min(100, max(0, zizen))
+    deprese = min(100, max(0, deprese))
+    
+    if zizen > 70:
+        hrac_aktualni_rychlost = hrac_rychlost
+    elif zizen > 50:
+        hrac_aktualni_rychlost = hrac_rychlost * 0.75
+    elif zizen > 30:
+        hrac_aktualni_rychlost = hrac_rychlost * 0.625
+    elif zizen > 15:
+        hrac_aktualni_rychlost = hrac_rychlost * 0.5
+    else:
+        hrac_aktualni_rychlost = hrac_rychlost * 0.25
+    
+    
+
     
     if pozadi == rybareni and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and mouse_click and not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
         zapnuti = True
@@ -764,7 +811,7 @@ while True:
 
         else:
             aktualni_sprite = TEXTURApepa2
-        hrac_pozice_x += hrac_rychlost
+        hrac_pozice_x += hrac_aktualni_rychlost
 
     elif stisknuto[pygame.K_a]:
         if pocitadlo % (pocet_snimku * faktor_zpozdeni) < faktor_zpozdeni:
@@ -772,7 +819,7 @@ while True:
 
         else:
             aktualni_sprite = TEXTURApepa_2
-        hrac_pozice_x -= hrac_rychlost
+        hrac_pozice_x -= hrac_aktualni_rychlost
         
         
     # ROZCESTNIK
@@ -783,9 +830,9 @@ while True:
             hrac_pozice_x = pozadi_sirka - hrac_velikostX - 118
             
         if hrac_obrazovka_x > prava_zona:
-            kamera_x += hrac_rychlost
+            kamera_x += hrac_aktualni_rychlost
         if hrac_obrazovka_x < leva_zona:
-            kamera_x -= hrac_rychlost
+            kamera_x -= hrac_aktualni_rychlost
             
         if kamera_x < 0:
             kamera_x = 0
@@ -909,9 +956,9 @@ while True:
                 
             
         if hrac_obrazovka_x > prava_zona:
-            kamera_x += hrac_rychlost
+            kamera_x += hrac_aktualni_rychlost
         if hrac_obrazovka_x < leva_zona:
-            kamera_x -= hrac_rychlost
+            kamera_x -= hrac_aktualni_rychlost
                 
         if kamera_x < 0:
             kamera_x = 0
@@ -1528,6 +1575,9 @@ while True:
         okno.blit(deprese_ikona, (695 , 545, 100 , 50))
         okno.blit(deprese_info, (695 + 48, 565, 100, 50))
         okno.blit(deprese_text, (695 + 48, 545, 100, 50))
+        
+        pygame.draw.rect(okno, cerna, (259, 544, 282, 52))
+        pygame.draw.rect(okno, hneda, (260, 545, 280, 50))
 
     
     if pozadi == bar:
