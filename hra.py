@@ -18,6 +18,59 @@ def vyber_predmet(predmety, bait):
             return p.copy()
     else:
         return predmety[-1].copy()
+
+def penalizace_cekani_z_hladu():
+    if hlad > 70:
+        return 0
+    elif hlad > 50:
+        return 2000
+    elif hlad > 30:
+        return 4000
+    elif hlad > 15:
+        return 5000
+    else:
+        return 7000
+
+def rychlost_na_text():
+    if hrac_aktualni_rychlost == hrac_rychlost:
+        return "Normal"
+    elif hrac_aktualni_rychlost >= hrac_rychlost * 0.75:
+        return "Slow"
+    elif hrac_aktualni_rychlost >= hrac_rychlost * 0.625:
+        return "Very slow"
+    elif hrac_aktualni_rychlost >= hrac_rychlost * 0.5:
+        return "Exhausted"
+    elif hrac_aktualni_rychlost >= hrac_rychlost * 0.25:
+        return "Critical"
+    
+def penalizace_kliknuti_z_deprese():
+    if deprese < 10:
+        return 0
+    elif deprese < 20:
+        return 1
+    elif deprese < 30:
+        return 2
+    elif deprese < 40:
+        return 3
+    elif deprese < 50:
+        return 4
+    elif deprese < 60:
+        return 5
+    elif deprese < 70:
+        return 6
+    elif deprese < 80:
+        return 7
+    elif deprese < 90:
+        return 8
+    elif deprese < 100:
+        return 9
+    else:
+        return 10
+    
+    
+    
+    
+    
     
 def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
@@ -717,32 +770,32 @@ while True:
             deprese += 5
             hlad_flag_60 = True
     if hlad < 40 and not hlad_flag_40:
-        deprese += 10
+        deprese += 5
         hlad_flag_40 = True
     if hlad < 30 and not hlad_flag_30:
-        deprese += 20
+        deprese += 10
         hlad_flag_30 = True
     if hlad < 20 and not hlad_flag_20:
-        deprese += 25
+        deprese += 15
         hlad_flag_20 = True
     if hlad == 0 and not hlad_flag_0:
-        deprese += 50
+        deprese += 25
         hlad_flag_0 = True
     
     if zizen < 60 and not zizen_flag_60:
         deprese += 5
         zizen_flag_60 = True
     if zizen < 40 and not zizen_flag_40:
-        deprese += 10
+        deprese += 5
         zizen_flag_40 = True
     if zizen < 30 and not zizen_flag_30:
-        deprese += 20
+        deprese += 10
         zizen_flag_30 = True
     if zizen < 20 and not zizen_flag_20:
-        deprese += 25
+        deprese += 15
         zizen_flag_20 = True
     if zizen == 0 and not zizen_flag_0:
-        deprese += 50
+        deprese += 25
         zizen_flag_0 = True
     
     if hlad >= 60:
@@ -781,10 +834,7 @@ while True:
         hrac_aktualni_rychlost = hrac_rychlost * 0.5
     else:
         hrac_aktualni_rychlost = hrac_rychlost * 0.25
-    
-    
-
-    
+            
     if pozadi == rybareni and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and mouse_click and not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
         zapnuti = True
 
@@ -1176,9 +1226,12 @@ while True:
             pozadi_vyska = pozadi.get_height()
             prut = True
             zpet_tlacitko = False
+            
             ulovek = vyber_predmet(predmety, baits_mode)
             ulovek["cekani"] += baits_mode["cekani"]
             ulovek["zmacknuti"] += baits_mode["zmacknuti"]
+            ulovek["cekani"] += penalizace_cekani_z_hladu()
+            ulovek["zmacknuti"] += penalizace_kliknuti_z_deprese()
             cas_nahozeni = pygame.time.get_ticks()
         else:
             plny_inventar_upozorneni = True
@@ -1578,8 +1631,22 @@ while True:
         
         pygame.draw.rect(okno, cerna, (259, 544, 282, 52))
         pygame.draw.rect(okno, hneda, (260, 545, 280, 50))
-
-    
+        okno.blit(hlad_text, (265 , 545, 100 , 50))
+        okno.blit(zizen_text, (370, 545, 100, 50))
+        okno.blit(deprese_text, (460, 545, 100, 50))
+        hlad_dopad_text = statistika_font.render("Waiting time:", True , cerna)
+        hlad_dopad_cislo_text = statistika_font.render(f"+{penalizace_cekani_z_hladu()/1000}s", True, cerna)
+        okno.blit(hlad_dopad_text, (265 , 560))
+        okno.blit(hlad_dopad_cislo_text, (265 , 575))
+        zizen_dopad_text = statistika_font.render("Movement:", True, cerna)
+        zizen_dopad_rychlost_text = statistika_font.render(f"{rychlost_na_text()}", True, cerna)
+        okno.blit(zizen_dopad_text, (370, 560))
+        okno.blit(zizen_dopad_rychlost_text, (370, 575))
+        deprese_dopad_text = statistika_font.render("More clicks:", True, cerna)
+        deprese_dopad_cislo_text = statistika_font.render(f"+{penalizace_kliknuti_z_deprese()}", True, cerna)
+        okno.blit(deprese_dopad_text, (460, 560))
+        okno.blit(deprese_dopad_cislo_text, (460, 575))
+        
     if pozadi == bar:
         pygame.draw.rect(okno, cerna, za_bar_exit)
         pygame.draw.rect(okno, hneda, bar_exit)
@@ -2186,6 +2253,7 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
+    
     
     clock.tick(60)
     pygame.display.flip()
