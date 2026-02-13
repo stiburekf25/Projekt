@@ -113,6 +113,8 @@ info_vnitrek_domu = 750
 
 kamera_x = 0
 
+
+
 soubor = open("shop.txt", "r", encoding="utf-8")
 
 seznam_vet = []
@@ -121,6 +123,18 @@ for radek in soubor:
     seznam_vet.append(radek[:-1])
 
 soubor.close()
+
+
+
+soubor_barman = open("barman.txt", "r", encoding="utf-8")
+
+seznam_vet_barman = []
+
+for radek in soubor_barman:
+    seznam_vet_barman.append(radek[:-1])
+    
+soubor_barman.close()
+
 
 rozliseni_okna = (okno_sirka, okno_vyska)
 
@@ -283,6 +297,8 @@ statistika_velikost = 20
 exit_bar_velikost = 40
 info_barman_velikost = 30
 drink_cena_velikost = 30
+hlaska_barman_velikost = 26
+barman_hlaska = None
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -661,6 +677,10 @@ hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
 hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 
+hlaska_barman_font = pygame.font.SysFont("AHaroni", hlaska_barman_velikost)
+barman_hlaska = random.choice(seznam_vet_barman)
+hlaska_barman_text = hlaska_barman_font.render(barman_hlaska, True, cerna)
+
 prechod_lock_venek_a_rozcestnik = False
 prechod_lock_venek_a_jezero = False
 prechod_lock_dum_a_venek = False
@@ -763,8 +783,8 @@ while True:
 
     if pozadi != krb:
         # Postupné snižování hladu a žízně
-        hlad = max(0, hlad - 0.02)
-        zizen = max(0, zizen - 0.02)
+        hlad = max(0, hlad - 0.002)
+        zizen = max(0, zizen - 0.002)
 
     if hlad < 60 and not hlad_flag_60:
             deprese += 5
@@ -944,6 +964,8 @@ while True:
             pozadi_vyska = pozadi.get_height()
         
         if zidle_bar_rect.collidepoint(mys_pozice) and mouse_click and not inventar:
+            barman_hlaska = random.choice(seznam_vet_barman)
+            hlaska_barman_text = hlaska_barman_font.render(barman_hlaska, True, cerna)
             pozadi = barman
             hrac_pozice_x = 0
             kamera_x = 0
@@ -1470,7 +1492,7 @@ while True:
     elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
-    elif not zapnuti and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
+    elif not zapnuti and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and not inventar and pozadi == rybareni:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
     elif zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra:
@@ -1661,6 +1683,7 @@ while True:
         pygame.draw.rect(okno, hneda, barman_exit)
         exit_barman_text = exit_bar_font.render("EXIT", True, cerna)
         okno.blit(exit_barman_text, (26, 558))
+        okno.blit(hlaska_barman_text, (390, 160))
         
         pygame.draw.rect(okno, cerna, za_voda_buy)
         pygame.draw.rect(okno, hneda, voda_buy)
@@ -2195,10 +2218,12 @@ while True:
         hrac_rychlost = 0
     
     if zpet_tlacitko and not inventar:
-        pygame.draw.rect(okno, cerna, (349, 529, 102, 52))
-        zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (350, 530, 100, 50))
-        okno.blit(zpet_tlacitko_text, (367, 543))
-    
+        pygame.draw.rect(okno, cerna, (4, 479, 102, 52))
+        zpet_tlacitko_rect = pygame.draw.rect(okno, bila, (5, 480, 100, 50))
+        okno.blit(zpet_tlacitko_text, (21, 492))
+        
+
+
     
     if minihra:
         center = (okraj_random_x, okraj_random_y)
