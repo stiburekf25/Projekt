@@ -575,6 +575,7 @@ za_barman_exit = pygame.draw.rect(okno, cerna, (9, 544 , 102, 52))
 barman_exit = pygame.draw.rect(okno, hneda, (10, 545 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
+garaz = pygame.image.load("garaz.png")
 
 
 pozadi = rozcestnik
@@ -943,7 +944,46 @@ while True:
         stojim_u_cesty_mezi_bar_a_auto = hrac_pozice_x > 515 and hrac_pozice_x < 770
         
         if stojim_u_cesty_mezi_bar_a_auto and stisknuto[pygame.K_e] and not inventar:
-            pass
+            pozadi = garaz
+            hrac_pozice_x = 100
+            kamera_x = 0
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
+    if pozadi == garaz:
+        info_garaz_obrazovka_x = 100 - kamera_x
+        hrac_rychlost = 4
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+        
+        if hrac_pozice_x < 60:
+            hrac_pozice_x = 60
+        if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 170:
+            hrac_pozice_x = pozadi_sirka - hrac_velikostX - 170
+                
+            
+        if hrac_obrazovka_x > prava_zona:
+            kamera_x += hrac_aktualni_rychlost
+        if hrac_obrazovka_x < leva_zona:
+            kamera_x -= hrac_aktualni_rychlost
+                
+        if kamera_x < 0:
+            kamera_x = 0
+        if kamera_x > pozadi_sirka - okno_sirka:
+            kamera_x = pozadi_sirka - okno_sirka
+        
+        stojim_u_cesty_ven_z_garazi = hrac_pozice_x > 20 and hrac_pozice_x < 100
+        
+        if stojim_u_cesty_ven_z_garazi and stisknuto[pygame.K_e] and not inventar:
+    
+            pozadi = rozcestnik
+            hrac_pozice_x = 500
+            hrac_rychlost = 4
+            kamera_x = 100
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
     #BAR
         
     if pozadi == bar:
@@ -1757,6 +1797,11 @@ while True:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 1400, 340, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x - 1400 + (50/2 - E_text.get_size()[0] / 2), 352))
+        
+    if pozadi == garaz and stojim_u_cesty_ven_z_garazi:
+        pygame.draw.rect(okno, cerna, (info_garaz_obrazovka_x - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (info_garaz_obrazovka_x, 340, 50, 50))
+        okno.blit(E_text, (info_garaz_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
