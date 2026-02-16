@@ -299,6 +299,7 @@ info_barman_velikost = 30
 drink_cena_velikost = 30
 hlaska_barman_velikost = 26
 barman_hlaska = None
+exit_shop_s_jidlem_velikost = 40
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -674,19 +675,22 @@ statistika_font = pygame.font.SysFont("Aharoni", statistika_velikost)
 exit_bar_font = pygame.font.SysFont("Aharoni", exit_bar_velikost)
 info_barman_font = pygame.font.SysFont("Aharoni", info_barman_velikost)
 drink_cena_font = pygame.font.Font("CHAOS16.otf", drink_cena_velikost)
+exit_shop_s_jidlem_font = pygame.font.SysFont("Aharoni", exit_shop_s_jidlem_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
 hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
 
-hlaska_barman_font = pygame.font.SysFont("AHaroni", hlaska_barman_velikost)
+hlaska_barman_font = pygame.font.SysFont("Aharoni", hlaska_barman_velikost)
 barman_hlaska = random.choice(seznam_vet_barman)
 hlaska_barman_text = hlaska_barman_font.render(barman_hlaska, True, cerna)
 
 prechod_lock_venek_a_rozcestnik = False
 prechod_lock_venek_a_jezero = False
 prechod_lock_dum_a_venek = False
-prechod_lock_dum_a_krb = False 
+prechod_lock_dum_a_krb = False
+prechod_lock_garaz_a_rozcestnik = False
+prechod_lock_shop_s_jidlem = False
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
@@ -945,16 +949,21 @@ while True:
         
         stojim_u_cesty_mezi_bar_a_auto = hrac_pozice_x > 515 and hrac_pozice_x < 770
         
-        if stojim_u_cesty_mezi_bar_a_auto and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_cesty_mezi_bar_a_auto and stisknuto[pygame.K_e] and not inventar and not prechod_lock_garaz_a_rozcestnik:
             pozadi = garaz
+            prechod_lock_garaz_a_rozcestnik = True
             hrac_pozice_x = 160
             kamera_x = 0
             hrac_rychlost = 4
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         
+        if not stojim_u_cesty_mezi_bar_a_auto:
+            prechod_lock_garaz_a_rozcestnik = False
+        
         info_garaz_exit_obrazovka_x = 20 - kamera_x
         info_garaz_shop_jidlo_obrazovka_x = 490 - kamera_x
+        
     if pozadi == garaz:
         hrac_rychlost = 4
         pozadi_sirka = pozadi.get_width()
@@ -978,23 +987,27 @@ while True:
         
         stojim_u_cesty_ven_z_garazi = hrac_pozice_x > 20 and hrac_pozice_x < 140
         
-        if stojim_u_cesty_ven_z_garazi and stisknuto[pygame.K_e] and not inventar:
+        if stojim_u_cesty_ven_z_garazi and stisknuto[pygame.K_e] and not inventar and not prechod_lock_garaz_a_rozcestnik:
             
             pozadi = rozcestnik
+            prechod_lock_garaz_a_rozcestnik = True
             hrac_pozice_x = 500
             hrac_rychlost = 4
             kamera_x = 100
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+        if not stojim_u_cesty_ven_z_garazi:
+            prechod_lock_garaz_a_rozcestnik = False
 
         
         stojim_u_shopu_jidlo = hrac_pozice_x > 280 and hrac_pozice_x < 635
         
         
-        if stojim_u_shopu_jidlo and stisknuto[pygame.K_e] and not inventar and pozadi == garaz:
+        if stojim_u_shopu_jidlo and stisknuto[pygame.K_e] and not inventar and pozadi == garaz and not prechod_lock_shop_s_jidlem:
             
             pozadi = pozadi_shop_jidlo
-            
+            prechod_lock_shop_s_jidlem = True
             hrac_pozice_x = 0
             hrac_rychlost = 0
             kamera_x = 0
@@ -1002,6 +1015,22 @@ while True:
             pozadi_vyska = pozadi.get_height()
             za_jidlo_shop_leave = pygame.draw.rect(okno, cerna, (9, 539, 102, 52))
             jidlo_shop_leave = pygame.draw.rect(okno, hneda, (10, 540, 100, 50))
+            jidlo_polozky_velikost_y = 300
+            jidlo_polozky_velikost_x = 150
+            za_hranolky_buy = pygame.draw.rect(okno, cerna, (39, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            hranolky_buy = pygame.draw.rect(okno, hneda, (40, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+            
+            za_salat_buy = pygame.draw.rect(okno, cerna, (229, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            salat_buy = pygame.draw.rect(okno, hneda, (230, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+            
+            za_hamburger = pygame.draw.rect(okno, cerna, (419, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            hamburger = pygame.draw.rect(okno, hneda, (420, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+            
+            za_rybi_prsty = pygame.draw.rect(okno, cerna, (609, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            rybi_prsty = pygame.draw.rect(okno, hneda, (610, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+        
+        if not stojim_u_shopu_jidlo:
+            prechod_lock_shop_s_jidlem = False
             
     if pozadi == pozadi_shop_jidlo:
         hrac_pozice_x = 0
@@ -1563,6 +1592,9 @@ while True:
                 
     if pozadi == pozadi_shop and leave_buy.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == pozadi_shop_jidlo and jidlo_shop_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
     elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -1832,12 +1864,12 @@ while True:
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 1400, 340, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x - 1400 + (50/2 - E_text.get_size()[0] / 2), 352))
         
-    if pozadi == garaz and stojim_u_cesty_ven_z_garazi:
+    if pozadi == garaz and stojim_u_cesty_ven_z_garazi and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_garaz_exit_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_garaz_exit_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_garaz_exit_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    if pozadi == garaz and stojim_u_shopu_jidlo:
+    if pozadi == garaz and stojim_u_shopu_jidlo and not prechod_lock_shop_s_jidlem:
         e_shop_jidlo_x = 490 - kamera_x  
         pygame.draw.rect(okno, cerna, (e_shop_jidlo_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (e_shop_jidlo_x, 340, 50, 50))
@@ -1847,8 +1879,22 @@ while True:
 
         pygame.draw.rect(okno, cerna, za_jidlo_shop_leave)
         pygame.draw.rect(okno, hneda, jidlo_shop_leave)
+        exit_shop_s_jidlem_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_shop_s_jidlem_text,( 27, 555))
         
-    if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto:
+        pygame.draw.rect(okno, cerna, za_hranolky_buy)
+        pygame.draw.rect(okno, hneda, hranolky_buy)
+        
+        pygame.draw.rect(okno, cerna, za_salat_buy)
+        pygame.draw.rect(okno, hneda, salat_buy)
+        
+        pygame.draw.rect(okno, cerna, za_hamburger)
+        pygame.draw.rect(okno, hneda, hamburger)
+        
+        pygame.draw.rect(okno, cerna, za_rybi_prsty)
+        pygame.draw.rect(okno, hneda, rybi_prsty)
+        
+    if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 898, 340, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x - 898 + (50/2 - E_text.get_size()[0] / 2), 352))
