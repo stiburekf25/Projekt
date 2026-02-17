@@ -300,6 +300,7 @@ drink_cena_velikost = 30
 hlaska_barman_velikost = 26
 barman_hlaska = None
 exit_shop_s_jidlem_velikost = 40
+jidlo_cena_velikost = 30
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -676,6 +677,7 @@ exit_bar_font = pygame.font.SysFont("Aharoni", exit_bar_velikost)
 info_barman_font = pygame.font.SysFont("Aharoni", info_barman_velikost)
 drink_cena_font = pygame.font.Font("CHAOS16.otf", drink_cena_velikost)
 exit_shop_s_jidlem_font = pygame.font.SysFont("Aharoni", exit_shop_s_jidlem_velikost)
+jidlo_cena_font = pygame.font.Font("CHAOS16.otf", jidlo_cena_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -1017,17 +1019,35 @@ while True:
             jidlo_shop_leave = pygame.draw.rect(okno, hneda, (10, 540, 100, 50))
             jidlo_polozky_velikost_y = 300
             jidlo_polozky_velikost_x = 150
+            
+            hranolky_cena = 20
+            salat_cena = 35
+            hamburger_cena = 60
+            rybi_prsty_cena = 110
+            
+            hranolky_hunger = 20
+            hranolky_zizen = 0
+            
+            salat_hunger = 20
+            salat_zizen = 20
+            
+            hamburger_hunger = 55
+            hamburger_zizen = 5
+            
+            rybi_prsty_hunger = 90
+            rybi_prsty_zizen = 20
+            
             za_hranolky_buy = pygame.draw.rect(okno, cerna, (39, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
             hranolky_buy = pygame.draw.rect(okno, hneda, (40, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
             
             za_salat_buy = pygame.draw.rect(okno, cerna, (229, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
             salat_buy = pygame.draw.rect(okno, hneda, (230, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
             
-            za_hamburger = pygame.draw.rect(okno, cerna, (419, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
-            hamburger = pygame.draw.rect(okno, hneda, (420, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+            za_hamburger_buy = pygame.draw.rect(okno, cerna, (419, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            hamburger_buy = pygame.draw.rect(okno, hneda, (420, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
             
-            za_rybi_prsty = pygame.draw.rect(okno, cerna, (609, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
-            rybi_prsty = pygame.draw.rect(okno, hneda, (610, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
+            za_rybi_prsty_buy = pygame.draw.rect(okno, cerna, (609, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
+            rybi_prsty_buy = pygame.draw.rect(okno, hneda, (610, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
         
         if not stojim_u_shopu_jidlo:
             prechod_lock_shop_s_jidlem = False
@@ -1046,6 +1066,31 @@ while True:
             kamera_x = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+        if hranolky_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= hranolky_cena:
+                hlad += hranolky_hunger
+                zizen += hranolky_zizen
+                coins -= hranolky_cena
+        
+        if salat_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= salat_cena:
+                hlad += salat_hunger
+                zizen += salat_zizen
+                coins -= salat_cena
+        
+        if hamburger_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= hamburger_cena:
+                hlad += hamburger_hunger
+                zizen += hamburger_zizen
+                coins -= hamburger_cena
+        
+        if rybi_prsty_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if coins >= rybi_prsty_cena:
+                hlad += rybi_prsty_hunger
+                zizen += rybi_prsty_zizen
+                coins -= rybi_prsty_cena
+        
             
         
     #BAR
@@ -1593,9 +1638,21 @@ while True:
     if pozadi == pozadi_shop and leave_buy.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
-    elif pozadi == pozadi_shop_jidlo and jidlo_shop_leave.collidepoint(mys_pozice):
+    elif pozadi == pozadi_shop_jidlo and jidlo_shop_leave.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-        
+    
+    elif pozadi == pozadi_shop_jidlo and hranolky_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == pozadi_shop_jidlo and hamburger_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == pozadi_shop_jidlo and salat_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    elif pozadi == pozadi_shop_jidlo and rybi_prsty_buy.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
     elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
@@ -1888,11 +1945,29 @@ while True:
         pygame.draw.rect(okno, cerna, za_salat_buy)
         pygame.draw.rect(okno, hneda, salat_buy)
         
-        pygame.draw.rect(okno, cerna, za_hamburger)
-        pygame.draw.rect(okno, hneda, hamburger)
+        pygame.draw.rect(okno, cerna, za_hamburger_buy)
+        pygame.draw.rect(okno, hneda, hamburger_buy)
         
-        pygame.draw.rect(okno, cerna, za_rybi_prsty)
-        pygame.draw.rect(okno, hneda, rybi_prsty)
+        pygame.draw.rect(okno, cerna, za_rybi_prsty_buy)
+        pygame.draw.rect(okno, hneda, rybi_prsty_buy)
+        
+        pygame.draw.rect(okno, cerna, (649 , 544, 102 , 52))
+        pygame.draw.rect(okno, Shneda, (650 , 545, 100 , 50))
+        hlad_info = statistika_font.render(f"{int(hlad)}/100", True, cerna)
+        hlad_text = statistika_font.render("Hunger:", True, cerna)
+        okno.blit(hlad_ikona, (650 , 542, 100 , 50))
+        okno.blit(hlad_info, (698 , 565, 100 , 50))
+        okno.blit(hlad_text, (696 , 545, 100 , 50))
+        
+        pygame.draw.rect(okno, cerna, (539 , 544, 102 , 52))
+        pygame.draw.rect(okno, modra, (540 , 545, 100 , 50))
+        zizen_info = statistika_font.render(f"{int(zizen)}/100", True, cerna)
+        zizen_text = statistika_font.render("Thirst:", True, cerna)
+        okno.blit(zizen_ikona, (540 , 545, 100 , 50))
+        okno.blit(zizen_info, (588, 565, 100, 50))
+        okno.blit(zizen_text, (586, 545, 100, 50))
+        
+        
         
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
