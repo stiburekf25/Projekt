@@ -301,6 +301,8 @@ hlaska_barman_velikost = 26
 barman_hlaska = None
 exit_shop_s_jidlem_velikost = 40
 jidlo_cena_velikost = 30
+jidlo_jmeno_velikost = 30
+jidlo_popis_velikost = 23
 
 #pozice polozek v shopu + velikost
 polozky_velikost_x = 230
@@ -678,6 +680,8 @@ info_barman_font = pygame.font.SysFont("Aharoni", info_barman_velikost)
 drink_cena_font = pygame.font.Font("CHAOS16.otf", drink_cena_velikost)
 exit_shop_s_jidlem_font = pygame.font.SysFont("Aharoni", exit_shop_s_jidlem_velikost)
 jidlo_cena_font = pygame.font.Font("CHAOS16.otf", jidlo_cena_velikost)
+jidlo_jmeno_font = pygame.font.SysFont("Aharoni", jidlo_jmeno_velikost)
+jidlo_popis_font = pygame.font.SysFont("Aharoni", jidlo_popis_velikost)
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -1007,7 +1011,8 @@ while True:
         
         
         if stojim_u_shopu_jidlo and stisknuto[pygame.K_e] and not inventar and pozadi == garaz and not prechod_lock_shop_s_jidlem:
-            
+            pozice_pred_jidlo_shopem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
+            stojim_u_shopu_jidlo = hrac_pozice_x > 280 and hrac_pozice_x < 635
             pozadi = pozadi_shop_jidlo
             prechod_lock_shop_s_jidlem = True
             hrac_pozice_x = 0
@@ -1053,17 +1058,15 @@ while True:
             prechod_lock_shop_s_jidlem = False
             
     if pozadi == pozadi_shop_jidlo:
-        hrac_pozice_x = 0
-        kamera_x = 0
         hrac_rychlost = 0
         pozadi_sirka = pozadi.get_width()
         pozadi_vyska = pozadi.get_height()
         
         if jidlo_shop_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_jidlo_shopem
+            stojim_u_shopu_jidlo = hrac_pozice_x > 280 and hrac_pozice_x < 635
             pozadi = garaz
-            hrac_pozice_x = 270
             hrac_rychlost = 4
-            kamera_x = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         
@@ -1937,19 +1940,62 @@ while True:
         pygame.draw.rect(okno, cerna, za_jidlo_shop_leave)
         pygame.draw.rect(okno, hneda, jidlo_shop_leave)
         exit_shop_s_jidlem_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
-        okno.blit(exit_shop_s_jidlem_text,( 27, 555))
+        okno.blit(exit_shop_s_jidlem_text,( 27, 553))
         
         pygame.draw.rect(okno, cerna, za_hranolky_buy)
         pygame.draw.rect(okno, hneda, hranolky_buy)
-        
-        pygame.draw.rect(okno, cerna, za_salat_buy)
+        hranolky_cena_text = jidlo_cena_font.render(f"{hranolky_cena}", True, zluta)
+        okno.blit(hranolky_cena_text, (90, 410))
+        okno.blit(coin_ikona, (120, 410))
+        hranolky_jmeno_text = jidlo_jmeno_font.render("Fries", True, cerna)
+        okno.blit(hranolky_jmeno_text, (90, 160))
+        hranolky_popis_hlad_text = jidlo_popis_font.render(f"Hunger: +{hranolky_hunger}", True, cerna)
+        hranolky_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{hranolky_zizen}", True, cerna)
+        okno.blit(hranolky_popis_hlad_text, (50, 340))
+        okno.blit(hranolky_popis_zizen_text, (50, 365))
+            
+        pygame.draw.rect(okno, cerna, za_salat_buy)                                       
         pygame.draw.rect(okno, hneda, salat_buy)
+        salat_cena_text = jidlo_cena_font.render(f"{salat_cena}", True, zluta)
+        okno.blit(salat_cena_text, (280, 410))
+        okno.blit(coin_ikona, (310, 410))
+        salat_jmeno_text = jidlo_jmeno_font.render("Salad", True, cerna)
+        okno.blit(salat_jmeno_text, (275, 160))
+        salat_popis_hlad_text = jidlo_popis_font.render(f"Hunger: +{salat_hunger}", True, cerna)
+        salat_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{salat_zizen}", True, cerna)
+        okno.blit(salat_popis_hlad_text, (240, 340))
+        okno.blit(salat_popis_zizen_text, (240, 365))
+
         
         pygame.draw.rect(okno, cerna, za_hamburger_buy)
         pygame.draw.rect(okno, hneda, hamburger_buy)
+        hamburger_cena_text = jidlo_cena_font.render(f"{hamburger_cena}", True, zluta)
+        okno.blit(hamburger_cena_text, (470, 410))
+        okno.blit(coin_ikona, (500, 410))
+        hamburger_jmeno_text = jidlo_jmeno_font.render("Hamburger", True, cerna)
+        okno.blit(hamburger_jmeno_text, (440, 160))
+        hamburger_popis_hlad_text = jidlo_popis_font.render(f"Hunger: +{hamburger_hunger}", True, cerna)
+        hamburger_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{hamburger_zizen}", True, cerna)
+        okno.blit(hamburger_popis_hlad_text, (430, 340))
+        okno.blit(hamburger_popis_zizen_text, (430, 365))
+
+
         
         pygame.draw.rect(okno, cerna, za_rybi_prsty_buy)
         pygame.draw.rect(okno, hneda, rybi_prsty_buy)
+        rybi_prsty_cena_text = jidlo_cena_font.render(f"{rybi_prsty_cena}", True, zluta)
+        okno.blit(rybi_prsty_cena_text, (655, 410))
+        okno.blit(coin_ikona, (690, 410))
+        rybi_prsty_jmeno_text = jidlo_jmeno_font.render("Fish sticks", True, cerna)
+        okno.blit(rybi_prsty_jmeno_text, (633, 160))
+        rybi_prsty_popis_hlad_text = jidlo_popis_font.render(f"Hunger: +{rybi_prsty_hunger}", True, cerna)
+        rybi_prsty_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{rybi_prsty_zizen}", True, cerna)
+        okno.blit(rybi_prsty_popis_hlad_text, (620, 340))
+        okno.blit(rybi_prsty_popis_zizen_text, (620, 365))
+
+
+
+        
         
         pygame.draw.rect(okno, cerna, (649 , 544, 102 , 52))
         pygame.draw.rect(okno, Shneda, (650 , 545, 100 , 50))
@@ -1967,7 +2013,7 @@ while True:
         okno.blit(zizen_info, (588, 565, 100, 50))
         okno.blit(zizen_text, (586, 545, 100, 50))
         
-        
+
         
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
