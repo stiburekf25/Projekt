@@ -696,7 +696,7 @@ prechod_lock_venek_a_jezero = False
 prechod_lock_dum_a_venek = False
 prechod_lock_dum_a_krb = False
 prechod_lock_garaz_a_rozcestnik = False
-prechod_lock_shop_s_jidlem = False
+
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
@@ -1010,11 +1010,10 @@ while True:
         stojim_u_shopu_jidlo = hrac_pozice_x > 280 and hrac_pozice_x < 635
         
         
-        if stojim_u_shopu_jidlo and stisknuto[pygame.K_e] and not inventar and pozadi == garaz and not prechod_lock_shop_s_jidlem:
+        if stojim_u_shopu_jidlo and stisknuto[pygame.K_e] and not inventar and pozadi == garaz:
             pozice_pred_jidlo_shopem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
             stojim_u_shopu_jidlo = hrac_pozice_x > 280 and hrac_pozice_x < 635
             pozadi = pozadi_shop_jidlo
-            prechod_lock_shop_s_jidlem = True
             hrac_pozice_x = 0
             hrac_rychlost = 0
             kamera_x = 0
@@ -1042,6 +1041,11 @@ while True:
             rybi_prsty_hunger = 90
             rybi_prsty_zizen = 20
             
+            hranolky_ikona = pygame.image.load("hranolky.png")
+            salat_ikona = pygame.image.load("salat.png")
+            hamburger_ikona = pygame.image.load("hamburger.png")
+            rybi_prsty_ikona = pygame.image.load("rybi_prsty.png")
+            
             za_hranolky_buy = pygame.draw.rect(okno, cerna, (39, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
             hranolky_buy = pygame.draw.rect(okno, hneda, (40, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
             
@@ -1054,8 +1058,6 @@ while True:
             za_rybi_prsty_buy = pygame.draw.rect(okno, cerna, (609, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
             rybi_prsty_buy = pygame.draw.rect(okno, hneda, (610, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
         
-        if not stojim_u_shopu_jidlo:
-            prechod_lock_shop_s_jidlem = False
             
     if pozadi == pozadi_shop_jidlo:
         hrac_rychlost = 0
@@ -1929,7 +1931,7 @@ while True:
         pygame.draw.rect(okno, bila, (info_garaz_exit_obrazovka_x, 340, 50, 50))
         okno.blit(E_text, (info_garaz_exit_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 352))
     
-    if pozadi == garaz and stojim_u_shopu_jidlo and not prechod_lock_shop_s_jidlem:
+    if pozadi == garaz and stojim_u_shopu_jidlo:
         e_shop_jidlo_x = 490 - kamera_x  
         pygame.draw.rect(okno, cerna, (e_shop_jidlo_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (e_shop_jidlo_x, 340, 50, 50))
@@ -1953,6 +1955,7 @@ while True:
         hranolky_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{hranolky_zizen}", True, cerna)
         okno.blit(hranolky_popis_hlad_text, (50, 340))
         okno.blit(hranolky_popis_zizen_text, (50, 365))
+        okno.blit(hranolky_ikona, (hranolky_buy))
             
         pygame.draw.rect(okno, cerna, za_salat_buy)                                       
         pygame.draw.rect(okno, hneda, salat_buy)
@@ -1965,6 +1968,7 @@ while True:
         salat_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{salat_zizen}", True, cerna)
         okno.blit(salat_popis_hlad_text, (240, 340))
         okno.blit(salat_popis_zizen_text, (240, 365))
+        okno.blit(salat_ikona, (salat_buy))
 
         
         pygame.draw.rect(okno, cerna, za_hamburger_buy)
@@ -1978,7 +1982,7 @@ while True:
         hamburger_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{hamburger_zizen}", True, cerna)
         okno.blit(hamburger_popis_hlad_text, (430, 340))
         okno.blit(hamburger_popis_zizen_text, (430, 365))
-
+        okno.blit(hamburger_ikona, (hamburger_buy))
 
         
         pygame.draw.rect(okno, cerna, za_rybi_prsty_buy)
@@ -1992,6 +1996,7 @@ while True:
         rybi_prsty_popis_zizen_text = jidlo_popis_font.render(f"Thirst: +{rybi_prsty_zizen}", True, cerna)
         okno.blit(rybi_prsty_popis_hlad_text, (620, 340))
         okno.blit(rybi_prsty_popis_zizen_text, (620, 365))
+        okno.blit(rybi_prsty_ikona, (rybi_prsty_buy))
 
 
 
