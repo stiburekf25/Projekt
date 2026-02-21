@@ -682,6 +682,9 @@ exit_shop_s_jidlem_font = pygame.font.SysFont("Aharoni", exit_shop_s_jidlem_veli
 jidlo_cena_font = pygame.font.Font("CHAOS16.otf", jidlo_cena_velikost)
 jidlo_jmeno_font = pygame.font.SysFont("Aharoni", jidlo_jmeno_velikost)
 jidlo_popis_font = pygame.font.SysFont("Aharoni", jidlo_popis_velikost)
+napis_hry_font = pygame.font.Font("hra_napis.otf", 140)
+za_napis_hry_font = pygame.font.Font("hra_napis.otf", 139)
+
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
@@ -770,11 +773,52 @@ dzus = pygame.image.load("dzus.png")
 cola = pygame.image.load("cola.png")
 pivo = pygame.image.load("pivo.png")
 
-while True:
-    print(hrac_pozice_x)
+hra = False 
+menu_obrazek = pygame.image.load("menu.png")
+ikona_prut_menu = pygame.image.load("ikona_prut_menu.png")
 
+za_start_button = pygame.draw.rect(okno, cerna, (324, 249, 152, 62))
+start_button = pygame.draw.rect(okno, bila, (325, 250, 150, 60))
+za_quit_button = pygame.draw.rect(okno, cerna, (9, 559, 32, 32))
+quit_button = pygame.draw.rect(okno, cervena, (10, 560, 30, 30))
+
+while not hra:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        
+        if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
+            mys_pozice = pygame.mouse.get_pos()
+            
+            if start_button.collidepoint(mys_pozice):
+                hra = True
+            
+            if quit_button.collidepoint(mys_pozice):
+                pygame.quit()
+                sys.exit()
+                
+    if not hra:
+        okno.blit(menu_obrazek, (0, 0))
+        pygame.draw.rect(okno, cerna, za_start_button)
+        pygame.draw.rect(okno, bila, start_button)
+        pygame.draw.rect(okno, cerna, za_quit_button)
+        pygame.draw.rect(okno, cervena, quit_button)
+        summer_text = napis_hry_font.render("SUMMER", True, cerna)
+        okno.blit(summer_text, ( 210, 1))
+        za_summer_text = za_napis_hry_font.render("SUMMER", True, bila)
+        okno.blit(za_summer_text, ( 210, 5))
+        fish_text = napis_hry_font.render("F   SH", True, cerna)
+        okno.blit(fish_text, (280, 90))
+        za_fish_text = za_napis_hry_font.render("F   SH", True, bila)
+        okno.blit(za_fish_text, (280, 95))
+        okno.blit(ikona_prut_menu, (270, 60))
+        
+    clock.tick(60)
+    pygame.display.flip()
     
-    
+
+while hra is True:
 # OVLADANI HRY HRACEM
     mouse_click = False
     
@@ -2539,6 +2583,8 @@ while True:
             if i < len(vylovene_predmety):
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
+    
+
     
     
     clock.tick(60)
