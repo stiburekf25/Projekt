@@ -797,7 +797,15 @@ while not hra:
             if quit_button.collidepoint(mys_pozice):
                 pygame.quit()
                 sys.exit()
+    kurzor_hand = False
+    mys_pozice = pygame.mouse.get_pos()
+
                 
+    if not hra and start_button.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    else:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        
     if not hra:
         okno.blit(menu_obrazek, (0, 0))
         pygame.draw.rect(okno, cerna, za_start_button)
