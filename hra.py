@@ -774,7 +774,6 @@ cola = pygame.image.load("cola.png")
 pivo = pygame.image.load("pivo.png")
 
 hra = False 
-menu_obrazek = pygame.image.load("menu.png")
 ikona_prut_menu = pygame.image.load("ikona_prut_menu.png")
 
 play_tlacitko = pygame.image.load("play_tlacitko.png")
@@ -785,6 +784,9 @@ play_tlacitko_vetsi_rect = play_tlacitko.get_rect(center=(395, 275))
 
 za_quit_button = pygame.draw.rect(okno, cerna, (9, 559, 32, 32))
 quit_button = pygame.draw.rect(okno, cervena, (10, 560, 30, 30))
+
+#Animace
+MN = [pygame.image.load(f"{i}.png") for i in range(1, 51)]
 
 while not hra:
     for udalost in pygame.event.get():
@@ -803,6 +805,8 @@ while not hra:
                 sys.exit()
     kurzor_hand = False
     mys_pozice = pygame.mouse.get_pos()
+    
+    pocitadlo += 1
 
                 
     if not hra and play_tlacitko_rect.collidepoint(mys_pozice):
@@ -811,7 +815,17 @@ while not hra:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
     if not hra:
-        okno.blit(menu_obrazek, (0, 0))
+        pocet_snimku = 50
+        faktor_zpozdeni = 2
+        
+        index = int(pocitadlo / faktor_zpozdeni) % pocet_snimku  # ← Pozor: / místo //
+        okno.blit(MN[index], (0, 0))        
+        
+        
+        
+        
+        
+        
         if not play_tlacitko_rect.collidepoint(mys_pozice):
             okno.blit(play_tlacitko, play_tlacitko_rect)
         else:
@@ -832,6 +846,15 @@ while not hra:
     clock.tick(60)
     pygame.display.flip()
     
+
+
+
+
+
+
+
+
+
 
 while hra is True:
 # OVLADANI HRY HRACEM
@@ -1836,6 +1859,7 @@ while hra is True:
     else:
         okno.blit(pozadi, (0, 0))
     
+    
     if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut and pozadi != pozadi_shop_jidlo:
         if pozadi == rybareni:
             pygame.draw.rect(okno, cerna, (4, 564, 82, 32))
@@ -2150,7 +2174,10 @@ while hra is True:
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo:
-        okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))          
+        okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
+    
+
+        
     if pozadi == shop and shop_mode is None:
         pygame.draw.rect(okno, cerna, za_koupit)
         pygame.draw.rect(okno, hneda, buy)
@@ -2599,7 +2626,6 @@ while hra is True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     
-
     
     
     clock.tick(60)
