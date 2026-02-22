@@ -777,8 +777,12 @@ hra = False
 menu_obrazek = pygame.image.load("menu.png")
 ikona_prut_menu = pygame.image.load("ikona_prut_menu.png")
 
-za_start_button = pygame.draw.rect(okno, cerna, (324, 249, 152, 62))
-start_button = pygame.draw.rect(okno, bila, (325, 250, 150, 60))
+play_tlacitko = pygame.image.load("play_tlacitko.png")
+play_tlacitko_rect = play_tlacitko.get_rect(center=(400, 280))
+
+play_tlacitko_vetsi = pygame.image.load("play_tlacitko_vetsi.png")
+play_tlacitko_vetsi_rect = play_tlacitko.get_rect(center=(395, 275))
+
 za_quit_button = pygame.draw.rect(okno, cerna, (9, 559, 32, 32))
 quit_button = pygame.draw.rect(okno, cervena, (10, 560, 30, 30))
 
@@ -791,7 +795,7 @@ while not hra:
         if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
             mys_pozice = pygame.mouse.get_pos()
             
-            if start_button.collidepoint(mys_pozice):
+            if play_tlacitko_rect.collidepoint(mys_pozice):
                 hra = True
             
             if quit_button.collidepoint(mys_pozice):
@@ -801,15 +805,18 @@ while not hra:
     mys_pozice = pygame.mouse.get_pos()
 
                 
-    if not hra and start_button.collidepoint(mys_pozice):
+    if not hra and play_tlacitko_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
         
     if not hra:
         okno.blit(menu_obrazek, (0, 0))
-        pygame.draw.rect(okno, cerna, za_start_button)
-        pygame.draw.rect(okno, bila, start_button)
+        if not play_tlacitko_rect.collidepoint(mys_pozice):
+            okno.blit(play_tlacitko, play_tlacitko_rect)
+        else:
+            okno.blit(play_tlacitko_vetsi, play_tlacitko_vetsi_rect)
+            
         pygame.draw.rect(okno, cerna, za_quit_button)
         pygame.draw.rect(okno, cervena, quit_button)
         summer_text = napis_hry_font.render("SUMMER", True, cerna)
