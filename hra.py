@@ -581,6 +581,7 @@ barman_exit = pygame.draw.rect(okno, hneda, (10, 545 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
 garaz = pygame.image.load("garaz.png")
+bouda = pygame.image.load("bouda.png")
 
 
 pozadi = rozcestnik
@@ -782,8 +783,11 @@ play_tlacitko_rect = play_tlacitko.get_rect(center=(400, 280))
 play_tlacitko_vetsi = pygame.image.load("play_tlacitko_vetsi.png")
 play_tlacitko_vetsi_rect = play_tlacitko.get_rect(center=(395, 275))
 
-za_quit_button = pygame.draw.rect(okno, cerna, (9, 559, 32, 32))
-quit_button = pygame.draw.rect(okno, cervena, (10, 560, 30, 30))
+quit_tlacitko = pygame.image.load("quit_tlacitko.png")
+quit_tlacitko_rect = quit_tlacitko.get_rect(center=(30, 570))
+
+quit_tlacitko_vetsi = pygame.image.load("quit_tlacitko_vetsi.png")
+quit_tlacitko_vetsi_rect = quit_tlacitko_vetsi.get_rect(center=(30, 570))
 
 #Animace
 MN = [pygame.image.load(f"{i}.png") for i in range(1, 51)]
@@ -800,7 +804,7 @@ while not hra:
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 hra = True
             
-            if quit_button.collidepoint(mys_pozice):
+            if quit_tlacitko_rect.collidepoint(mys_pozice):
                 pygame.quit()
                 sys.exit()
     kurzor_hand = False
@@ -810,6 +814,8 @@ while not hra:
 
                 
     if not hra and play_tlacitko_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif not hra and quit_tlacitko_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -830,9 +836,12 @@ while not hra:
             okno.blit(play_tlacitko, play_tlacitko_rect)
         else:
             okno.blit(play_tlacitko_vetsi, play_tlacitko_vetsi_rect)
+        
+        if not quit_tlacitko_rect.collidepoint(mys_pozice):
+            okno.blit(quit_tlacitko, quit_tlacitko_rect)
+        else:
+            okno.blit(quit_tlacitko_vetsi, quit_tlacitko_vetsi_rect)
             
-        pygame.draw.rect(okno, cerna, za_quit_button)
-        pygame.draw.rect(okno, cervena, quit_button)
         summer_text = napis_hry_font.render("SUMMER", True, cerna)
         okno.blit(summer_text, ( 210, 1))
         za_summer_text = za_napis_hry_font.render("SUMMER", True, bila)
@@ -857,6 +866,7 @@ while not hra:
 
 
 while hra is True:
+    print(hrac_pozice_x)
 # OVLADANI HRY HRACEM
     mouse_click = False
     
@@ -1339,6 +1349,9 @@ while hra is True:
         
         if not stojim_u_domu:
             prechod_lock_dum_a_venek = False
+        
+        stojim_u_boudy = hrac_pozice_x > 380 and hrac_pozice_x < 560
+        info_bouda_obrazovka_x = 1080 - kamera_x
         
 
         
@@ -1870,7 +1883,8 @@ while hra is True:
             pygame.draw.rect(okno, hneda, zapnuti_statistik)
             okno.blit(zapnuti_statistik_ikona, (360, 565, 80, 30))
 
-            
+    if pozadi == venek:
+        okno.blit(bouda, (info_bouda_obrazovka_x, 290))
     
     if zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo:
         pygame.draw.rect(okno, cerna, za_vypnuti_statistik)
