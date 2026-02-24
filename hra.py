@@ -98,7 +98,7 @@ def soucet_vsech_baits():
 okno_sirka = 800
 okno_vyska = 600
 
-hrac_pozice_x = 380
+hrac_pozice_x = 508
 hrac_pozice_y = 315
 hrac_rychlost = 4
 hrac_aktualni_rychlost = 4
@@ -111,7 +111,7 @@ info_shop = 920
 info_dum = 190
 info_vnitrek_domu = 750
 
-kamera_x = 0
+kamera_x = 108
 
 
 
@@ -581,7 +581,6 @@ barman_exit = pygame.draw.rect(okno, hneda, (10, 545 , 100, 50))
 
 slotmachine = pygame.image.load("slotmachine.png")
 garaz = pygame.image.load("garaz.png")
-bouda = pygame.image.load("bouda.png")
 
 
 pozadi = rozcestnik
@@ -866,7 +865,7 @@ while not hra:
 
 
 while hra is True:
-    print(hrac_pozice_x)
+    print(hrac_pozice_x, kamera_x)
 # OVLADANI HRY HRACEM
     mouse_click = False
     
@@ -1089,9 +1088,9 @@ while hra is True:
             
             pozadi = rozcestnik
             prechod_lock_garaz_a_rozcestnik = True
-            hrac_pozice_x = 500
+            hrac_pozice_x = 508
             hrac_rychlost = 4
-            kamera_x = 100
+            kamera_x = 108
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         
@@ -1260,7 +1259,10 @@ while hra is True:
                 hlad += hlad_pivo
                 coins -= pivo_cena
             
-        
+    stojim_u_boudy = hrac_pozice_x > 320 and hrac_pozice_x < 415
+    
+    if stojim_u_boudy and pozadi == rozcestnik:
+        pass
 
     
         
@@ -1882,9 +1884,11 @@ while hra is True:
             pygame.draw.rect(okno, cerna, za_zapnuti_statistik)
             pygame.draw.rect(okno, hneda, zapnuti_statistik)
             okno.blit(zapnuti_statistik_ikona, (360, 565, 80, 30))
-
-    if pozadi == venek:
-        okno.blit(bouda, (info_bouda_obrazovka_x, 290))
+            
+    if stojim_u_boudy and pozadi == rozcestnik:
+        pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1180, 249, 52, 52))
+        pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 1179, 250, 50, 50))
+        okno.blit(E_text, (info_rozcestnik_obrazovka_x - 1179 + (50/2 - E_text.get_size()[0] / 2), 263))
     
     if zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo:
         pygame.draw.rect(okno, cerna, za_vypnuti_statistik)
