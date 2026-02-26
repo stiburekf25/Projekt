@@ -583,7 +583,7 @@ slotmachine = pygame.image.load("slotmachine.png")
 garaz = pygame.image.load("garaz.png")
 
 bouda_zamcena = pygame.image.load("bouda_zamcena.png")
-
+kapr_bouda = pygame.image.load("kapr_bouda.png")
 
 pozadi = rozcestnik
 
@@ -686,6 +686,8 @@ jidlo_jmeno_font = pygame.font.SysFont("Aharoni", jidlo_jmeno_velikost)
 jidlo_popis_font = pygame.font.SysFont("Aharoni", jidlo_popis_velikost)
 napis_hry_font = pygame.font.Font("hra_napis.otf", 140)
 za_napis_hry_font = pygame.font.Font("hra_napis.otf", 139)
+exit_bouda_font = pygame.font.SysFont("Aharoni", 40)
+give_kapry_font = pygame.font.SysFont("Aharoni", 40)
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -705,9 +707,9 @@ prechod_lock_garaz_a_rozcestnik = False
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
 
-zizen = 100
-hlad = 100
-deprese = 0
+zizen = 0
+hlad = 0
+deprese = 100
 
 hlad_flag_60 = False
 hlad_flag_40 = False
@@ -829,10 +831,6 @@ while not hra:
         okno.blit(MN[index], (0, 0))        
         
         
-        
-        
-        
-        
         if not play_tlacitko_rect.collidepoint(mys_pozice):
             okno.blit(play_tlacitko, play_tlacitko_rect)
         else:
@@ -856,14 +854,6 @@ while not hra:
     clock.tick(60)
     pygame.display.flip()
     
-
-
-
-
-
-
-
-
 
 
 while hra is True:
@@ -1274,6 +1264,14 @@ while hra is True:
             pozadi_vyska = pozadi.get_height()
             za_exit_bouda = pygame.draw.rect(okno, cerna, (19, 19, 102, 52))
             exit_bouda = pygame.draw.rect(okno, hneda, (20, 20, 100, 50))
+            exit_bouda_text = exit_bouda_font.render("EXIT", True, cerna)
+            za_nabidka_pro_mazlicka = pygame.draw.rect(okno, cerna, (19, 429, 202, 152))
+            nabidka_pro_mazlicka = pygame.draw.rect(okno, hneda, (20, 430, 200, 150))
+            za_kapr_davani = pygame.draw.rect(okno, cerna, (69, 519, 102, 52))
+            kapr_davani = pygame.draw.rect(okno, hneda, (70, 520, 100, 50))
+            give_kapry_text = give_kapry_font.render("GIVE", True, cerna)
+            
+            
         elif mazlicek_odemceny:
             pass
     
@@ -1770,6 +1768,9 @@ while hra is True:
     elif pozadi == bouda_zamcena and exit_bouda.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
+    elif pozadi == bouda_zamcena and kapr_davani.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
     elif pozadi == pozadi_shop_jidlo and jidlo_shop_leave.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
@@ -1906,7 +1907,13 @@ while hra is True:
     if pozadi == bouda_zamcena:
         pygame.draw.rect(okno, cerna, za_exit_bouda)
         pygame.draw.rect(okno, hneda, exit_bouda)
-
+        okno.blit(exit_bouda_text, (36, 33))
+        pygame.draw.rect(okno, cerna, za_nabidka_pro_mazlicka)
+        pygame.draw.rect(okno, hneda, nabidka_pro_mazlicka)
+        okno.blit(kapr_bouda,(nabidka_pro_mazlicka))
+        pygame.draw.rect(okno, cerna, za_kapr_davani)
+        pygame.draw.rect(okno, hneda, kapr_davani)
+        okno.blit(give_kapry_text, (87, 533))
         
     if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena:
         if pozadi == rybareni:
