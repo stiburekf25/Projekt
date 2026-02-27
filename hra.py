@@ -689,6 +689,9 @@ napis_hry_font = pygame.font.Font("hra_napis.otf", 140)
 za_napis_hry_font = pygame.font.Font("hra_napis.otf", 139)
 exit_bouda_font = pygame.font.SysFont("Aharoni", 40)
 give_kapry_font = pygame.font.SysFont("Aharoni", 40)
+exit_bouda_odemcena_font = pygame.font.SysFont("Aharoni", 40)
+equip_unequip_font = pygame.font.SysFont("Aharoni", 40)
+
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -797,6 +800,14 @@ quit_tlacitko_vetsi_rect = quit_tlacitko_vetsi.get_rect(center=(30, 570))
 MN = [pygame.image.load(f"{i}.png") for i in range(1, 51)]
 
 mazlicek_odemceny = False
+mazlicek_equipped = False
+za_unequip_tlacitko = pygame.draw.rect(okno, cerna, (619, 469, 152, 82))
+unequip_tlacitko = pygame.draw.rect(okno, cervena, (620, 470, 150, 80))
+za_equip_tlacitko = pygame.draw.rect(okno, cerna, (29, 469, 152, 82))
+equip_tlacitko = pygame.draw.rect(okno, zelena, (30, 470, 150, 80))
+exit_bouda_odemcena_text = exit_bouda_odemcena_font.render("EXIT", True , cerna)
+equip_text = equip_unequip_font.render("EQUIP", True, cerna)
+unequip_text = equip_unequip_font.render("UNEQUIP", True , cerna)
 
 while not hra:
     for udalost in pygame.event.get():
@@ -1301,6 +1312,15 @@ while hra is True:
             hrac_rychlost = 4
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+        
+        if mazlicek_equipped:
+            if unequip_tlacitko.collidepoint(mys_pozice) and mouse_click and not inventar:
+                mazlicek_equipped = False
+        
+        if not mazlicek_equipped:
+            if equip_tlacitko.collidepoint(mys_pozice) and mouse_click and not inventar:
+                mazlicek_equipped = True
+            
     
     
     
@@ -1323,6 +1343,7 @@ while hra is True:
         if kapr_davani.collidepoint(mys_pozice) and mouse_click and not inventar:
             if obsah_inventare["Kapr"] >= 3:
                 mazlicek_odemceny = True
+                mazlicek_equipped = True
                 obsah_inventare["Kapr"] -= 3
                 pozadi = bouda_odemcena
                 
@@ -1812,6 +1833,12 @@ while hra is True:
     elif pozadi == bouda_zamcena and kapr_davani.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
+    elif pozadi == bouda_odemcena and unequip_tlacitko.collidepoint(mys_pozice) and mazlicek_equipped:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == bouda_odemcena and equip_tlacitko.collidepoint(mys_pozice) and not mazlicek_equipped:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
     elif pozadi == pozadi_shop_jidlo and jidlo_shop_leave.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
@@ -1959,6 +1986,7 @@ while hra is True:
     if pozadi == bouda_odemcena:
         pygame.draw.rect(okno, cerna, za_exit_bouda_odemcena)
         pygame.draw.rect(okno, hneda, exit_bouda_odemcena)
+        okno.blit(exit_bouda_odemcena_text, (36, 32))
         
     if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena:
         if pozadi == rybareni:
@@ -2276,8 +2304,25 @@ while hra is True:
         okno.blit(E_text, (info_jezero_obrazovka_x - 1564 + (50/2 - E_text.get_size()[0] / 2), 352))
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
+    
+    if mazlicek_equipped and (pozadi == rozcestnik or pozadi == garaz or pozadi == venek):
+        pygame.draw.rect(okno, cerna, (hrac_obrazovka_x + 20, 400, 50, 50))
+    
+    if mazlicek_equipped and pozadi == bouda_odemcena and not inventar:
+        pygame.draw.rect(okno, cerna, (za_unequip_tlacitko))
+        pygame.draw.rect(okno, cervena, (unequip_tlacitko))
+        okno.blit(unequip_text, (633, 500))
+    
+    if not mazlicek_equipped and pozadi == bouda_odemcena and not inventar:
+        pygame.draw.rect(okno, cerna, (za_equip_tlacitko))
+        pygame.draw.rect(okno, zelena, (equip_tlacitko))
+        okno.blit(equip_text, (62, 500))
+
+    
     if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
+    
+
             
     if pozadi == shop and shop_mode is None:
         pygame.draw.rect(okno, cerna, za_koupit)
