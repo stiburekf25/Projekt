@@ -2306,7 +2306,7 @@ while hra is True:
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
     if mazlicek_equipped and (pozadi == rozcestnik or pozadi == garaz or pozadi == venek):
-        pygame.draw.rect(okno, cerna, (hrac_obrazovka_x + 20, 400, 50, 50))
+        pygame.draw.rect(okno, cerna, (hrac_obrazovka_x - 60, hrac_pozice_y + 95, 90, 46))
     
     if mazlicek_equipped and pozadi == bouda_odemcena and not inventar:
         pygame.draw.rect(okno, cerna, (za_unequip_tlacitko))
