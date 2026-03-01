@@ -193,7 +193,7 @@ slot = sloty[i]
 #predmety
 coins = 100
 obsah_inventare = {
-    "Plechovka":0, "Bota":0, "Kapr":3, "Štika":0, "Sumec":0, "Rak":0}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
 posledni_ulovek = None
@@ -617,6 +617,27 @@ TEXTURApepa_1_lod = pygame.transform.scale(pepa_1_lod, (hrac_velikostX, hrac_vel
 pepa_2_lod = pygame.image.load("pepa_beznohy_pravo.png")
 TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_velikostY))
 
+#obrazky lisky
+
+liska_sedici = pygame.image.load("sedici_liska.png")
+
+liska_pravo_1 = pygame.image.load("liska_pravo_1.png")
+
+liska_pravo_2 = pygame.image.load("liska_pravo_2.png")
+
+liska_pravo_3 = pygame.image.load("liska_pravo_3.png")
+
+liska_pravo_4 = pygame.image.load("liska_pravo_4.png")
+
+liska_vlevo_1 = pygame.image.load("liska_vlevo_1.png")
+
+liska_vlevo_2 = pygame.image.load("liska_vlevo_2.png")
+
+liska_vlevo_3 = pygame.image.load("liska_vlevo_3.png")
+
+liska_vlevo_4 = pygame.image.load("liska_vlevo_4.png")
+
+
 #obrazek inv
 inv = pygame.image.load("inventar.png")
 inv2 = pygame.image.load("inventar_2.png")
@@ -979,6 +1000,7 @@ while hra is True:
     
     pocitadlo += 1
     aktualni_sprite = TEXTURApostava
+    aktualni_sprite_lisky = liska_sedici
     pocet_snimku = 2
     faktor_zpozdeni = 8
     
@@ -1000,12 +1022,28 @@ while hra is True:
         else:
             aktualni_sprite = TEXTURApepa_2
         hrac_pozice_x -= hrac_aktualni_rychlost
+    
+    #animace lisky pri chuzi
+    
+    if stisknuto[pygame.K_d] and mazlicek_equipped:
+        snimek = (pocitadlo // faktor_zpozdeni) % 4  # 4 snímky animace
+        sprite_pravo = [liska_pravo_1, liska_pravo_2, liska_pravo_3, liska_pravo_4]
+        aktualni_sprite_lisky = sprite_pravo[snimek]
+
+    elif stisknuto[pygame.K_a] and mazlicek_equipped:
+        snimek = (pocitadlo // faktor_zpozdeni) % 4
+        sprite_vlevo = [liska_vlevo_1, liska_vlevo_2, liska_vlevo_3, liska_vlevo_4]
+        aktualni_sprite_lisky = sprite_vlevo[snimek]
+
+    elif mazlicek_equipped:
+        aktualni_sprite_lisky = liska_sedici        
+        
         
         
     # ROZCESTNIK
     if pozadi == rozcestnik:
-        if hrac_pozice_x < 250:
-            hrac_pozice_x = 250
+        if hrac_pozice_x < 290:
+            hrac_pozice_x = 290
         if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 118 :
             hrac_pozice_x = pozadi_sirka - hrac_velikostX - 118
             
@@ -2043,9 +2081,10 @@ while hra is True:
         okno.blit(hlad_dopad_text, (265 , 560))
         okno.blit(hlad_dopad_cislo_text, (265 , 575))
         zizen_dopad_text = statistika_font.render("Movement:", True, cerna)
-        zizen_dopad_rychlost_text = statistika_font.render(f"{rychlost_na_text()}", True, cerna)
         okno.blit(zizen_dopad_text, (370, 560))
-        okno.blit(zizen_dopad_rychlost_text, (370, 575))
+        if pozadi != rybareni and pozadi != krb:
+            zizen_dopad_rychlost_text = statistika_font.render(f"{rychlost_na_text()}", True, cerna)
+            okno.blit(zizen_dopad_rychlost_text, (370, 575))
         deprese_dopad_text = statistika_font.render("More clicks:", True, cerna)
         deprese_dopad_cislo_text = statistika_font.render(f"+{penalizace_kliknuti_z_deprese()}", True, cerna)
         okno.blit(deprese_dopad_text, (460, 560))
@@ -2306,7 +2345,7 @@ while hra is True:
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
     if mazlicek_equipped and (pozadi == rozcestnik or pozadi == garaz or pozadi == venek):
-        pygame.draw.rect(okno, cerna, (hrac_obrazovka_x - 60, hrac_pozice_y + 95, 90, 46))
+        okno.blit(aktualni_sprite_lisky, (hrac_obrazovka_x - 60, hrac_pozice_y + 105))
     
     if mazlicek_equipped and pozadi == bouda_odemcena and not inventar:
         pygame.draw.rect(okno, cerna, (za_unequip_tlacitko))
