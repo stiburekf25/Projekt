@@ -193,7 +193,7 @@ slot = sloty[i]
 #predmety
 coins = 100
 obsah_inventare = {
-    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
+    "Plechovka":0, "Bota":0, "Kapr":3, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
 posledni_ulovek = None
@@ -587,7 +587,7 @@ kapr_bouda = pygame.image.load("kapr_bouda.png")
 bouda_odemcena = pygame.image.load("bouda_odemcena.png")
 
 kapota = pygame.image.load("kapota.png")
-za_kapota_exit = pygame.draw.rect(okno, cerna, (19, 529 , 100, 50))
+za_kapota_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 kapota_exit = pygame.draw.rect(okno, cervena, (20, 530 , 100, 50))
 
 
@@ -725,6 +725,7 @@ give_kapry_font = pygame.font.SysFont("Aharoni", 40)
 exit_bouda_odemcena_font = pygame.font.SysFont("Aharoni", 40)
 equip_unequip_font = pygame.font.SysFont("Aharoni", 40)
 exit_automechanik_font = pygame.font.SysFont("Aharoni", 40)
+exit_kapota_font = pygame.font.SysFont("Aharoni", 40)
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -1098,6 +1099,7 @@ while hra is True:
         stojim_u_auta = hrac_pozice_x > 249 and hrac_pozice_x < 320
         
         if stojim_u_auta and stisknuto[pygame.K_e] and not inventar:
+            pozice_pred_autem = (hrac_pozice_x, hrac_pozice_y, kamera_x)
             pozadi = kapota
             hrac_pozice_x = 0
             kamera_x = 0
@@ -1121,6 +1123,21 @@ while hra is True:
         
         info_garaz_exit_obrazovka_x = 20 - kamera_x
         info_garaz_shop_jidlo_obrazovka_x = 490 - kamera_x
+    
+    if pozadi == kapota:
+        hrac_pozice_x = 0
+        kamera_x = 0
+        hrac_rychlost = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+        
+        if kapota_exit.collidepoint(mys_pozice) and mouse_click:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_autem
+            pozadi = rozcestnik
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
         
     if pozadi == garaz:
         hrac_rychlost = 4
@@ -1909,6 +1926,9 @@ while hra is True:
     elif pozadi == bouda_odemcena and exit_bouda_odemcena.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
+    elif pozadi == kapota and kapota_exit.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
     elif pozadi == bouda_zamcena and kapr_davani.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
@@ -2225,7 +2245,10 @@ while hra is True:
     
     if pozadi == kapota:
         pygame.draw.rect(okno, cerna, za_kapota_exit)     
-        pygame.draw.rect(okno, cervena, kapota_exit)     
+        pygame.draw.rect(okno, cervena, kapota_exit)
+        exit_kapota_text = exit_kapota_font.render("EXIT", True, cerna)
+        okno.blit(exit_kapota_text, (36, 543))
+        
     if pozadi == garaz and stojim_u_cesty_ven_z_garazi and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_garaz_exit_obrazovka_x - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_garaz_exit_obrazovka_x, 340, 50, 50))
