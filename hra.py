@@ -594,8 +594,6 @@ kapota_exit = pygame.draw.rect(okno, cervena, (20, 530 , 100, 50))
 automechanik = pygame.image.load("automechanik.png")
 za_automechanik_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 automechanik_exit = pygame.draw.rect(okno, seda, (20, 530 , 100, 50))
-za_sell_plechovka_automechanik = pygame.draw.rect(okno, Sseda, (49, 49, 52, 52))
-sell_plechovka_automechanik = pygame.draw.rect(okno, Sseda, (50, 50, 50, 50))
 
 
 pozadi = rozcestnik
@@ -2349,10 +2347,6 @@ while hra is True:
         exit_automechanik_text = exit_automechanik_font.render("EXIT", True, cerna)
         okno.blit(exit_automechanik_text, (36, 543))
 
-
-        pygame.draw.rect(okno, cerna, za_sell_plechovka_automechanik)
-        pygame.draw.rect(okno, Sseda, sell_plechovka_automechanik)
-        
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 898, 340, 50, 50))
