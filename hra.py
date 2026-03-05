@@ -595,6 +595,25 @@ automechanik = pygame.image.load("automechanik.png")
 za_automechanik_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 automechanik_exit = pygame.draw.rect(okno, seda, (20, 530 , 100, 50))
 
+pneumatiky_buy = pygame.image.load("pneumatiky_buy.png")
+motor_buy = pygame.image.load("motor_buy.png")
+benzin_buy = pygame.image.load("benzin_buy.png")
+brzdy_buy = pygame.image.load("brzdy_buy.png")
+
+automechanik_plechovky_sell = pygame.image.load("automechanik_plechovky_sell.png")
+
+
+pneumatiky_rect = pygame.Rect(195, 270, 200, 215)
+benzin_rect = pygame.Rect(398, 330, 95, 125)
+brzdy_rect = pygame.Rect(520, 400, 100, 54)
+motor_rect = pygame.Rect(630, 265, 150, 150)
+automechanik_sell_rect = pygame.Rect(630, 420, 160, 150)
+
+pneumatiky_pocet = 4
+pneumatiky_cena = 1000
+
+
+
 
 pozadi = rozcestnik
 
@@ -724,6 +743,9 @@ exit_bouda_odemcena_font = pygame.font.SysFont("Aharoni", 40)
 equip_unequip_font = pygame.font.SysFont("Aharoni", 40)
 exit_automechanik_font = pygame.font.SysFont("Aharoni", 40)
 exit_kapota_font = pygame.font.SysFont("Aharoni", 40)
+popisky_automechanik_font = pygame.font.SysFont("Aharoni", 30)
+pocty_automechanik_font = pygame.font.SysFont("Aharoni", 25)
+cena_automechanik_font = pygame.font.Font("CHAOS16.otf", 30)
 
 
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
@@ -2044,6 +2066,22 @@ while hra is True:
     elif pozadi == pozadi_shop and shop_mode == "buy" and baits_upgrade.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
+    elif pozadi == automechanik and pneumatiky_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == automechanik and benzin_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == automechanik and motor_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == automechanik and brzdy_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == automechanik and automechanik_sell_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+        
     elif baits_mode is None and inventar:
         if bread_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -2346,6 +2384,47 @@ while hra is True:
         pygame.draw.rect(okno, seda, automechanik_exit)
         exit_automechanik_text = exit_automechanik_font.render("EXIT", True, cerna)
         okno.blit(exit_automechanik_text, (36, 543))
+        
+        okno.blit(pneumatiky_buy, (195, 270))
+        okno.blit(benzin_buy, (390, 330))
+        okno.blit(motor_buy, (630, 265))
+        okno.blit(brzdy_buy, (520, 400))
+        okno.blit(automechanik_plechovky_sell, (630, 420))
+        
+        pneumatiky_rect = pygame.Rect(195, 270, 200, 215)
+        benzin_rect = pygame.Rect(398, 330, 95, 125)
+        brzdy_rect = pygame.Rect(520, 400, 100, 54)
+        motor_rect = pygame.Rect(630, 265, 150, 150)
+        automechanik_sell_rect = pygame.Rect(630, 420, 160, 150)
+        
+        if pneumatiky_rect.collidepoint(mys_pozice):
+            pygame.draw.rect(okno, cerna, (229, 139, 102, 122))
+            pygame.draw.rect(okno, hneda, (230, 140, 100, 120))
+            pneumatiky_napis_text = popisky_automechanik_font.render("TIRES", True, cerna)
+            okno.blit(pneumatiky_napis_text, (250, 150))
+            pocty_pneumatik_text = pocty_automechanik_font.render(f"{pneumatiky_pocet}/4", True, cerna)
+            zbyvajici_pneumatiky_text = pocty_automechanik_font.render("amt. left:", True, cerna)
+            okno.blit(zbyvajici_pneumatiky_text, (235, 175))
+            okno.blit(pocty_pneumatik_text, (267, 195))
+            cena_pneumatik_text = cena_automechanik_font.render(f"{pneumatiky_cena}", True, zluta)
+            okno.blit(cena_pneumatik_text, (240, 220))
+            okno.blit(coin_ikona, (290, 220))
+            
+            
+        if benzin_rect.collidepoint(mys_pozice):
+            pygame.draw.rect(okno, cerna, (394, 169, 102, 122))
+            pygame.draw.rect(okno, hneda, (395, 170, 100, 120))
+            
+        if brzdy_rect.collidepoint(mys_pozice):
+            pygame.draw.rect(okno, cerna, (519, 169, 102, 122))
+            pygame.draw.rect(okno, hneda, (520, 170, 100, 120))
+            
+        if motor_rect.collidepoint(mys_pozice):
+            pygame.draw.rect(okno, cerna, (669, 129, 102, 122))
+            pygame.draw.rect(okno, hneda, (670, 130, 100, 120))
+        
+        
+        
 
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
