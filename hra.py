@@ -591,20 +591,20 @@ kapota = pygame.image.load("kapota.png")
 za_kapota_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 kapota_exit = pygame.draw.rect(okno, cervena, (20, 530 , 100, 50))
 
-fix_polozky_velikost_x = 150
+fix_polozky_velikost_x = 300
 fix_polozky_velikost_y = 200
 
-za_pneumatika_fix = pygame.draw.rect(okno, cerna, (39, 99, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
-pneumatika_fix = pygame.draw.rect(okno, oranzova, (40, 100, fix_polozky_velikost_x, fix_polozky_velikost_y))
+za_pneumatika_fix = pygame.draw.rect(okno, cerna, (66, 49, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
+pneumatika_fix = pygame.draw.rect(okno, oranzova, (67, 50, fix_polozky_velikost_x, fix_polozky_velikost_y))
 
-za_benzin_fix = pygame.draw.rect(okno, cerna, (79 + fix_polozky_velikost_x, 99, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
-benzin_fix = pygame.draw.rect(okno, oranzova, (80 + fix_polozky_velikost_x, 100, fix_polozky_velikost_x, fix_polozky_velikost_y))
+za_benzin_fix = pygame.draw.rect(okno, cerna, (133 + fix_polozky_velikost_x, 49, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
+benzin_fix = pygame.draw.rect(okno, oranzova, (134 + fix_polozky_velikost_x, 50, fix_polozky_velikost_x, fix_polozky_velikost_y))
 
-za_brzdy_fix = pygame.draw.rect(okno, cerna, (119 + fix_polozky_velikost_x + fix_polozky_velikost_x, 99, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
-brzdy_fix = pygame.draw.rect(okno, oranzova, (120 + fix_polozky_velikost_x + fix_polozky_velikost_x, 100, fix_polozky_velikost_x, fix_polozky_velikost_y))
+za_brzdy_fix = pygame.draw.rect(okno, cerna, (66 , 299, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
+brzdy_fix = pygame.draw.rect(okno, oranzova, (67, 300, fix_polozky_velikost_x, fix_polozky_velikost_y))
 
-za_motor_fix = pygame.draw.rect(okno, cerna, (159 + fix_polozky_velikost_x + fix_polozky_velikost_x + fix_polozky_velikost_x, 99, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
-motor_fix = pygame.draw.rect(okno, oranzova, (160 + fix_polozky_velikost_x + fix_polozky_velikost_x + fix_polozky_velikost_x, 100, fix_polozky_velikost_x, fix_polozky_velikost_y))
+za_motor_fix = pygame.draw.rect(okno, cerna, (133 + fix_polozky_velikost_x, 299, fix_polozky_velikost_x + 2, fix_polozky_velikost_y + 2))
+motor_fix = pygame.draw.rect(okno, oranzova, (134 + fix_polozky_velikost_x, 300, fix_polozky_velikost_x, fix_polozky_velikost_y))
 
 automechanik = pygame.image.load("automechanik.png")
 za_automechanik_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
@@ -614,6 +614,7 @@ pneumatiky_buy = pygame.image.load("pneumatiky_buy.png")
 motor_buy = pygame.image.load("motor_buy.png")
 benzin_buy = pygame.image.load("benzin_buy.png")
 brzdy_buy = pygame.image.load("brzdy_buy.png")
+pneumatika = pygame.image.load("pneumatika.png")
 
 automechanik_plechovky_sell = pygame.image.load("automechanik_plechovky_sell.png")
 
@@ -2360,16 +2361,27 @@ while hra is True:
         
         pygame.draw.rect(okno, cerna, za_pneumatika_fix)
         pygame.draw.rect(okno, oranzova, pneumatika_fix)
+        okno.blit(pneumatika, (77, 60))
+        pocet_pneumatik_v_inv_text = pocty_automechanik_font.render(f"amount in inv: {pneumatiky_inv_pocet}", True , cerna)
+        okno.blit(pocet_pneumatik_v_inv_text, (76, 230))
         
         pygame.draw.rect(okno, cerna, za_benzin_fix)
         pygame.draw.rect(okno, oranzova, benzin_fix)
+        okno.blit(benzin_buy, (138 + fix_polozky_velikost_x, 60))
+        pocet_benzinu_v_inv_text = pocty_automechanik_font.render(f"amount in inv: {benzin_inv_pocet}", True, cerna)
+        okno.blit(pocet_benzinu_v_inv_text, (442, 230))
         
         pygame.draw.rect(okno, cerna, za_brzdy_fix)
         pygame.draw.rect(okno, oranzova, brzdy_fix)
+        okno.blit(brzdy_buy, (82, 350))
+        pocet_brzd_v_inv_text = pocty_automechanik_font.render(f"amount in inv: {brzdy_inv_pocet}", True, cerna)
+        okno.blit(pocet_brzd_v_inv_text, (76, 480))
         
         pygame.draw.rect(okno, cerna, za_motor_fix)
         pygame.draw.rect(okno, oranzova, motor_fix)
-        
+        okno.blit(motor_buy, (142 + fix_polozky_velikost_x, 310))
+        pocet_motoru_v_inv_text = pocty_automechanik_font.render(f"amount in inv: {motor_inv_pocet}", True, cerna)
+        okno.blit(pocet_motoru_v_inv_text, (442, 480))        
         
         
     if pozadi == garaz and stojim_u_cesty_ven_z_garazi and not prechod_lock_garaz_a_rozcestnik:
