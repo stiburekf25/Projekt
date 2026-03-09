@@ -196,7 +196,7 @@ slot = sloty[i]
 #predmety
 coins = 1000000
 obsah_inventare = {
-    "Plechovka":2, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
+    "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
 #Rybareni
 posledni_ulovek = None
@@ -605,7 +605,7 @@ sazka_aktualni = 0
 
 slot_vysledky = [0, 0, 0]  # indexy výsledků pro každý slot
 slot_animace_indexy = [0, 0, 0]  # indexy pro animaci točení
-slot_animace_rychlost = 3  # každých N framů přepne symbol
+slot_animace_rychlost = 10  # každých N framů přepne symbol
 
 # 4 symboly – nahraď svými obrázky
 slot_symboly = [
@@ -617,15 +617,15 @@ slot_symboly = [
 
 # Výhry podle kombinací (kolikrát sazka)
 slot_vyhry = {
-    (0, 0, 0): 2,    # 3x plechovka → 2x sazka
-    (1, 1, 1): 5,    # 3x kapr → 5x sazka
-    (2, 2, 2): 10,   # 3x štika → 10x sazka
-    (3, 3, 3): 50,   # 3x coin → 50x sazka (jackpot)
+    (0, 0, 0): 2,    # 3x bread → 2x sazka
+    (1, 1, 1): 5,    # 3x worm → 5x sazka
+    (2, 2, 2): 10,   # 3x corn → 10x sazka
+    (3, 3, 3): 50,   # 3x fish → 50x sazka (jackpot)
 }
 
 slot_zprava = ""
 slot_zprava_cas = 0
-slot_zprava_doba = 2500
+slot_zprava_doba = 2000
 
 
 
@@ -1128,7 +1128,7 @@ while animace_start_auto_ze_zadu is True:
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SAZZ[index], (0, 0))
     
-    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 5: #15  # ← 3x
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 3: #15  # ← 3x
         animace_start_auto_ze_zadu = False
         animace_start_auto_ze_predu = True
     
@@ -1152,7 +1152,7 @@ while animace_start_auto_ze_predu is True:
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SAZP[index], (0, 0))
     
-    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 5: #15  # ← 3x
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 3: #15  # ← 3x
         animace_start_auto_ze_predu = False
         animace_start_pepa_1 = True
     
@@ -1713,8 +1713,42 @@ while hra is True:
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+            
+    if not toceni_znaku:
+            for rect, cena in [(sazka_50, sazka_50_cena), (sazka_200, sazka_200_cena),
+                               (sazka_500, sazka_500_cena), (sazka_1000, sazka_1000_cena)]:
+                if rect.collidepoint(mys_pozice) and mouse_click and coins >= cena:
+                    sazka_aktualni = cena
+                    coins -= cena
+                    toceni_znaku = True
+                    toceni_cas_start = pygame.time.get_ticks()
+                    slot_zprava = ""
+                    break
+                
+    if toceni_znaku and pygame.time.get_ticks() - toceni_cas_start > toceni_doba:
+        toceni_znaku = False
+        slot_vysledky = [random.randint(0, 3) for _ in range(3)]
+        kombinace = tuple(slot_vysledky)
+        slot_animace_indexy = list(slot_vysledky)  # zastav na výsledku
         
+        if kombinace in slot_vyhry:
+                vyhrano = sazka_aktualni * slot_vyhry[kombinace]
+                coins += vyhrano
+                slot_zprava = f"WIN! +{vyhrano}"
+        elif slot_vysledky[0] == slot_vysledky[1] or \
+             slot_vysledky[1] == slot_vysledky[2] or \
+             slot_vysledky[0] == slot_vysledky[2]:
+            coins += sazka_aktualni
+            slot_zprava = f"Almost! +{sazka_aktualni}"
+        else:
+            slot_zprava = f"No luck... -{sazka_aktualni}"
         
+        slot_zprava_cas = pygame.time.get_ticks()
+            
+    # Animace točení – rychlé přeskakování symbolů
+    if toceni_znaku:
+        if pocitadlo % slot_animace_rychlost == 0:
+            slot_animace_indexy = [random.randint(0, 3) for _ in range(3)]
             
         
     
@@ -2653,44 +2687,84 @@ while hra is True:
         okno.blit(zizen_info, (588, 565, 100, 50))
         okno.blit(zizen_text, (586, 545, 100, 50))
     
-    if pozadi == slotmachine and not toceni_znaku:
-        pygame.draw.rect(okno, cerna, za_slotmachine_exit)
-        pygame.draw.rect(okno, hneda, slotmachine_exit)
-        exit_slotmachine_text = exit_kapota_font.render("EXIT", True, cerna)
-        okno.blit(exit_slotmachine_text, (36, 543))
+    if pozadi == slotmachine:
+        if not toceni_znaku:
+            pygame.draw.rect(okno, cerna, za_slotmachine_exit)
+            pygame.draw.rect(okno, hneda, slotmachine_exit)
+            exit_slotmachine_text = exit_kapota_font.render("EXIT", True, cerna)
+            okno.blit(exit_slotmachine_text, (36, 543))
+            
+            pygame.draw.rect(okno, cerna, za_sazka_50)
+            pygame.draw.rect(okno, zluta_bet, sazka_50)
+            
+            pygame.draw.rect(okno, cerna, za_sazka_200)
+            pygame.draw.rect(okno, zluta_bet, sazka_200)
+            
+            pygame.draw.rect(okno, cerna, za_sazka_500)
+            pygame.draw.rect(okno, zluta_bet, sazka_500)
+            
+            pygame.draw.rect(okno, cerna, za_sazka_1000)
+            pygame.draw.rect(okno, zluta_bet, sazka_1000)
+            
+            bet_napis_text = bet_napis_font.render("BET:", True, cerna)
+            bet_50_cena_text = bet_cena_font.render(f"{sazka_50_cena}", True, cerna)
+            bet_200_cena_text = bet_cena_font.render(f"{sazka_200_cena}", True, cerna)
+            bet_500_cena_text = bet_cena_font.render(f"{sazka_500_cena}", True, cerna)
+            bet_1000_cena_text = bet_cena_font.render(f"{sazka_1000_cena}", True, cerna)
+            
+            okno.blit(bet_napis_text, (115, 406))
+            okno.blit(bet_napis_text, (295, 406))
+            okno.blit(bet_napis_text, (475, 406))
+            okno.blit(bet_napis_text, (655, 406))
+            
+            okno.blit(bet_50_cena_text, (105, 436))
+            okno.blit(bet_200_cena_text, (275, 436))
+            okno.blit(bet_500_cena_text, (455, 436))
+            okno.blit(bet_1000_cena_text, (630, 436))
+            
+            okno.blit(coin_ikona, (135, 436))
+            okno.blit(coin_ikona, (320, 436))
+            okno.blit(coin_ikona, (500, 436))
+            okno.blit(coin_ikona, (685, 436))
         
-        pygame.draw.rect(okno, cerna, za_sazka_50)
-        pygame.draw.rect(okno, zluta_bet, sazka_50)
-        
-        pygame.draw.rect(okno, cerna, za_sazka_200)
-        pygame.draw.rect(okno, zluta_bet, sazka_200)
-        
-        pygame.draw.rect(okno, cerna, za_sazka_500)
-        pygame.draw.rect(okno, zluta_bet, sazka_500)
-        
-        pygame.draw.rect(okno, cerna, za_sazka_1000)
-        pygame.draw.rect(okno, zluta_bet, sazka_1000)
-        
-        bet_napis_text = bet_napis_font.render("BET:", True, cerna)
-        bet_50_cena_text = bet_cena_font.render(f"{sazka_50_cena}", True, cerna)
-        bet_200_cena_text = bet_cena_font.render(f"{sazka_200_cena}", True, cerna)
-        bet_500_cena_text = bet_cena_font.render(f"{sazka_500_cena}", True, cerna)
-        bet_1000_cena_text = bet_cena_font.render(f"{sazka_1000_cena}", True, cerna)
-        
-        okno.blit(bet_napis_text, (115, 406))
-        okno.blit(bet_napis_text, (295, 406))
-        okno.blit(bet_napis_text, (475, 406))
-        okno.blit(bet_napis_text, (655, 406))
-        
-        okno.blit(bet_50_cena_text, (105, 436))
-        okno.blit(bet_200_cena_text, (275, 436))
-        okno.blit(bet_500_cena_text, (455, 436))
-        okno.blit(bet_1000_cena_text, (630, 436))
-        
-        okno.blit(coin_ikona, (135, 436))
-        okno.blit(coin_ikona, (320, 436))
-        okno.blit(coin_ikona, (500, 436))
-        okno.blit(coin_ikona, (685, 436))
+        slot_sirka_box = 100
+        slot_vyska_box = 100
+        slot_mezera = 20
+        slot_start_x = (800 - (3 * slot_sirka_box + 2 * slot_mezera)) // 2
+        slot_y = 200
+
+        for i in range(3):
+            box_x = slot_start_x + i * (slot_sirka_box + slot_mezera)
+            # Rámeček slotu
+            pygame.draw.rect(okno, cerna, (box_x - 3, slot_y - 3, slot_sirka_box + 6, slot_vyska_box + 6))
+            pygame.draw.rect(okno, bila, (box_x, slot_y, slot_sirka_box, slot_vyska_box))
+            # Symbol
+            symbol = pygame.transform.scale(slot_symboly[slot_animace_indexy[i]], (80, 80))
+            okno.blit(symbol, (box_x + 10, slot_y + 10))
+
+
+        # --- Zpráva výhra/prohra ---
+        if slot_zprava and pygame.time.get_ticks() - slot_zprava_cas < slot_zprava_doba:
+            if "WIN" in slot_zprava:
+                barva = zelena
+            elif "Almost" in slot_zprava:
+                barva = zluta_bet
+            else:
+                barva = cervena
+            zprava_font = pygame.font.SysFont("Aharoni", 50)
+            zprava_text = zprava_font.render(slot_zprava, True, barva)
+            zprava_rect = zprava_text.get_rect(center=(400, 340))
+            okno.blit(zprava_text, zprava_rect)
+            
+        # --- Tabulka výher ---
+        info_font = pygame.font.SysFont("Aharoni", 18)
+        payout_lines = [
+            "3x BREAD = x2   3x WORM = x5",
+            "3x CORN = x10   3x FISH HEAD = x50 JACKPOT",
+        ]
+        for i, line in enumerate(payout_lines):
+            t = info_font.render(line, True, bila)
+            okno.blit(t, (400 - t.get_width()//2, 155 + i * 22))
         
     if pozadi == rozcestnik and stojim_u_auta:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
