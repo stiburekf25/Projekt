@@ -998,7 +998,11 @@ SAPONE = [pygame.image.load(f"sapone{k}.png") for k in range(1, 59)]
 animace_start_pepa_brzdy = False
 SAB = [pygame.image.load(f"sab{y}.png") for y in range(1, 4)]
 animace_start_pepa_brzdeni_auta = False
-SABA = [pygame.image.load(f"saba{c}.png") for c in range(1, 29)]
+SABA = [pygame.image.load(f"saba{c}.png") for c in range(1, 31)]
+animace_start_kufr = False
+SAK = [pygame.image.load(f"sak{s}.png") for s in range(1, 11)]
+animace_start_promluva = False
+SAR = [pygame.image.load(f"sapr{s}.png") for s in range(1, 42)]
 
 mazlicek_odemceny = False
 mazlicek_equipped = False
@@ -1021,8 +1025,10 @@ while not hra and not animace_start:
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 animace_start = True
-                #hra = True
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
+            
+            
                 
             
             if quit_tlacitko_rect.collidepoint(mys_pozice):
@@ -1040,6 +1046,7 @@ while not hra and not animace_start:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+    
         
     if not hra:
         pocet_snimku = 50
@@ -1082,14 +1089,16 @@ while animace_start is True:
     pocitadlo += 1
     
     pocet_snimku = len(SA)
-    faktor_zpozdeni = 10#200
+    faktor_zpozdeni = 185#200
     
-    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
-    okno.blit(SA[index], (0, 0))        
     
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start = False
         animace_start_auto_prijezd = True
+        break
+        
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SA[index], (0, 0))        
         
     clock.tick(60)
     pygame.display.flip()    
@@ -1101,18 +1110,20 @@ while animace_start_auto_prijezd is True:
             pygame.quit()
             sys.exit()
 
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
     pocitadlo += 1
     
     pocet_snimku = len(SAP)
-    faktor_zpozdeni = 2#10
+    faktor_zpozdeni = 10#10
     
-    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
-    okno.blit(SAP[index], (0, 0))
     
-    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 10: #15  # ← 3x
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 6: #15  # ← 3x
         animace_start_auto_prijezd = False
         animace_start_auto_ze_zadu = True
+        break
 
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SAP[index], (0, 0))
         
     clock.tick(60)
     pygame.display.flip()    
@@ -1127,16 +1138,16 @@ while animace_start_auto_ze_zadu is True:
     pocitadlo += 1
     
     pocet_snimku = len(SAZZ)
-    faktor_zpozdeni = 5#20
+    faktor_zpozdeni = 10#20
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 5: #15  # ← 3x
+        animace_start_auto_ze_zadu = False
+        animace_start_auto_ze_predu = True
+        break
     
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SAZZ[index], (0, 0))
-    
-    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 3: #15  # ← 3x
-        animace_start_auto_ze_zadu = False
-        animace_start_auto_ze_predu = True
-    
-
         
     clock.tick(60)
     pygame.display.flip()    
@@ -1151,16 +1162,16 @@ while animace_start_auto_ze_predu is True:
     pocitadlo += 1
     
     pocet_snimku = len(SAZP)
-    faktor_zpozdeni = 5#20
+    faktor_zpozdeni = 10#20
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 5: #15  # ← 3x
+        animace_start_auto_ze_predu = False
+        animace_start_pepa_1 = True
+        break
     
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SAZP[index], (0, 0))
-    
-    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 3: #15  # ← 3x
-        animace_start_auto_ze_predu = False
-        animace_start_pepa_1 = True
-    
-
         
     clock.tick(60)
     pygame.display.flip()
@@ -1175,14 +1186,16 @@ while animace_start_pepa_1 is True:
     pocitadlo += 1
     
     pocet_snimku = len(SAPONE)
-    faktor_zpozdeni = 5#20
+    faktor_zpozdeni = 20#20
     
-    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
-    okno.blit(SAPONE[index], (0, 0))
     
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start_pepa_1 = False 
         animace_start_pepa_brzdy = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SAPONE[index], (0, 0))
 
     clock.tick(60)
     pygame.display.flip()
@@ -1197,14 +1210,16 @@ while animace_start_pepa_brzdy is True:
     pocitadlo += 1
     
     pocet_snimku = len(SAB)
-    faktor_zpozdeni = 23
+    faktor_zpozdeni = 25
     
-    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
-    okno.blit(SAB[index], (0, 0))
     
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku: 
         animace_start_pepa_brzdy = False
         animace_start_pepa_brzdeni_auta = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SAB[index], (0, 0))
 
     clock.tick(60)
     pygame.display.flip()
@@ -1219,14 +1234,64 @@ while animace_start_pepa_brzdeni_auta is True:
     pocitadlo += 1
     
     pocet_snimku = len(SABA)
-    faktor_zpozdeni = 15
+    faktor_zpozdeni = 14
     
-    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
-    okno.blit(SABA[index], (0, 0))
     
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku: 
         animace_start_pepa_brzdeni_auta = False
+        animace_start_kufr = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SABA[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
+
+pocitadlo = 0
+while animace_start_kufr is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SAK)
+    faktor_zpozdeni = 15
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
+        animace_start_kufr = False
+        animace_start_promluva = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SAK[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
+
+pocitadlo = 0
+while animace_start_promluva is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SAR)
+    faktor_zpozdeni = 12
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
+        animace_start_promluva = False
         hra = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SAR[index], (0, 0))
 
     clock.tick(60)
     pygame.display.flip()
