@@ -1024,7 +1024,8 @@ while not hra and not animace_start:
             mys_pozice = pygame.mouse.get_pos()
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
-                animace_start = True
+                hra = True
+                #animace_start = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
             
@@ -3182,9 +3183,9 @@ while hra is True:
     if pozadi == venek and stojim_u_shopu:
         info_shop_obrazovka_x = info_shop - kamera_x
         
-        pygame.draw.rect(okno, cerna, (info_shop_obrazovka_x -1, 359, 52, 52))
-        pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x, 360, 50, 50))
-        okno.blit(E_text, (info_shop_obrazovka_x + (50/2 - E_text.get_size()[0] / 2), 372))
+        pygame.draw.rect(okno, cerna, (info_shop_obrazovka_x -1 + 5, 359, 52, 52))
+        pygame.draw.rect(okno, (bila), (info_shop_obrazovka_x + 5, 360, 50, 50))
+        okno.blit(E_text, (info_shop_obrazovka_x + 5 + (50/2 - E_text.get_size()[0] / 2), 372))
     
     if pozadi == jezero and stojim_u_leva_lod and not prechod_lock_venek_a_jezero:
         pygame.draw.rect(okno, cerna, (21, 339, 52, 52)) 
