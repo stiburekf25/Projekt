@@ -194,7 +194,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 1000000
+coins = 100
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -983,7 +983,8 @@ quit_tlacitko_vetsi = pygame.image.load("quit_tlacitko_vetsi.png")
 quit_tlacitko_vetsi_rect = quit_tlacitko_vetsi.get_rect(center=(30, 570))
 
 #Animace
-hra = False 
+hra = False
+menu = False
 MN = [pygame.image.load(f"{i}.png") for i in range(1, 51)]
 animace_start = False
 SA = [pygame.image.load(f"s{a}.png") for a in range(1, 13)]
@@ -1003,6 +1004,16 @@ animace_start_kufr = False
 SAK = [pygame.image.load(f"sak{s}.png") for s in range(1, 11)]
 animace_start_promluva = False
 SAR = [pygame.image.load(f"sapr{s}.png") for s in range(1, 42)]
+animace_konec_opraveni_auta = False
+SKO = [pygame.image.load(f"sko{x}.png") for x in range(1, 10)]
+animace_konec_zlomeni_prutu = False
+SKZ = [pygame.image.load(f"skz{r}.png") for r in range(1, 24)]
+animace_konec_kufr = False
+SKK = [pygame.image.load(f"skk{j}.png") for j in range(1, 23)]
+animace_konec = False
+SK = [pygame.image.load(f"sk{u}.png") for u in range(1, 7)]
+
+
 
 mazlicek_odemceny = False
 mazlicek_equipped = False
@@ -1014,7 +1025,7 @@ exit_bouda_odemcena_text = exit_bouda_odemcena_font.render("EXIT", True , cerna)
 equip_text = equip_unequip_font.render("EQUIP", True, cerna)
 unequip_text = equip_unequip_font.render("UNEQUIP", True , cerna)
 
-while not hra and not animace_start:
+while not menu and not animace_start:
     for udalost in pygame.event.get():
         if udalost.type == pygame.QUIT:
             pygame.quit()
@@ -1024,8 +1035,9 @@ while not hra and not animace_start:
             mys_pozice = pygame.mouse.get_pos()
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
-                hra = True
-                #animace_start = True
+                menu = True
+                #hra = True
+                animace_start = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
             
@@ -1041,15 +1053,15 @@ while not hra and not animace_start:
     pocitadlo += 1
 
                 
-    if not hra and play_tlacitko_rect.collidepoint(mys_pozice):
+    if not menu and play_tlacitko_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-    elif not hra and quit_tlacitko_rect.collidepoint(mys_pozice):
+    elif not menu and quit_tlacitko_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
     
         
-    if not hra:
+    if not menu:
         pocet_snimku = 50
         faktor_zpozdeni = 2
         
@@ -1296,6 +1308,9 @@ while animace_start_promluva is True:
 
     clock.tick(60)
     pygame.display.flip()
+
+
+
 
 
 while hra is True:
@@ -1566,7 +1581,9 @@ while hra is True:
             maxed_out_motor =  True
         
         if maxed_out_benzin and maxed_out_brzdy and maxed_out_motor and maxed_out_pneumatiky and kapota_konec_hry.collidepoint(mys_pozice) and mouse_click:
-            pass
+            hra = False
+            animace_konec_opraveni_auta = True
+            break
             
         
     if pozadi == garaz:
@@ -3703,4 +3720,105 @@ while hra is True:
     clock.tick(60)
     pygame.display.flip()
     
+
+pocitadlo = 0
     
+while animace_konec_opraveni_auta is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SKO)
+    faktor_zpozdeni = 15
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
+        animace_konec_opraveni_auta = False
+        animace_konec_zlomeni_prutu = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SKO[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
+
+pocitadlo = 0
+
+while animace_konec_zlomeni_prutu is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SKZ)
+    faktor_zpozdeni = 15
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
+        animace_konec_zlomeni_prutu = False
+        animace_konec_kufr = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SKZ[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
+
+
+pocitadlo = 0
+
+while animace_konec_kufr is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SKK)
+    faktor_zpozdeni = 15
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
+        animace_konec_kufr = False
+        animace_konec = True
+        break
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SKK[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
+
+
+pocitadlo = 0
+
+while animace_konec is True:
+    for udalost in pygame.event.get():
+        if udalost.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+    
+    pocitadlo += 1
+    
+    pocet_snimku = len(SK)
+    faktor_zpozdeni = 15
+    
+    
+    if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 10:
+        animace_konec = False
+        menu = False
+        
+
+    index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
+    okno.blit(SK[index], (0, 0))
+
+    clock.tick(60)
+    pygame.display.flip()
