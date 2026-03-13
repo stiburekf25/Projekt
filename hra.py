@@ -898,6 +898,8 @@ prechod_lock_dum_a_krb = False
 prechod_lock_garaz_a_rozcestnik = False
 prechod_lock_pred_lesem_a_garaz = False
 prechod_lock_pred_garazi_a_pred_lesem = False
+prechod_lock_odchod_z_lesa = False
+prechod_lock_cesta_do_lesa = False
 
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
@@ -1785,6 +1787,9 @@ while hra is True:
                 
     
     if pozadi == cesta_pred_lesem:
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+
         if hrac_pozice_x < 60:
             hrac_pozice_x = 60
         if hrac_pozice_x > 1050:
@@ -1814,7 +1819,68 @@ while hra is True:
         
         if not stojim_u_cesty_do_garazi:
             prechod_lock_pred_lesem_a_garaz = False
+        
+        stojim_u_holky = hrac_pozice_x > 260 and hrac_pozice_x < 530
+        
+        
+        
+        
+        
+
             
+        stojim_pred_lesem = hrac_pozice_x > 1000 and hrac_pozice_x < 1051
+        
+        if stojim_pred_lesem and stisknuto[pygame.K_e] and not inventar and not prechod_lock_cesta_do_lesa:
+            
+            pozadi = les
+            prechod_lock_cesta_do_lesa = True
+            hrac_pozice_x = 200
+            kamera_x = 0
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if not stojim_pred_lesem:
+            prechod_lock_cesta_do_lesa = False 
+    
+    if pozadi == les:
+        if hrac_pozice_x < 80:
+            hrac_pozice_x = 80
+        if hrac_pozice_x > 1300:
+            hrac_pozice_x = 1300 
+                
+            
+        if hrac_obrazovka_x > prava_zona:
+            kamera_x += hrac_aktualni_rychlost
+        if hrac_obrazovka_x < leva_zona:
+            kamera_x -= hrac_aktualni_rychlost
+                
+        if kamera_x < 0:
+            kamera_x = 0
+        if kamera_x > pozadi_sirka - okno_sirka:
+            kamera_x = pozadi_sirka - okno_sirka
+            
+        stojim_u_cesty_ven_z_lesa = hrac_pozice_x > 59 and hrac_pozice_x < 100
+        
+        if stojim_u_cesty_ven_z_lesa and stisknuto[pygame.K_e] and not inventar and not prechod_lock_odchod_z_lesa:
+            pozadi = cesta_pred_lesem
+            prechod_lock_odchod_z_lesa = True
+            hrac_pozice_x = 999
+            hrac_rychlost = 4
+            kamera_x = 600
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if not stojim_u_cesty_ven_z_lesa:
+            prechod_lock_odchod_z_lesa = False
+        
+        stojim_u_shopu_boruvky = hrac_pozice_x > 1000 and hrac_pozice_x < 1300
+        
+        
+        
+        
+        
+        
         
         
     #BAR
@@ -3235,7 +3301,30 @@ while hra is True:
         pygame.draw.rect(okno, cerna, (20 - 1, 339, 52, 52))
         pygame.draw.rect(okno, bila, (20, 340, 50, 50))
         okno.blit(E_text, (20 + (50/2 - E_text.get_size()[0] / 2), 352))
-
+        
+    if pozadi == cesta_pred_lesem and stojim_pred_lesem and not prechod_lock_cesta_do_lesa:
+        e_les_x = 1250 - kamera_x
+        pygame.draw.rect(okno, cerna, (e_les_x - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (e_les_x, 340, 50, 50))
+        okno.blit(E_text, (e_les_x + (50/2 - E_text.get_size()[0] / 2), 352))
+    
+    if pozadi == cesta_pred_lesem and stojim_u_holky:
+        e_les_x = 432 - kamera_x
+        pygame.draw.rect(okno, cerna, (e_les_x - 1, 219, 52, 52))
+        pygame.draw.rect(okno, bila, (e_les_x, 220, 50, 50))
+        okno.blit(E_text, (e_les_x + (50/2 - E_text.get_size()[0] / 2), 232))
+    
+    if pozadi == les and stojim_u_cesty_ven_z_lesa and not prechod_lock_odchod_z_lesa:
+        pygame.draw.rect(okno, cerna, (20 - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (20, 340, 50, 50))
+        okno.blit(E_text, (20 + (50/2 - E_text.get_size()[0] / 2), 352))
+    
+    if pozadi == les and stojim_u_shopu_boruvky:
+        e_boruvky_x = 1192 - kamera_x  
+        pygame.draw.rect(okno, cerna, (e_boruvky_x - 1, 234, 52, 52))
+        pygame.draw.rect(okno, bila, (e_boruvky_x, 235, 50, 50))
+        okno.blit(E_text, (e_boruvky_x + (50/2 - E_text.get_size()[0] / 2), 247))
+        
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 898, 340, 50, 50))
