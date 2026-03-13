@@ -1700,6 +1700,7 @@ while hra is True:
             hrac_pozice_x = 150
             hrac_rychlost = 4
             kamera_x = 0
+            hrac_obrazovka_x = hrac_pozice_x - kamera_x
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
             
