@@ -194,7 +194,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 100
+coins = 6676767
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -699,6 +699,8 @@ brzdy_buy = pygame.image.load("brzdy_buy.png")
 pneumatika = pygame.image.load("pneumatika.png")
 motor_kapota = pygame.image.load("motor_kapota.png")
 hotovo = pygame.image.load("hotovo.png")
+cesta_pred_lesem = pygame.image.load("cesta_pred_lesem.png")
+les = pygame.image.load("les.png")
 
 automechanik_plechovky_sell = pygame.image.load("automechanik_plechovky_sell.png")
 
@@ -894,6 +896,8 @@ prechod_lock_venek_a_jezero = False
 prechod_lock_dum_a_venek = False
 prechod_lock_dum_a_krb = False
 prechod_lock_garaz_a_rozcestnik = False
+prechod_lock_pred_lesem_a_garaz = False
+prechod_lock_pred_garazi_a_pred_lesem = False
 
 
 # CYKLICKE VYKRESLOVANI FRAMU HRY
@@ -1036,8 +1040,8 @@ while not menu and not animace_start:
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 menu = True
-                #hra = True
-                animace_start = True
+                hra = True
+                #animace_start = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
             
@@ -1314,7 +1318,7 @@ while animace_start_promluva is True:
 
 
 while hra is True:
-    #print()
+    print(hrac_pozice_x, kamera_x)
 # OVLADANI HRY HRACEM
     mouse_click = False
     
@@ -1593,8 +1597,8 @@ while hra is True:
         
         if hrac_pozice_x < 60:
             hrac_pozice_x = 60
-        if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 170:
-            hrac_pozice_x = pozadi_sirka - hrac_velikostX - 170
+        if hrac_pozice_x > pozadi_sirka - hrac_velikostX - 100:
+            hrac_pozice_x = pozadi_sirka - hrac_velikostX - 100
                 
             
         if hrac_obrazovka_x > prava_zona:
@@ -1685,7 +1689,20 @@ while hra is True:
             kamera_x = 0
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
-    
+        
+        stojim_u_garaz_a_cesta_do_lesa = hrac_pozice_x > 1350 and hrac_pozice_x < 1600
+        
+        if stojim_u_garaz_a_cesta_do_lesa and stisknuto[pygame.K_e] and not inventar and not prechod_lock_pred_garazi_a_pred_lesem:
+            pozadi = cesta_pred_lesem
+            prechod_lock_pred_garazi_a_pred_lesem = True
+            hrac_pozice_x = 150
+            hrac_rychlost = 4
+            kamera_x = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
+        if not stojim_u_garaz_a_cesta_do_lesa:
+            prechod_lock_pred_garazi_a_pred_lesem = False
             
     if pozadi == pozadi_shop_jidlo:
         hrac_rychlost = 0
@@ -1723,7 +1740,7 @@ while hra is True:
                 hlad += rybi_prsty_hunger
                 zizen += rybi_prsty_zizen
                 coins -= rybi_prsty_cena
-    
+
     if pozadi == automechanik:
         hrac_rychlost = 0
         pozadi_sirka = pozadi.get_width()
@@ -1766,9 +1783,39 @@ while hra is True:
                 coins += plechovka_sell_automechanik_cena
                 odeber_z_inventare("Plechovka")           
                 
-        
-        
+    
+    if pozadi == cesta_pred_lesem:
+        if hrac_pozice_x < 60:
+            hrac_pozice_x = 60
+        if hrac_pozice_x > 1050:
+            hrac_pozice_x = 1050 
+                
             
+        if hrac_obrazovka_x > prava_zona:
+            kamera_x += hrac_aktualni_rychlost
+        if hrac_obrazovka_x < leva_zona:
+            kamera_x -= hrac_aktualni_rychlost
+                
+        if kamera_x < 0:
+            kamera_x = 0
+        if kamera_x > pozadi_sirka - okno_sirka:
+            kamera_x = pozadi_sirka - okno_sirka 
+            
+        stojim_u_cesty_do_garazi = hrac_pozice_x > 20 and hrac_pozice_x < 140
+        
+        if stojim_u_cesty_do_garazi and stisknuto[pygame.K_e] and not inventar and not prechod_lock_pred_lesem_a_garaz:
+            pozadi = garaz
+            prechod_lock_pred_lesem_a_garaz = True
+            hrac_pozice_x = 1346
+            kamera_x = 848
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if not stojim_u_cesty_do_garazi:
+            prechod_lock_pred_lesem_a_garaz = False
+            
+        
         
     #BAR
         
@@ -3098,6 +3145,13 @@ while hra is True:
         pygame.draw.rect(okno, cerna, (e_garaz_x - 1, 209, 52, 52))
         pygame.draw.rect(okno, bila, (e_garaz_x, 210, 50, 50))
         okno.blit(E_text, (e_garaz_x + (50/2 - E_text.get_size()[0] / 2), 222))
+        
+    if pozadi == garaz and stojim_u_garaz_a_cesta_do_lesa and not prechod_lock_pred_garazi_a_pred_lesem:
+        e_shop_jidlo_x = 1570 - kamera_x  
+        pygame.draw.rect(okno, cerna, (e_shop_jidlo_x - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (e_shop_jidlo_x, 340, 50, 50))
+        okno.blit(E_text, (e_shop_jidlo_x + (50/2 - E_text.get_size()[0] / 2), 352))
+
     
     if pozadi == automechanik:
         pygame.draw.rect(okno, cerna, za_automechanik_exit)
@@ -3176,6 +3230,11 @@ while hra is True:
                 cena_motoru_text = cena_automechanik_font.render(f"{motor_cena}", True, zluta)
                 okno.blit(cena_motoru_text, (680, 210))
                 okno.blit(coin_ikona, (734, 210))                    
+        
+    if pozadi == cesta_pred_lesem and stojim_u_cesty_do_garazi and not prechod_lock_pred_lesem_a_garaz:
+        pygame.draw.rect(okno, cerna, (20 - 1, 339, 52, 52))
+        pygame.draw.rect(okno, bila, (20, 340, 50, 50))
+        okno.blit(E_text, (20 + (50/2 - E_text.get_size()[0] / 2), 352))
 
     if pozadi == rozcestnik and stojim_u_cesty_mezi_bar_a_auto and not prechod_lock_garaz_a_rozcestnik:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 899, 339, 52, 52))
