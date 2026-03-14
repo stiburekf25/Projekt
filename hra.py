@@ -1997,6 +1997,11 @@ while hra is True:
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
         
+        if boruvky_sell.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if boruvky_pocet_v_inv >= 5:
+                boruvky_pocet_v_inv -= 5
+                coins += odmena_za_boruvky_cena
+        
         
         
         
@@ -2878,7 +2883,9 @@ while hra is True:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
             
                 
-    
+    elif pozadi == shop_boruvky and boruvky_sell.collidepoint(mys_pozice) and not inventar:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
     
     
     elif baits_mode is None and inventar:
