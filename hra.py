@@ -892,7 +892,7 @@ sell_boruvky_odmena_font = pygame.font.Font("CHAOS16.otf", 65)
 popisky_upgradu_boruvky_font = pygame.font.SysFont("Aharoni", 30)
 cena_upgradu_boruvky_font = pygame.font.Font("CHAOS16.otf", 45)
 current_upgrade_font = pygame.font.SysFont("Aharoni", 20)
-
+hlaska_boruvky_font = pygame.font.SysFont("Aharoni", 30)
 
 
 
@@ -1091,13 +1091,25 @@ max_kosik_na_boruvky = 5
 sber_boruvek_nasobeni = 1
 
 kosik_upgrade_level = 0
-max_kosik_upgrade_level = 3
+max_kosik_upgrade_level = 4
 
 sber_vice_boruvek_upgrade_level = 0
 max_sber_vice_boruvek_upgrade_level = 3
 
 cekani_boruvky_upgrade_level = 0
 max_cekani_boruvky_upgrade_level = 4
+
+soubor_boruvky = open("boruvky.txt", "r", encoding="utf-8")
+
+seznam_vet_boruvky = []
+
+for radek in soubor_boruvky:
+    seznam_vet_boruvky.append(radek[:-1])
+
+soubor_boruvky.close()
+
+boruvky_hlaska = random.choice(seznam_vet_boruvky)
+hlaska_boruvky_text = hlaska_boruvky_font.render(boruvky_hlaska, True, cerna)
 
 
 
@@ -1950,6 +1962,8 @@ while hra is True:
         
         if stojim_u_shopu_boruvky and stisknuto[pygame.K_e] and not inventar:
             pozadi = shop_boruvky
+            boruvky_hlaska = random.choice(seznam_vet_boruvky)
+            hlaska_boruvky_text = hlaska_boruvky_font.render(boruvky_hlaska, True, cerna)
             pozice_pred_shop_boruvky = (hrac_pozice_x, hrac_pozice_y, kamera_x)
             hrac_rychlost = 0
             pozadi_sirka = pozadi.get_width()
@@ -1970,9 +1984,10 @@ while hra is True:
                 screen_x = b[0] - kamera_x
                 boruvka_rect = pygame.Rect(screen_x, b[1], boruvka_velikost, boruvka_velikost)
                 if boruvka_rect.collidepoint(mys_pozice) and mouse_click:
-                    b[2] = False
-                    b[3] = aktualni_cas
-                    boruvky_pocet_v_inv += pocet_boruvek_pri_sebrani
+                    if boruvky_pocet_v_inv < max_kosik_na_boruvky:
+                        b[2] = False
+                        b[3] = aktualni_cas
+                        boruvky_pocet_v_inv += pocet_boruvek_pri_sebrani
                     
                     
                     
@@ -2001,6 +2016,32 @@ while hra is True:
             if boruvky_pocet_v_inv >= 5:
                 boruvky_pocet_v_inv -= 5
                 coins += odmena_za_boruvky_cena
+            
+        if kosik_na_boruvky_upgrade.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if kosik_upgrade_level < max_kosik_upgrade_level:
+                if boruvky_pocet_v_inv >= cena_kosik_na_boruvky:
+                    kosik_upgrade_level += 1
+                    max_kosik_na_boruvky += 10
+                    boruvky_pocet_v_inv -= cena_kosik_na_boruvky
+                    cena_kosik_na_boruvky = int(cena_kosik_na_boruvky * 2)
+    
+        if sber_vice_boruvek.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if sber_vice_boruvek_upgrade_level < max_sber_vice_boruvek_upgrade_level:
+                if boruvky_pocet_v_inv >= cena_sber_vice_boruvek:
+                    sber_vice_boruvek_upgrade_level += 1
+                    pocet_boruvek_pri_sebrani += 1
+                    sber_boruvek_nasobeni += 1
+                    boruvky_pocet_v_inv -= cena_sber_vice_boruvek
+                    cena_sber_vice_boruvek = int(cena_sber_vice_boruvek * 2)
+
+        if cekani_na_boruvky.collidepoint(mys_pozice) and mouse_click and not inventar:
+            if cekani_boruvky_upgrade_level < max_cekani_boruvky_upgrade_level:
+                if boruvky_pocet_v_inv >= cena_cekani_na_boruvky:
+                    cekani_boruvky_upgrade_level += 1
+                    boruvky_respawn_delay -= 5000
+                    boruvky_pocet_v_inv -= cena_cekani_na_boruvky
+                    cena_cekani_na_boruvky = int(cena_cekani_na_boruvky * 2)
+                
         
         
         
@@ -2885,8 +2926,19 @@ while hra is True:
                 
     elif pozadi == shop_boruvky and boruvky_sell.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-
     
+    
+    elif pozadi == shop_boruvky and kosik_na_boruvky_upgrade.collidepoint(mys_pozice):
+        if kosik_upgrade_level < max_kosik_upgrade_level:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == shop_boruvky and sber_vice_boruvek.collidepoint(mys_pozice):
+        if sber_vice_boruvek_upgrade_level < max_sber_vice_boruvek_upgrade_level:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+    elif pozadi == shop_boruvky and cekani_na_boruvky.collidepoint(mys_pozice):
+        if cekani_boruvky_upgrade_level < max_cekani_boruvky_upgrade_level:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
     elif baits_mode is None and inventar:
         if bread_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
@@ -3497,6 +3549,8 @@ while hra is True:
         exit_shop_boruvky_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
         okno.blit(exit_shop_boruvky_text,( 27, 553))
         
+        okno.blit(hlaska_boruvky_text, (385, 225))        
+        
         pygame.draw.rect(okno, cerna, za_boruvky_sell)
         pygame.draw.rect(okno, hneda, boruvky_sell)
         okno.blit(boruvky_sell_ikona, (50, 410))
@@ -3513,8 +3567,9 @@ while hra is True:
         popisky_upgradu_kosik = popisky_upgradu_boruvky_font.render("inventory", True, cerna)
         okno.blit(popisky_upgradu_kosik, (408, 405))
         cena_upgradu_kosik_text = cena_upgradu_boruvky_font.render(f"{cena_kosik_na_boruvky}", True , cerna)
-        okno.blit(cena_upgradu_kosik_text, (425, 520))
-        okno.blit(boruvky_ikona, (448, 530))
+        if kosik_upgrade_level < max_kosik_upgrade_level:
+            okno.blit(cena_upgradu_kosik_text, (415, 520))
+            okno.blit(boruvky_ikona, (458, 530))
         current_kosik_text = current_upgrade_font.render(f"current: {max_kosik_na_boruvky}", True, cerna)
         okno.blit(current_kosik_text, (420, 508))
         max_upgrade_kosik_text = current_upgrade_font.render(f"{kosik_upgrade_level}/{max_kosik_upgrade_level}", True, cerna)
@@ -3526,8 +3581,9 @@ while hra is True:
         popisky_upgradu_sber = popisky_upgradu_boruvky_font.render("collect", True, cerna)
         okno.blit(popisky_upgradu_sber, (552, 405))
         cena_upgradu_sber_text = cena_upgradu_boruvky_font.render(f"{cena_sber_vice_boruvek}", True , cerna)
-        okno.blit(cena_upgradu_sber_text, (550, 520))
-        okno.blit(boruvky_ikona, (590, 530))
+        if sber_vice_boruvek_upgrade_level < max_sber_vice_boruvek_upgrade_level:
+            okno.blit(cena_upgradu_sber_text, (550, 520))
+            okno.blit(boruvky_ikona, (590, 530))
         current_sber_text = current_upgrade_font.render(f"current: {sber_boruvek_nasobeni}", True, cerna)
         okno.blit(current_sber_text, (555, 508))
         max_upgrade_sber_text = current_upgrade_font.render(f"{sber_vice_boruvek_upgrade_level}/{max_sber_vice_boruvek_upgrade_level}", True, cerna)
@@ -3540,9 +3596,10 @@ while hra is True:
         popisky_upgradu_cekani = popisky_upgradu_boruvky_font.render("growth", True, cerna)
         okno.blit(popisky_upgradu_cekani, (683, 405))
         cena_upgradu_cekani_text = cena_upgradu_boruvky_font.render(f"{cena_cekani_na_boruvky}", True , cerna)
-        okno.blit(cena_upgradu_cekani_text, (687, 520))
-        okno.blit(boruvky_ikona, (712, 530))
-        current_cekani_text = current_upgrade_font.render(f"current: {boruvky_respawn_delay / 1000}", True, cerna)
+        if cekani_boruvky_upgrade_level < max_cekani_boruvky_upgrade_level:
+            okno.blit(cena_upgradu_cekani_text, (677, 520))
+            okno.blit(boruvky_ikona, (722, 530))
+        current_cekani_text = current_upgrade_font.render(f"current: {int(boruvky_respawn_delay / 1000)}s", True, cerna)
         okno.blit(current_cekani_text, (677, 508))
         max_upgrade_cekani_text = current_upgrade_font.render(f"{cekani_boruvky_upgrade_level}/{max_cekani_boruvky_upgrade_level}", True, cerna)
         okno.blit(max_upgrade_cekani_text, (746, 575))
