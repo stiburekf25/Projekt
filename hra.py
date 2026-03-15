@@ -194,7 +194,7 @@ vylovene_predmety = []
 slot = sloty[i]
 
 #predmety
-coins = 6676767
+coins = 100
 obsah_inventare = {
     "Plechovka":0, "Bota":0, "Kapr":0, "Štika":0, "Sumec":0, "Rak":0}
 
@@ -893,8 +893,8 @@ popisky_upgradu_boruvky_font = pygame.font.SysFont("Aharoni", 30)
 cena_upgradu_boruvky_font = pygame.font.Font("CHAOS16.otf", 45)
 current_upgrade_font = pygame.font.SysFont("Aharoni", 20)
 hlaska_boruvky_font = pygame.font.SysFont("Aharoni", 30)
-
-
+odpovedi_holka_font = pygame.font.SysFont("Aharoni", 50)
+quest_odmena_font = pygame.font.Font("CHAOS16.otf", 45)
 
 prechod_lock_venek_a_rozcestnik = False
 prechod_lock_venek_a_jezero = False
@@ -1087,7 +1087,7 @@ cena_kosik_na_boruvky = 5
 cena_sber_vice_boruvek = 10
 cena_cekani_na_boruvky = 5
 
-max_kosik_na_boruvky = 5
+max_kosik_na_boruvky = 10
 sber_boruvek_nasobeni = 1
 
 kosik_upgrade_level = 0
@@ -1112,7 +1112,82 @@ boruvky_hlaska = random.choice(seznam_vet_boruvky)
 hlaska_boruvky_text = hlaska_boruvky_font.render(boruvky_hlaska, True, cerna)
 
 
+#kytky npc
 
+holka_kytky_otazka = pygame.image.load("holka_kytky.png")
+holka_levandule = pygame.image.load("holka_levandule.png")
+holka_ruze = pygame.image.load("holka_ruze.png")
+start_questu = False
+
+za_holka_leave = pygame.draw.rect(okno, cerna, (9, 539, 102, 52))
+holka_leave = pygame.draw.rect(okno, hneda, (10, 540, 100, 50))
+
+za_holka_leave = pygame.draw.rect(okno, cerna, (9, 539, 102, 52))
+holka_leave = pygame.draw.rect(okno, hneda, (10, 540, 100, 50))
+
+za_holka_start_questu_yes = pygame.draw.rect(okno, cerna, (529, 409, 152, 102))
+holka_start_questu_yes = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
+
+
+za_holka_levandule_give = pygame.draw.rect(okno, cerna, (529, 409, 152, 102))
+holka_levandule_give = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
+
+levandule = False
+pocet_levanduli = 0
+
+levandule_ikona = pygame.image.load("levandule_ikona.png")
+levandule_ikona = pygame.transform.scale(levandule_ikona, (50, 80))
+
+levandule_pozice = [
+    [700, 355, True, "cesta_pred_lesem"],
+    [820, 355, True, "rozcestnik"],
+    [1330, 355, True, "venek"],
+]
+
+pozadi_na_jmeno = {
+    id(cesta_pred_lesem): "cesta_pred_lesem",
+    id(rozcestnik): "rozcestnik",
+    id(venek): "venek",
+    id(les): "les",
+    id(rybareni): "rybareni",
+    id(jezero): "jezero",}
+
+ruze = False
+pocet_ruzi = 0
+
+ruze_ikona = pygame.image.load("ruze_ikona.png")
+ruze_ikona = pygame.transform.scale(ruze_ikona, (50, 80))
+
+ruze_pozice = [
+    [1390, 350, True, "les"],
+    [100, 200, True, "jezero"],
+    [80, 500, True, "rozcestnik"],
+]
+
+za_holka_ruze_give = pygame.draw.rect(okno, cerna, (529, 409, 152, 102))
+holka_ruze_give = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
+
+tulipan = False
+pocet_tulipanu = 0
+
+tulipan_ikona = pygame.image.load("tulipan_ikona.png")
+tulipan_ikona = pygame.transform.scale(tulipan_ikona, (50, 80))
+holka_tulipan = pygame.image.load("holka_tulipan.png")
+
+
+za_holka_tulipan_give = pygame.draw.rect(okno, cerna, (529, 409, 152, 102))
+holka_tulipan_give = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
+
+tulipan_pozice = [
+    [100, 100, True, "rybareni"],
+    [400, 355, True, "venek"],
+    [800, 350, True, "les"],
+]
+
+odmena_za_quest = 2500
+konec_questu = False
+
+holka_konec_questu = pygame.image.load("holka_konec_questu.png")
 
 while not menu and not animace_start:
     for udalost in pygame.event.get():
@@ -1125,8 +1200,8 @@ while not menu and not animace_start:
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 menu = True
-                hra = True
-                #animace_start = True
+                #hra = True
+                animace_start = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
             
@@ -1497,13 +1572,13 @@ while hra is True:
     else:
         hrac_aktualni_rychlost = hrac_rychlost * 0.25
             
-    if pozadi == rybareni and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and mouse_click and not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky:
+    if pozadi == rybareni and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and mouse_click and not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         zapnuti = True
 
-    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi != rybareni and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky:
+    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi != rybareni and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         zapnuti = True
         
-    if zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky:
+    if zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and mouse_click and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         zapnuti = False
 
     
@@ -1906,7 +1981,21 @@ while hra is True:
         
         stojim_u_holky = hrac_pozice_x > 260 and hrac_pozice_x < 530
         
-        
+        if stojim_u_holky and stisknuto[pygame.K_e] and not inventar:
+            pozice_pred_holkou = (hrac_pozice_x, hrac_pozice_y, kamera_x)
+            if not start_questu:
+                pozadi = holka_kytky_otazka
+            if levandule:
+                pozadi = holka_levandule
+            if ruze:
+                pozadi = holka_ruze
+            if tulipan:
+                pozadi = holka_tulipan
+            if konec_questu:
+                pozadi = holka_konec_questu
+            hrac_rychlost = 0
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
         
         
         
@@ -1927,6 +2016,113 @@ while hra is True:
         if not stojim_pred_lesem:
             prechod_lock_cesta_do_lesa = False 
     
+    if pozadi == holka_kytky_otazka:
+        hrac_pozice_x = 0
+        hrac_rychlost = 0
+        kamera_x = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+        
+        if holka_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_holkou
+            pozadi = cesta_pred_lesem
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+
+        if holka_start_questu_yes.collidepoint(mys_pozice) and mouse_click and not inventar:
+            start_questu = True
+            levandule = True
+            pozadi = holka_levandule 
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+            
+            
+    if pozadi == holka_levandule:
+        hrac_pozice_x = 0
+        hrac_rychlost = 0
+        kamera_x = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+
+        if holka_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_holkou
+            pozadi = cesta_pred_lesem
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if holka_levandule_give.collidepoint(mys_pozice) and mouse_click and not inventar and levandule:
+            if pocet_levanduli == 3:
+                levandule = False
+                ruze = True
+                pozadi = holka_ruze
+                pozadi_sirka = pozadi.get_width()
+                pozadi_vyska = pozadi.get_height()
+    
+    if pozadi == holka_ruze:
+        hrac_pozice_x = 0
+        hrac_rychlost = 0
+        kamera_x = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+    
+        if holka_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_holkou
+            pozadi = cesta_pred_lesem
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if holka_ruze_give.collidepoint(mys_pozice) and mouse_click and not inventar and ruze:
+            if pocet_ruzi == 3:
+                ruze = False
+                tulipan = True
+                pozadi = holka_tulipan
+                pozadi_sirka = pozadi.get_width()
+                pozadi_vyska = pozadi.get_height()
+    
+    if pozadi == holka_tulipan:
+        hrac_pozice_x = 0
+        hrac_rychlost = 0
+        kamera_x = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+                
+        if holka_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_holkou
+            pozadi = cesta_pred_lesem
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+        
+        if holka_tulipan_give.collidepoint(mys_pozice) and mouse_click and not inventar and tulipan:
+            if pocet_tulipanu == 3:
+                tulipan = False
+                konec_questu = True
+                pozadi = holka_konec_questu
+                pozadi_sirka = pozadi.get_width()
+                pozadi_vyska = pozadi.get_height()
+                coins += odmena_za_quest
+                
+    if pozadi == holka_konec_questu:
+        hrac_pozice_x = 0
+        hrac_rychlost = 0
+        kamera_x = 0
+        pozadi_sirka = pozadi.get_width()
+        pozadi_vyska = pozadi.get_height()
+        
+        if holka_leave.collidepoint(mys_pozice) and mouse_click and not inventar:
+            hrac_pozice_x, hrac_pozice_y, kamera_x = pozice_pred_holkou
+            pozadi = cesta_pred_lesem
+            hrac_rychlost = 4
+            pozadi_sirka = pozadi.get_width()
+            pozadi_vyska = pozadi.get_height()
+                
+                
+                
+                
+                
     if pozadi == les:
         if hrac_pozice_x < 80:
             hrac_pozice_x = 80
@@ -2677,7 +2873,7 @@ while hra is True:
     
     #Omezeni otevirani inv v shopu a v buy and sell a v slotmachine
     
-    if pozadi != shop and pozadi != pozadi_shop and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky:
+    if pozadi != shop and pozadi != pozadi_shop and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         if ikona_inv_rect.collidepoint(mys_pozice) and mouse_click:
             inventar = True
             hrac_rychlost = 0
@@ -2714,7 +2910,33 @@ while hra is True:
             baits_mode = None
 
 
+    if levandule and pocet_levanduli < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for lav in levandule_pozice:
+            if lav[2] and lav[3] == pozadi_jmeno:
+                lav_rect = pygame.Rect(lav[0] - kamera_x, lav[1], levandule_ikona.get_width(), levandule_ikona.get_height())
+                if lav_rect.collidepoint(mys_pozice) and mouse_click:
+                    lav[2] = False
+                    pocet_levanduli += 1
+                    
+    if ruze and pocet_ruzi < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for ruz in ruze_pozice:
+            if ruz[2] and ruz[3] == pozadi_jmeno:
+                ruz_rect = pygame.Rect(ruz[0] - kamera_x, ruz[1], ruze_ikona.get_width(), ruze_ikona.get_height())
+                if ruz_rect.collidepoint(mys_pozice) and mouse_click:
+                    ruz[2] = False
+                    pocet_ruzi += 1
 
+    if tulipan and pocet_tulipanu < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for tul in tulipan_pozice:
+            if tul[2] and tul[3] == pozadi_jmeno:
+                tul_rect = pygame.Rect(tul[0] - kamera_x, tul[1], tulipan_ikona.get_width(), tulipan_ikona.get_height())
+                if tul_rect.collidepoint(mys_pozice) and mouse_click:
+                    tul[2] = False
+                    pocet_tulipanu += 1    
+    
     #Kurzor na hand nebo arrow podle urciteho pozadi ci podminky
     
     kurzor_hand = False 
@@ -2759,13 +2981,13 @@ while hra is True:
     elif pozadi == automechanik and automechanik_exit.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
-    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky:
+    elif not zapnuti and zapnuti_statistik.collidepoint(mys_pozice) and pozadi != rybareni and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
     elif not zapnuti and zapnuti_statistik_rybareni.collidepoint(mys_pozice) and not inventar and pozadi == rybareni:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
-    elif zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky:
+    elif zapnuti and vypnuti_statistik.collidepoint(mys_pozice) and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
          
     elif pozadi == bar and bar_exit.collidepoint(mys_pozice) and not inventar:
@@ -2813,7 +3035,7 @@ while hra is True:
     elif pozadi == pozadi_shop and leave_sell.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
-    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop and not minihra and not prut and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky:
+    elif ikona_inv_rect.collidepoint(mys_pozice)and not inventar and not pozadi == shop and not pozadi == pozadi_shop and not minihra and not prut and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         
     elif tlacitko.collidepoint(mys_pozice) and inventar:
@@ -2905,7 +3127,38 @@ while hra is True:
         if maxed_out_benzin and maxed_out_brzdy and maxed_out_motor and maxed_out_pneumatiky and kapota_konec_hry.collidepoint(mys_pozice):
             hand = True 
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND if hand else pygame.SYSTEM_CURSOR_ARROW)            
-            
+    
+    
+    
+    
+    elif pozadi == holka_kytky_otazka and not start_questu and holka_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        
+    elif pozadi == holka_kytky_otazka and not start_questu and holka_start_questu_yes.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_levandule and holka_levandule_give.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_levandule and levandule and holka_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_ruze and holka_ruze_give.collidepoint(mys_pozice) and ruze:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_ruze and ruze and holka_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_tulipan and holka_tulipan_give.collidepoint(mys_pozice) and tulipan:
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_tulipan and tulipan and holka_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    elif pozadi == holka_konec_questu and konec_questu and holka_leave.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    
+    
     elif pozadi == shop_boruvky and shop_boruvky_leave.collidepoint(mys_pozice) and not inventar:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     
@@ -2918,10 +3171,31 @@ while hra is True:
                 if pygame.Rect(sx, b[1], boruvka_velikost, boruvka_velikost).collidepoint(mys_pozice):
                     kurzor_na_boruvce = True
                     break
-        if kurzor_na_boruvce:
+        
+        kurzor_na_ruzi_les = False
+        if ruze and pocet_ruzi < 3:
+            pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+            for ruz in ruze_pozice:
+                if ruz[2] and ruz[3] == pozadi_jmeno:
+                    ruz_rect = pygame.Rect(ruz[0] - kamera_x, ruz[1], ruze_ikona.get_width(), ruze_ikona.get_height())
+                    if ruz_rect.collidepoint(mys_pozice):
+                        kurzor_na_ruzi_les = True
+                        break
+        
+        kurzor_na_tulipanu_les = False
+        if tulipan and pocet_tulipanu < 3:
+            pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+            for tul in tulipan_pozice:
+                if tul[2] and tul[3] == pozadi_jmeno:
+                    tul_rect = pygame.Rect(tul[0] - kamera_x, tul[1], tulipan_ikona.get_width(), tulipan_ikona.get_height())
+                    if tul_rect.collidepoint(mys_pozice):
+                        kurzor_na_tulipanu_les = True
+                        break
+
+        if kurzor_na_boruvce or kurzor_na_ruzi_les or kurzor_na_tulipanu_les:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         else:
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)       
             
                 
     elif pozadi == shop_boruvky and boruvky_sell.collidepoint(mys_pozice) and not inventar:
@@ -2939,7 +3213,51 @@ while hra is True:
     elif pozadi == shop_boruvky and cekani_na_boruvky.collidepoint(mys_pozice):
         if cekani_boruvky_upgrade_level < max_cekani_boruvky_upgrade_level:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            
+    elif levandule and pocet_levanduli < 3 and not inventar:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        kurzor_na_levanduli = False
+        for lav in levandule_pozice:
+            if lav[2] and lav[3] == pozadi_jmeno:
+                lav_rect = pygame.Rect(lav[0] - kamera_x, lav[1], levandule_ikona.get_width(), levandule_ikona.get_height())
+                if lav_rect.collidepoint(mys_pozice):
+                    kurzor_na_levanduli = True
+                    break
+        if kurzor_na_levanduli:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
     
+    
+    elif ruze and pocet_ruzi < 3 and not inventar:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        kurzor_na_ruzi = False
+        for ruz in ruze_pozice:
+            if ruz[2] and ruz[3] == pozadi_jmeno:
+                ruz_rect = pygame.Rect(ruz[0] - kamera_x, ruz[1], ruze_ikona.get_width(), ruze_ikona.get_height())
+                if ruz_rect.collidepoint(mys_pozice):
+                    kurzor_na_ruzi = True
+                    break
+        if kurzor_na_ruzi:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+            
+    elif tulipan and pocet_tulipanu < 3 and not inventar:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        kurzor_na_tulipanu = False
+        for tul in tulipan_pozice:
+            if tul[2] and tul[3] == pozadi_jmeno:
+                tul_rect = pygame.Rect(tul[0] - kamera_x, tul[1], tulipan_ikona.get_width(), tulipan_ikona.get_height())
+                if tul_rect.collidepoint(mys_pozice):
+                    kurzor_na_tulipanu = True
+                    break
+                
+        if kurzor_na_tulipanu:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        else:
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)    
+                
     elif baits_mode is None and inventar:
         if bread_tlacitko_inventory.collidepoint(mys_pozice) and inventar:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -2984,7 +3302,7 @@ while hra is True:
         pygame.draw.rect(okno, hneda, exit_bouda_odemcena)
         okno.blit(exit_bouda_odemcena_text, (36, 32))
         
-    if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky:
+    if not zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and pozadi and not minihra and not prut and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         if pozadi == rybareni:
             pygame.draw.rect(okno, cerna, (4, 564, 82, 32))
             pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
@@ -2999,12 +3317,12 @@ while hra is True:
         pygame.draw.rect(okno, bila, (info_rozcestnik_obrazovka_x - 1179, 250, 50, 50))
         okno.blit(E_text, (info_rozcestnik_obrazovka_x - 1179 + (50/2 - E_text.get_size()[0] / 2), 263))
     
-    if zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky:
+    if zapnuti and not inventar and pozadi != bar and pozadi != barman and pozadi != shop and not shop_mode == "sell" and not shop_mode == "buy" and not prut and not minihra and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         pygame.draw.rect(okno, cerna, za_vypnuti_statistik)
         pygame.draw.rect(okno, hneda, vypnuti_statistik)
         okno.blit(vypnuti_statistik_ikona, (360, 5, 80, 30))
 
-    if zapnuti and pozadi != shop and not inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky:
+    if zapnuti and pozadi != shop and not inventar and not minihra and not prut and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != slotmachine and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         pygame.draw.rect(okno, cerna, (4 , 544, 102 , 52))
         pygame.draw.rect(okno, Shneda, (5 , 545, 100 , 50))
         hlad_info = statistika_font.render(f"{int(hlad)}/100", True, cerna)
@@ -3511,6 +3829,68 @@ while hra is True:
         pygame.draw.rect(okno, bila, (e_les_x, 220, 50, 50))
         okno.blit(E_text, (e_les_x + (50/2 - E_text.get_size()[0] / 2), 232))
     
+    if pozadi == holka_kytky_otazka and not start_questu:
+        pygame.draw.rect(okno, cerna, za_holka_leave)
+        pygame.draw.rect(okno, hneda, holka_leave)
+        exit_holka_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_holka_text,( 27, 553))
+        
+        pygame.draw.rect(okno, cerna, za_holka_start_questu_yes)
+        pygame.draw.rect(okno, hneda, holka_start_questu_yes)
+        yes_holka_text = odpovedi_holka_font.render("YES", True, cerna)
+        okno.blit(yes_holka_text,(568, 445))
+
+    if pozadi == holka_levandule and levandule:
+        pygame.draw.rect(okno, cerna, za_holka_leave)
+        pygame.draw.rect(okno, hneda, holka_leave)
+        exit_holka_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_holka_text,( 27, 553))
+        
+        pygame.draw.rect(okno, cerna, za_holka_levandule_give)
+        pygame.draw.rect(okno, hneda, holka_levandule_give)
+        give_holka_text = odpovedi_holka_font.render("GIVE", True, cerna)
+        okno.blit(give_holka_text,(562, 445))
+        pocet_levanduli_text = current_upgrade_font.render(f"{pocet_levanduli}/3", True, cerna)
+        okno.blit(pocet_levanduli_text,(654, 492))
+        
+    if pozadi == holka_tulipan and tulipan:
+    
+        pygame.draw.rect(okno, cerna, za_holka_leave)
+        pygame.draw.rect(okno, hneda, holka_leave)
+        exit_holka_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_holka_text,( 27, 553))
+        
+        pygame.draw.rect(okno, cerna, za_holka_tulipan_give)
+        pygame.draw.rect(okno, hneda, holka_tulipan_give)
+        give_holka_text = odpovedi_holka_font.render("GIVE", True, cerna)
+        okno.blit(give_holka_text,(562, 445))
+        pocet_levanduli_text = current_upgrade_font.render(f"{pocet_tulipanu}/3", True, cerna)
+        okno.blit(pocet_levanduli_text,(654, 492))
+    
+    if pozadi == holka_ruze and ruze:
+        pygame.draw.rect(okno, cerna, za_holka_leave)
+        pygame.draw.rect(okno, hneda, holka_leave)
+        exit_holka_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_holka_text,( 27, 553))
+        
+        pygame.draw.rect(okno, cerna, za_holka_ruze_give)
+        pygame.draw.rect(okno, hneda, holka_ruze_give)
+        give_holka_text = odpovedi_holka_font.render("GIVE", True, cerna)
+        okno.blit(give_holka_text,(562, 445))
+        pocet_levanduli_text = current_upgrade_font.render(f"{pocet_ruzi}/3", True, cerna)
+        okno.blit(pocet_levanduli_text,(654, 492))
+        
+    if pozadi == holka_konec_questu and konec_questu:
+        pygame.draw.rect(okno, cerna, za_holka_leave)
+        pygame.draw.rect(okno, hneda, holka_leave)
+        exit_holka_text = exit_shop_s_jidlem_font.render("EXIT", True, cerna)
+        okno.blit(exit_holka_text,( 27, 553))
+
+        quest_odmena_text = quest_odmena_font.render(f"+{odmena_za_quest}", True, zluta)
+        okno.blit(quest_odmena_text, ( 525, 200,))
+        okno.blit(coin_ikona, (640, 210))
+        
+        
     if pozadi == les:
         okno.blit(boruvky_ikona, (18, 60))
         boruvky_pocet_text = coins_font.render(f":{boruvky_pocet_v_inv}", True, cerna)
@@ -3687,12 +4067,36 @@ while hra is True:
         pygame.draw.rect(okno, cerna, (za_equip_tlacitko))
         pygame.draw.rect(okno, zelena, (equip_tlacitko))
         okno.blit(equip_text, (62, 500))
-
     
-    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky:
+        
+    if levandule and pocet_levanduli < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for lav in levandule_pozice:
+            if lav[2] and lav[3] == pozadi_jmeno:
+                sx = lav[0] - kamera_x
+                if -20 < sx < 820:
+                    okno.blit(levandule_ikona, (sx, lav[1]))
+                    
+    if ruze and pocet_ruzi < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for ruz in ruze_pozice:
+            if ruz[2] and ruz[3] == pozadi_jmeno:
+                sx = ruz[0] - kamera_x
+                if -20 < sx < 820:
+                    okno.blit(ruze_ikona, (sx, ruz[1]))
+    
+    if tulipan and pocet_tulipanu < 3:
+        pozadi_jmeno = pozadi_na_jmeno.get(id(pozadi))
+        for tul in tulipan_pozice:
+            if tul[2] and tul[3] == pozadi_jmeno:
+                sx = tul[0] - kamera_x
+                if -20 < sx < 820:
+                    okno.blit(tulipan_ikona, (sx, tul[1]))
+                    
+    if pozadi != shop and pozadi != rybareni and pozadi != rybareni_dole and pozadi != rybareni_pozor and pozadi != krb and pozadi != bar and pozadi != barman and pozadi != slotmachine and pozadi != pozadi_shop_jidlo and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != automechanik and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         okno.blit(aktualni_sprite, (hrac_obrazovka_x, hrac_pozice_y))
     
-
+    
             
     if pozadi == shop and shop_mode is None:
         pygame.draw.rect(okno, cerna, za_koupit)
@@ -3971,7 +4375,7 @@ while hra is True:
         okno.blit(coins_text, (55, 20))
         okno.blit(coin_ikona, (20, 20))
     
-    if not inventar and pozadi != shop and pozadi != pozadi_shop and not prut and not minihra and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky:
+    if not inventar and pozadi != shop and pozadi != pozadi_shop and not prut and not minihra and pozadi != slotmachine and pozadi != bouda_zamcena and pozadi != bouda_odemcena and pozadi != kapota and pozadi != shop_boruvky and pozadi != holka_kytky_otazka and pozadi != holka_levandule and pozadi != holka_ruze and pozadi != holka_tulipan and pozadi != holka_konec_questu:
         okno.blit(ikona_inv, (700, 20))
         
     if inventar:
