@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import os
+import webbrowser
 pygame.init()
 
 # PRIPRAVA HRY
@@ -993,6 +994,15 @@ quit_tlacitko_rect = quit_tlacitko.get_rect(center=(30, 570))
 quit_tlacitko_vetsi = pygame.image.load("quit_tlacitko_vetsi.png")
 quit_tlacitko_vetsi_rect = quit_tlacitko_vetsi.get_rect(center=(30, 570))
 
+instagram_ikona = pygame.image.load("instagram_ikona.png")
+instagram_ikona_rect = instagram_ikona.get_rect(center=(640, 560))
+
+paypal_ikona = pygame.image.load("paypal_ikona.png")
+paypal_ikona_rect = paypal_ikona.get_rect(center=(700, 560))
+
+github_ikona = pygame.image.load("github_ikona.png")
+github_ikona_rect = github_ikona.get_rect(center=(760, 560))
+
 #Animace
 hra = False
 menu = False
@@ -1205,12 +1215,13 @@ while not menu and not animace_start:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
             
-            
-                
-            
             if quit_tlacitko_rect.collidepoint(mys_pozice):
                 pygame.quit()
                 sys.exit()
+                
+            if github_ikona_rect.collidepoint(mys_pozice):
+                webbrowser.open(r"https://github.com/stiburekf25")
+                
     kurzor_hand = False
     mys_pozice = pygame.mouse.get_pos()
     
@@ -1220,6 +1231,12 @@ while not menu and not animace_start:
     if not menu and play_tlacitko_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     elif not menu and quit_tlacitko_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif not menu and instagram_ikona_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif not menu and paypal_ikona_rect.collidepoint(mys_pozice):
+        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+    elif not menu and github_ikona_rect.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
@@ -1252,6 +1269,9 @@ while not menu and not animace_start:
         za_fish_text = za_napis_hry_font.render("F   SH", True, bila)
         okno.blit(za_fish_text, (280, 95))
         okno.blit(ikona_prut_menu, (270, 60))
+        okno.blit(instagram_ikona, (instagram_ikona_rect))
+        okno.blit(paypal_ikona, (paypal_ikona_rect))
+        okno.blit(github_ikona, (github_ikona_rect))
         
     clock.tick(60)
     pygame.display.flip()
