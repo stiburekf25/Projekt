@@ -3,6 +3,7 @@ import sys
 import random
 import os
 import webbrowser
+import json
 pygame.init()
 
 # PRIPRAVA HRY
@@ -69,11 +70,6 @@ def penalizace_kliknuti_z_deprese():
     else:
         return 10
     
-    
-    
-    
-    
-    
 def najdi_predmet_podle_jmena(predmety, jmeno):
     for p in predmety:
         if p["jmeno"] == jmeno:
@@ -96,7 +92,184 @@ def prodej_predmet(jmeno):
 def soucet_vsech_baits():
     return sum(bait["pocet"] for bait in baits.values())
 
-    
+   
+   
+   
+def ziskej_data_pro_save():
+    pozadi_na_jmeno_save = {
+        id(rozcestnik): "rozcestnik",
+        id(venek): "venek",
+        id(jezero): "jezero",
+        id(dum): "dum",
+        id(krb): "krb",
+        id(garaz): "garaz",
+        id(les): "les",
+        id(cesta_pred_lesem): "cesta_pred_lesem",
+        id(bar): "bar",
+    }
+    return {
+        "coins": coins,
+        "hlad": hlad,
+        "zizen": zizen,
+        "deprese": deprese,
+        "hrac_pozice_x": hrac_pozice_x,
+        "hrac_pozice_y": hrac_pozice_y,
+        "kamera_x": kamera_x,
+        "pozadi": pozadi_na_jmeno_save.get(id(pozadi), "rozcestnik"),
+        "obsah_inventare": obsah_inventare,
+        "obsah_inventare_max": obsah_inventare_max,
+        "inventar_order": [p["jmeno"] for p in inventar_order],
+        "kyblik_lvl": kyblik_lvl,
+        "zmacknuti_lvl": zmacknuti_lvl,
+        "cekani_lvl": cekani_lvl,
+        "momentalni_cekani": momentalni_cekani,
+        "baits": {k: v["pocet"] for k, v in baits.items()},
+        "baits_lvl": baits_lvl,
+        "obsah_baits_max": obsah_baits_max,
+        "mazlicek_odemceny": mazlicek_odemceny,
+        "mazlicek_equipped": mazlicek_equipped,
+        "boruvky_pocet_v_inv": boruvky_pocet_v_inv,
+        "boruvky_respawn_delay": boruvky_respawn_delay,
+        "boruvky_visible": [b[2] for b in boruvky],
+        "kosik_upgrade_level": kosik_upgrade_level,
+        "sber_vice_boruvek_upgrade_level": sber_vice_boruvek_upgrade_level,
+        "cekani_boruvky_upgrade_level": cekani_boruvky_upgrade_level,
+        "pocet_boruvek_pri_sebrani": pocet_boruvek_pri_sebrani,
+        "max_kosik_na_boruvky": max_kosik_na_boruvky,
+        "cena_kosik_na_boruvky": cena_kosik_na_boruvky,
+        "cena_sber_vice_boruvek": cena_sber_vice_boruvek,
+        "cena_cekani_na_boruvky": cena_cekani_na_boruvky,
+        "start_questu": start_questu,
+        "levandule": levandule,
+        "ruze": ruze,
+        "tulipan": tulipan,
+        "konec_questu": konec_questu,
+        "pocet_levanduli": pocet_levanduli,
+        "pocet_ruzi": pocet_ruzi,
+        "pocet_tulipanu": pocet_tulipanu,
+        "levandule_pozice_visible": [l[2] for l in levandule_pozice],
+        "ruze_pozice_visible": [r[2] for r in ruze_pozice],
+        "tulipan_pozice_visible": [t[2] for t in tulipan_pozice],
+        "pneumatiky_inv_pocet": pneumatiky_inv_pocet,
+        "benzin_inv_pocet": benzin_inv_pocet,
+        "motor_inv_pocet": motor_inv_pocet,
+        "brzdy_inv_pocet": brzdy_inv_pocet,
+        "fixed_pneumatiky_pocet": fixed_pneumatiky_pocet,
+        "fixed_benzin_pocet": fixed_benzin_pocet,
+        "fixed_brzdy_pocet": fixed_brzdy_pocet,
+        "fixed_motor_pocet": fixed_motor_pocet,
+        "maxed_out_pneumatiky": maxed_out_pneumatiky,
+        "maxed_out_benzin": maxed_out_benzin,
+        "maxed_out_brzdy": maxed_out_brzdy,
+        "maxed_out_motor": maxed_out_motor,
+        "pneumatiky_pocet": pneumatiky_pocet,
+        "benzin_pocet": benzin_pocet,
+        "motor_pocet": motor_pocet,
+        "brzdy_pocet": brzdy_pocet,
+    }
+
+def aplikuj_save(d):
+    global coins, hlad, zizen, deprese
+    global hrac_pozice_x, hrac_pozice_y, kamera_x, pozadi
+    global obsah_inventare, obsah_inventare_max, inventar_order
+    global kyblik_lvl, zmacknuti_lvl, cekani_lvl, momentalni_cekani
+    global baits, baits_lvl, obsah_baits_max
+    global mazlicek_odemceny, mazlicek_equipped
+    global boruvky_pocet_v_inv, boruvky_respawn_delay, boruvky
+    global kosik_upgrade_level, sber_vice_boruvek_upgrade_level, cekani_boruvky_upgrade_level
+    global pocet_boruvek_pri_sebrani, max_kosik_na_boruvky
+    global cena_kosik_na_boruvky, cena_sber_vice_boruvek, cena_cekani_na_boruvky
+    global start_questu, levandule, ruze, tulipan, konec_questu
+    global pocet_levanduli, pocet_ruzi, pocet_tulipanu
+    global levandule_pozice, ruze_pozice, tulipan_pozice
+    global pneumatiky_inv_pocet, benzin_inv_pocet, motor_inv_pocet, brzdy_inv_pocet
+    global fixed_pneumatiky_pocet, fixed_benzin_pocet, fixed_brzdy_pocet, fixed_motor_pocet
+    global maxed_out_pneumatiky, maxed_out_benzin, maxed_out_brzdy, maxed_out_motor
+    global pneumatiky_pocet, benzin_pocet, motor_pocet, brzdy_pocet
+    global pozadi_sirka, pozadi_vyska
+
+    jmeno_na_pozadi = {
+        "rozcestnik": rozcestnik, "venek": venek, "jezero": jezero,
+        "dum": dum, "krb": krb, "garaz": garaz,
+        "les": les, "cesta_pred_lesem": cesta_pred_lesem, "bar": bar,
+    }
+
+    coins = d["coins"]
+    hlad = d["hlad"]
+    zizen = d["zizen"]
+    deprese = d["deprese"]
+    hrac_pozice_x = d["hrac_pozice_x"]
+    hrac_pozice_y = d["hrac_pozice_y"]
+    kamera_x = d["kamera_x"]
+    pozadi = jmeno_na_pozadi.get(d["pozadi"], rozcestnik)
+    pozadi_sirka = pozadi.get_width()
+    pozadi_vyska = pozadi.get_height()
+    obsah_inventare = d["obsah_inventare"]
+    obsah_inventare_max = d["obsah_inventare_max"]
+    inventar_order = []
+    for jmeno in d["inventar_order"]:
+        predmet = najdi_predmet_podle_jmena(predmety, jmeno)
+        if predmet:
+            inventar_order.append(predmet)
+    kyblik_lvl = d["kyblik_lvl"]
+    zmacknuti_lvl = d["zmacknuti_lvl"]
+    cekani_lvl = d["cekani_lvl"]
+    momentalni_cekani = d["momentalni_cekani"]
+    for k in baits:
+        baits[k]["pocet"] = d["baits"][k]
+    baits_lvl = d["baits_lvl"]
+    obsah_baits_max = d["obsah_baits_max"]
+    mazlicek_odemceny = d["mazlicek_odemceny"]
+    mazlicek_equipped = d["mazlicek_equipped"]
+    boruvky_pocet_v_inv = d["boruvky_pocet_v_inv"]
+    boruvky_respawn_delay = d["boruvky_respawn_delay"]
+    for i, vis in enumerate(d["boruvky_visible"]):
+        boruvky[i][2] = vis
+    kosik_upgrade_level = d["kosik_upgrade_level"]
+    sber_vice_boruvek_upgrade_level = d["sber_vice_boruvek_upgrade_level"]
+    cekani_boruvky_upgrade_level = d["cekani_boruvky_upgrade_level"]
+    pocet_boruvek_pri_sebrani = d["pocet_boruvek_pri_sebrani"]
+    max_kosik_na_boruvky = d["max_kosik_na_boruvky"]
+    cena_kosik_na_boruvky = d["cena_kosik_na_boruvky"]
+    cena_sber_vice_boruvek = d["cena_sber_vice_boruvek"]
+    cena_cekani_na_boruvky = d["cena_cekani_na_boruvky"]
+    start_questu = d["start_questu"]
+    levandule = d["levandule"]
+    ruze = d["ruze"]
+    tulipan = d["tulipan"]
+    konec_questu = d["konec_questu"]
+    pocet_levanduli = d["pocet_levanduli"]
+    pocet_ruzi = d["pocet_ruzi"]
+    pocet_tulipanu = d["pocet_tulipanu"]
+    for i, vis in enumerate(d["levandule_pozice_visible"]):
+        levandule_pozice[i][2] = vis
+    for i, vis in enumerate(d["ruze_pozice_visible"]):
+        ruze_pozice[i][2] = vis
+    for i, vis in enumerate(d["tulipan_pozice_visible"]):
+        tulipan_pozice[i][2] = vis
+    pneumatiky_inv_pocet = d["pneumatiky_inv_pocet"]
+    benzin_inv_pocet = d["benzin_inv_pocet"]
+    motor_inv_pocet = d["motor_inv_pocet"]
+    brzdy_inv_pocet = d["brzdy_inv_pocet"]
+    fixed_pneumatiky_pocet = d["fixed_pneumatiky_pocet"]
+    fixed_benzin_pocet = d["fixed_benzin_pocet"]
+    fixed_brzdy_pocet = d["fixed_brzdy_pocet"]
+    fixed_motor_pocet = d["fixed_motor_pocet"]
+    maxed_out_pneumatiky = d["maxed_out_pneumatiky"]
+    maxed_out_benzin = d["maxed_out_benzin"]
+    maxed_out_brzdy = d["maxed_out_brzdy"]
+    maxed_out_motor = d["maxed_out_motor"]
+    pneumatiky_pocet = d["pneumatiky_pocet"]
+    benzin_pocet = d["benzin_pocet"]
+    motor_pocet = d["motor_pocet"]
+    brzdy_pocet = d["brzdy_pocet"]   
+   
+   
+   
+   
+   
+   
+   
 okno_sirka = 800
 okno_vyska = 600
 
@@ -1121,6 +1294,14 @@ soubor_boruvky.close()
 boruvky_hlaska = random.choice(seznam_vet_boruvky)
 hlaska_boruvky_text = hlaska_boruvky_font.render(boruvky_hlaska, True, cerna)
 
+#game saved
+
+save_text_cas = 0
+save_text_doba = 2000
+save_text_zobrazit = False
+
+
+
 
 #kytky npc
 
@@ -1198,6 +1379,31 @@ odmena_za_quest = 2500
 konec_questu = False
 
 holka_konec_questu = pygame.image.load("holka_konec_questu.png")
+            
+stojim_u_jezera = False
+stojim_u_shopu = False
+stojim_u_domu = False
+stojim_u_boudy = False
+stojim_u_cesty_venek = False
+stojim_u_cesty_rozcestnik = False
+stojim_u_baru = False
+stojim_u_auta = False
+stojim_u_cesty_mezi_bar_a_auto = False
+stojim_u_cesty_ven_z_garazi = False
+stojim_u_shopu_jidlo = False
+stojim_u_garaze = False
+stojim_u_garaz_a_cesta_do_lesa = False
+stojim_u_cesty_do_garazi = False
+stojim_u_holky = False
+stojim_pred_lesem = False
+stojim_u_cesty_ven_z_lesa = False
+stojim_u_shopu_boruvky = False
+stojim_u_leva_lod = False
+stojim_u_prava_lod = False
+stojim_u_dveri = False
+stojim_u_postele = False
+stojim_u_krbu = False
+
 
 while not menu and not animace_start:
     for udalost in pygame.event.get():
@@ -1210,11 +1416,15 @@ while not menu and not animace_start:
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 menu = True
-                #hra = True
-                animace_start = True
+                if os.path.exists("save.json"):
+                        hra = True
+                        with open("save.json", "r", encoding="utf-8") as f:
+                            aplikuj_save(json.load(f))
+                else:
+                    animace_start = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
-            
+                
             if quit_tlacitko_rect.collidepoint(mys_pozice):
                 pygame.quit()
                 sys.exit()
@@ -1485,6 +1695,9 @@ while animace_start_promluva is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start_promluva = False
         hra = True
+        if os.path.exists("save.json"):
+            with open("save.json", "r", encoding="utf-8") as f:
+                aplikuj_save(json.load(f))
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1498,8 +1711,9 @@ while animace_start_promluva is True:
 
 
 while hra is True:
-    print(hrac_pozice_x, kamera_x)
-# OVLADANI HRY HRACEM
+    
+        
+        # OVLADANI HRY HRACEM
     mouse_click = False
     
     for udalost in pygame.event.get():
@@ -2496,6 +2710,7 @@ while hra is True:
             kamera_x = 848
             pozadi_sirka = pozadi.get_width()
             pozadi_vyska = pozadi.get_height()
+            
         stojim_u_jezera = hrac_pozice_x > 1320 and hrac_pozice_x < 1450
         
         if not stojim_u_cesty_venek:
@@ -2590,8 +2805,12 @@ while hra is True:
             prechod_lock_dum_a_venek = False
         
         if stojim_u_postele and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
-            pass
-        
+            with open("save.json", "w", encoding="utf-8") as f:
+                    json.dump(ziskej_data_pro_save(), f, indent=2, ensure_ascii=False)
+            save_text_zobrazit = True
+            save_text_cas = pygame.time.get_ticks()                    
+                    
+                    
         if stojim_u_krbu and stisknuto[pygame.K_e] and not inventar and not prechod_lock_dum_a_krb:
             pozadi = krb
             prechod_lock_dum_a_krb = True
@@ -4566,6 +4785,15 @@ while hra is True:
                 obrazek = vylovene_predmety[i]
                 okno.blit(obrazek, sloty[i].topleft)
     
+    if save_text_zobrazit:
+        if pygame.time.get_ticks() - save_text_cas < save_text_doba:
+            save_font = pygame.font.SysFont("Aharoni", 40)
+            save_text = save_font.render("GAME SAVED!", True, bila)
+            save_rect = save_text.get_rect(center=(okno_sirka // 2, 300))
+            okno.blit(save_text, save_rect)
+        else:
+            save_text_zobrazit = False    
+    
     
     
     clock.tick(60)
@@ -4666,10 +4894,11 @@ while animace_konec is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 10:
         animace_konec = False
         menu = False
-        
+        if os.path.exists("save.json"):
+                    os.remove("save.json")        
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SK[index], (0, 0))
-
+    
     clock.tick(60)
     pygame.display.flip()
