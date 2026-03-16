@@ -474,7 +474,7 @@ statistika_velikost = 20
 exit_bar_velikost = 40
 info_barman_velikost = 30
 drink_cena_velikost = 30
-hlaska_barman_velikost = 26
+hlaska_barman_velikost = 30
 barman_hlaska = None
 exit_shop_s_jidlem_velikost = 40
 jidlo_cena_velikost = 30
@@ -1176,6 +1176,15 @@ paypal_ikona_rect = paypal_ikona.get_rect(center=(700, 560))
 github_ikona = pygame.image.load("github_ikona.png")
 github_ikona_rect = github_ikona.get_rect(center=(760, 560))
 
+instagram_ikona_vetsi = pygame.image.load("instagram_ikona_vetsi.png")
+instagram_ikona_vetsi_rect = instagram_ikona_vetsi.get_rect(center=(640, 560))
+
+paypal_ikona_vetsi = pygame.image.load("paypal_ikona_vetsi.png")
+paypal_ikona_vetsi_rect = paypal_ikona_vetsi.get_rect(center=(700, 560))
+
+github_ikona_vetsi = pygame.image.load("github_ikona_vetsi.png")
+github_ikona_vetsi_rect = github_ikona_vetsi.get_rect(center=(760, 560))
+
 #Animace
 hra = False
 menu = False
@@ -1297,7 +1306,7 @@ hlaska_boruvky_text = hlaska_boruvky_font.render(boruvky_hlaska, True, cerna)
 #game saved
 
 save_text_cas = 0
-save_text_doba = 2000
+save_text_doba = 1500
 save_text_zobrazit = False
 
 
@@ -1431,6 +1440,12 @@ while not menu and not animace_start:
                 
             if github_ikona_rect.collidepoint(mys_pozice):
                 webbrowser.open(r"https://github.com/stiburekf25")
+            
+            if instagram_ikona_rect.collidepoint(mys_pozice):
+                webbrowser.open(r"https://www.instagram.com/filipstiburek._/")
+                
+            if paypal_ikona_rect.collidepoint(mys_pozice):
+                webbrowser.open(r"https://www.paypal.com/paypalme/CibulekJede")
                 
     kurzor_hand = False
     mys_pozice = pygame.mouse.get_pos()
@@ -1470,6 +1485,7 @@ while not menu and not animace_start:
         else:
             okno.blit(quit_tlacitko_vetsi, quit_tlacitko_vetsi_rect)
             
+            
         summer_text = napis_hry_font.render("SUMMER", True, cerna)
         okno.blit(summer_text, ( 210, 1))
         za_summer_text = za_napis_hry_font.render("SUMMER", True, bila)
@@ -1483,6 +1499,22 @@ while not menu and not animace_start:
         okno.blit(paypal_ikona, (paypal_ikona_rect))
         okno.blit(github_ikona, (github_ikona_rect))
         
+        if not instagram_ikona_rect.collidepoint(mys_pozice):
+            okno.blit(instagram_ikona, instagram_ikona_rect)
+        else:
+            okno.blit(instagram_ikona_vetsi, instagram_ikona_vetsi_rect)
+            
+        if not paypal_ikona_rect.collidepoint(mys_pozice):
+            okno.blit(paypal_ikona, paypal_ikona_rect)
+        else:
+            okno.blit(paypal_ikona_vetsi, paypal_ikona_vetsi_rect)
+        
+        if not github_ikona_rect.collidepoint(mys_pozice):
+            okno.blit(github_ikona, github_ikona_rect)
+        else:
+            okno.blit(github_ikona_vetsi, github_ikona_vetsi_rect)
+            
+            
     clock.tick(60)
     pygame.display.flip()
 
@@ -4789,7 +4821,7 @@ while hra is True:
         if pygame.time.get_ticks() - save_text_cas < save_text_doba:
             save_font = pygame.font.SysFont("Aharoni", 40)
             save_text = save_font.render("GAME SAVED!", True, bila)
-            save_rect = save_text.get_rect(center=(okno_sirka // 2, 300))
+            save_rect = save_text.get_rect(center=(okno_sirka // 2, 85))
             okno.blit(save_text, save_rect)
         else:
             save_text_zobrazit = False    
