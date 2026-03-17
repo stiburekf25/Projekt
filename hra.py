@@ -434,7 +434,7 @@ predmety = [
         "zmacknuti": 23,
         "limit_cekani": 1100,
         "cena": 1000,
-        "obrazek": pygame.image.load("tajnaRyba.png"),
+        "obrazek": pygame.image.load("Rak.png"),
     },
 ]
         
@@ -991,6 +991,7 @@ kapr = pygame.image.load("kapr.png")
 stika = pygame.image.load("stika.png")
 sumec = pygame.image.load("sumec.png")
 tajnaRyba = pygame.image.load("tajnaRyba.png")
+rak = pygame.image.load("Rak.png")
 
 coin_ikona = pygame.image.load("coin_ikon.png")
 
