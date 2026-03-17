@@ -522,21 +522,21 @@ kyblik_buy_pozice_x = 100
 kyblik_buy_pozice_y = 80
 za_kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x - 1, kyblik_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x, kyblik_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-kyblik_cena = 3000
+kyblik_cena = 1500
 kyblik_buy_ikona = pygame.image.load("buy_kyblik.png")
 
 zmacknuti_buy_pozice_x = 315
 zmacknuti_buy_pozice_y = 80
 za_zmacknuti_buy = pygame.draw.rect(okno, cerna, (zmacknuti_buy_pozice_x - 1, zmacknuti_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 zmacknuti_buy = pygame.draw.rect(okno, hneda, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-zmacknuti_cena = 700
+zmacknuti_cena = 250
 zmacknuti_buy_ikona = pygame.image.load("buy_zmacknuti.png")
 
 cekani_buy_pozice_x = 530
 cekani_buy_pozice_y = 80
 za_cekani_buy = pygame.draw.rect(okno, cerna, (cekani_buy_pozice_x -1, cekani_buy_pozice_y -1, upgrady_velikost_x +2, upgrady_velikost_y +2))
 cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
-cekani_cena = 200
+cekani_cena = 50
 cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
 def vykresli_popis_baitu(bait_data, x, y):
@@ -888,13 +888,13 @@ automechanik_sell_rect = pygame.Rect(630, 420, 160, 150)
 
 
 pneumatiky_pocet = 4
-pneumatiky_cena = 1000
+pneumatiky_cena = 1500
 
 benzin_pocet = 1
-benzin_cena = 1500
+benzin_cena = 1000
 
 motor_pocet = 1
-motor_cena = 6000
+motor_cena = 9000
 
 brzdy_pocet = 4
 brzdy_cena = 2000
@@ -1431,6 +1431,7 @@ while not menu and not animace_start:
                             aplikuj_save(json.load(f))
                 else:
                     animace_start = True
+                    #hra = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
                 
@@ -2603,12 +2604,13 @@ while hra is True:
             toceni_znaku = False
             slot_vysledky = [random.randint(0, 3) for _ in range(3)]
             kombinace = tuple(slot_vysledky)
-            slot_animace_indexy = list(slot_vysledky)  # zastav na výsledku
+            slot_animace_indexy = list(slot_vysledky)
             
             if kombinace in slot_vyhry:
                     vyhrano = sazka_aktualni * slot_vyhry[kombinace]
                     coins += vyhrano
                     slot_zprava = f"WIN! +{vyhrano}"
+                    deprese = max(0, deprese - 5)
             elif slot_vysledky[0] == slot_vysledky[1] or \
                  slot_vysledky[1] == slot_vysledky[2] or \
                  slot_vysledky[0] == slot_vysledky[2]:
@@ -2616,7 +2618,8 @@ while hra is True:
                 slot_zprava = f"Almost! +{sazka_aktualni}"
             else:
                 slot_zprava = f"No luck... -{sazka_aktualni}"
-            
+                deprese = min(100, deprese + 5)
+                
             slot_zprava_cas = pygame.time.get_ticks()
                 
         # Animace točení – rychlé přeskakování symbolů
@@ -3545,6 +3548,7 @@ while hra is True:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         else:         
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+            
     elif pozadi == krb and krb_leave.collidepoint(mys_pozice):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
     else:         
@@ -3728,6 +3732,7 @@ while hra is True:
             exit_slotmachine_text = exit_kapota_font.render("EXIT", True, cerna)
             okno.blit(exit_slotmachine_text, (36, 543))
             
+            
             pygame.draw.rect(okno, cerna, za_sazka_50)
             pygame.draw.rect(okno, zluta_bet, sazka_50)
             
@@ -3761,11 +3766,19 @@ while hra is True:
             okno.blit(coin_ikona, (500, 436))
             okno.blit(coin_ikona, (685, 436))
         
+        pygame.draw.rect(okno, cerna, (694 , 544, 102 , 52))
+        pygame.draw.rect(okno, fialova, (695 , 545, 100 , 50))
+        deprese_info = statistika_font.render(f"{int(deprese)}/100", True, cerna)
+        deprese_text = statistika_font.render("Misery:", True, cerna)
+        okno.blit(deprese_ikona, (695 , 545, 100 , 50))
+        okno.blit(deprese_info, (695 + 48, 565, 100, 50))
+        okno.blit(deprese_text, (695 + 48, 545, 100, 50))
+        
         slot_sirka_box = 100
         slot_vyska_box = 100
         slot_mezera = 20
         slot_start_x = (800 - (3 * slot_sirka_box + 2 * slot_mezera)) // 2
-        slot_y = 200
+        slot_y = 210
 
         for i in range(3):
             box_x = slot_start_x + i * (slot_sirka_box + slot_mezera)
@@ -3784,10 +3797,10 @@ while hra is True:
             elif "Almost" in slot_zprava:
                 barva = zluta_bet
             else:
-                barva = cervena
+                barva = oranzova
             zprava_font = pygame.font.SysFont("Aharoni", 50)
             zprava_text = zprava_font.render(slot_zprava, True, barva)
-            zprava_rect = zprava_text.get_rect(center=(400, 340))
+            zprava_rect = zprava_text.get_rect(center=(400, 35))
             okno.blit(zprava_text, zprava_rect)
             
         # --- Tabulka výher ---
@@ -3796,9 +3809,17 @@ while hra is True:
             "3x BREAD = x2   3x WORM = x5",
             "3x CORN = x10   3x FISH HEAD = x50 JACKPOT",
         ]
+                
+        tabulka_sirka = 380
+        tabulka_vyska = 52
+        tabulka_x = 405 - tabulka_sirka // 2
+        tabulka_y = 526
+        pygame.draw.rect(okno, cerna, (tabulka_x - 1, tabulka_y - 1, tabulka_sirka + 2, tabulka_vyska + 2))
+        pygame.draw.rect(okno, hneda, (tabulka_x, tabulka_y, tabulka_sirka, tabulka_vyska))
+        
         for i, line in enumerate(payout_lines):
             t = info_font.render(line, True, bila)
-            okno.blit(t, (400 - t.get_width()//2, 155 + i * 22))
+            okno.blit(t, (400 - t.get_width()//2, 535 + i * 22))
         
     if pozadi == rozcestnik and stojim_u_auta:
         pygame.draw.rect(okno, cerna, (info_rozcestnik_obrazovka_x - 1401, 339, 52, 52))
@@ -4411,7 +4432,7 @@ while hra is True:
         okno.blit(zmacknuti_buy_ikona, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y))
         pocet_upgradu_pro_zmacknuti = pocet_upgradu_font.render(f"{zmacknuti_lvl}/{max_upgrade_zmacknuti}", True, cerna)
         if zmacknuti_lvl < max_upgrade_zmacknuti:
-            cena_buy_upgradu_zmacknuti = coins_cena_buy_font.render(f"{zmacknuti_cena}", True, zluta)
+            cena_buy_upgradu_zmacknuti = coins_cena_buy_font.render(f"{int(zmacknuti_cena)}", True, zluta)
             okno.blit(cena_buy_upgradu_zmacknuti, (zmacknuti_buy_pozice_x + 70, zmacknuti_buy_pozice_y + upgrady_velikost_y -50))
             okno.blit(coin_ikona, (zmacknuti_buy_pozice_x + 40, zmacknuti_buy_pozice_y + upgrady_velikost_y -50))
         else:
