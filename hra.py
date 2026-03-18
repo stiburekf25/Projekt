@@ -4,7 +4,11 @@ import random
 import os
 import webbrowser
 import json
+
+
+pygame.mixer.pre_init(44100, -16, 2, 2048)
 pygame.init()
+pygame.mixer.init()
 
 # PRIPRAVA HRY
 
@@ -774,7 +778,7 @@ sazka_1000_cena = 1000
 
 toceni_znaku = False
 toceni_cas_start = 0
-toceni_doba = 1500  # ms jak dlouho se "točí"
+toceni_doba = 3550  # ms jak dlouho se "točí"
 sazka_aktualni = 0
 
 slot_vysledky = [0, 0, 0]  # indexy výsledků pro každý slot
@@ -1414,6 +1418,78 @@ stojim_u_dveri = False
 stojim_u_postele = False
 stojim_u_krbu = False
 
+#zvuky
+
+zvuk_chuze_sterk = pygame.mixer.Sound("sterk_chuze.mp3")
+zvuk_chuze_sterk_hraje = False
+zvuk_chuze_sterk.set_volume(0.1)
+
+zvuk_chuze_les = pygame.mixer.Sound("zvuk_chuze_les.mp3")
+zvuk_chuze_les_hraje = False
+zvuk_chuze_les.set_volume(0.5)
+
+zvuk_les_ambient = pygame.mixer.Sound("les_ambient.wav")
+zvuk_les_ambient.set_volume(0.4)
+zvuk_les_ambient_hraje = False
+
+zvuk_venek_ambient = pygame.mixer.Sound("venek.wav")
+zvuk_venek_ambient.set_volume(1)
+zvuk_venek_ambient_hraje = False
+
+zvuk_boruvky_shop = pygame.mixer.Sound("boruvky_shop.mp3")
+zvuk_boruvky_shop.set_volume(0.5)
+zvuk_boruvky_shop_hraje = False
+
+zvuk_shop = pygame.mixer.Sound("shop.mp3")
+zvuk_shop.set_volume(1)
+zvuk_shop_hraje = False
+
+zvuk_barman = pygame.mixer.Sound("barman.mp3")
+zvuk_barman.set_volume(1)
+zvuk_barman_hraje = False
+
+zvuk_click = pygame.mixer.Sound("click.wav")
+zvuk_click.set_volume(0.4)
+
+pygame.mixer.music.load("background_music.wav")
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(loops=-1)
+
+zvuk_slot_spin = pygame.mixer.Sound("slotmachine_spin.mp3")
+zvuk_slot_spin.set_volume(1)
+
+zvuk_jidla = pygame.mixer.Sound("jidlo.wav")
+zvuk_jidla.set_volume(0.4)
+
+zvuk_piti = pygame.mixer.Sound("piti.wav")
+zvuk_piti.set_volume(1)
+
+zvuk_krb = pygame.mixer.Sound("krb.mp3")
+zvuk_krb.set_volume(1)
+zvuk_krb_hraje = False
+
+zvuk_chuze_dum = pygame.mixer.Sound("drevena_podlaha.mp3")
+zvuk_chuze_dum.set_volume(0.5)
+zvuk_chuze_dum_hraje = False
+
+zvuk_liska_bouda = pygame.mixer.Sound("liska.wav")
+zvuk_liska_bouda.set_volume(0.4)
+zvuk_liska_bouda_hraje = False
+
+zvuk_slot_vysledek = pygame.mixer.Sound("vysledek_slotmachine.wav")
+zvuk_slot_vysledek.set_volume(0.6)
+
+zvuk_jezero = pygame.mixer.Sound("jezero.wav")
+zvuk_jezero.set_volume(0.4)
+zvuk_jezero_hraje = False
+
+zvuk_swoosh = pygame.mixer.Sound("swoosh.wav")
+zvuk_swoosh.set_volume(1)
+
+zvuk_chyt = pygame.mixer.Sound("chyt.wav")
+zvuk_chyt.set_volume(0.6)
+zvuk_chyt_hraje = False
+
 
 while not menu and not animace_start:
     for udalost in pygame.event.get():
@@ -1431,8 +1507,8 @@ while not menu and not animace_start:
                         with open("save.json", "r", encoding="utf-8") as f:
                             aplikuj_save(json.load(f))
                 else:
-                    animace_start = True
-                    #hra = True
+                    #animace_start = True
+                    hra = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
                 
@@ -1757,6 +1833,7 @@ while hra is True:
             
         if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
             mouse_click = True
+            zvuk_click.play()    
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
@@ -1877,6 +1954,132 @@ while hra is True:
             aktualni_sprite = TEXTURApepa_2
         hrac_pozice_x -= hrac_aktualni_rychlost
     
+    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem) and not inventar:
+        if stisknuto[pygame.K_d] or stisknuto[pygame.K_a]:
+            if not zvuk_chuze_sterk_hraje:
+                zvuk_chuze_sterk.play(loops=-1)
+                zvuk_chuze_sterk_hraje = True
+        else:
+            if zvuk_chuze_sterk_hraje:
+                zvuk_chuze_sterk.stop()
+                zvuk_chuze_sterk_hraje = False
+
+    else:  # ← TOTO CHYBÍ - když pozadi není štěrk, zastav zvuk
+        if zvuk_chuze_sterk_hraje:
+            zvuk_chuze_sterk.stop()
+            zvuk_chuze_sterk_hraje = False
+
+    if pozadi == les and not inventar:
+        if stisknuto[pygame.K_d] or stisknuto[pygame.K_a]:
+            if not zvuk_chuze_les_hraje:
+                zvuk_chuze_les.play(loops=-1)
+                zvuk_chuze_les_hraje = True
+        else:
+            if zvuk_chuze_les_hraje:
+                zvuk_chuze_les.stop()
+                zvuk_chuze_les_hraje = False
+
+    else:  # ← stejně i tady pro jistotu
+        if zvuk_chuze_les_hraje:
+            zvuk_chuze_les.stop()
+            zvuk_chuze_les_hraje = False
+    
+    if pozadi in (les, shop_boruvky):
+        if not zvuk_les_ambient_hraje:
+            zvuk_les_ambient.play(loops=-1)
+            zvuk_les_ambient_hraje = True
+    else:
+        if zvuk_les_ambient_hraje:
+            zvuk_les_ambient.stop()
+            zvuk_les_ambient_hraje = False
+    
+    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem):
+        if not zvuk_venek_ambient_hraje:
+            zvuk_venek_ambient.play(loops=-1)
+            zvuk_venek_ambient_hraje = True
+    else:
+        if zvuk_venek_ambient_hraje:
+            zvuk_venek_ambient.stop()
+            zvuk_venek_ambient_hraje = False
+    
+    if pozadi == shop_boruvky:
+        if not zvuk_boruvky_shop_hraje:
+            zvuk_boruvky_shop.play()  # přehraje jednou a skončí
+            zvuk_boruvky_shop_hraje = True
+    else:
+        if zvuk_boruvky_shop_hraje:
+            zvuk_boruvky_shop.stop()
+            zvuk_boruvky_shop_hraje = False
+            
+    if pozadi == shop:
+        if not zvuk_shop_hraje:
+            zvuk_shop.play()  # přehraje jednou a skončí
+            zvuk_shop_hraje = True
+    else:
+        if zvuk_shop_hraje:
+            zvuk_shop.stop()
+            zvuk_shop_hraje = False
+    
+    if pozadi == barman:
+        if not zvuk_barman_hraje:
+            zvuk_barman.play()
+            zvuk_barman_hraje = True
+    
+    else:
+        if zvuk_barman_hraje:
+            zvuk_barman.stop()
+            zvuk_barman_hraje = False
+    
+    if pozadi == krb:
+        if not zvuk_krb_hraje:
+            zvuk_krb.play(loops=-1)
+            zvuk_krb_hraje = True
+    else:
+        if zvuk_krb_hraje:
+            zvuk_krb.stop()
+            zvuk_krb_hraje = False
+    
+    if pozadi == bouda_zamcena:
+        if not zvuk_liska_bouda_hraje:
+            zvuk_liska_bouda.play(loops=-1)
+            zvuk_liska_bouda_hraje = True
+    else:
+        if zvuk_liska_bouda_hraje:
+            zvuk_liska_bouda.stop()
+            zvuk_liska_bouda_hraje = False    
+            
+    if pozadi in (dum, jezero):
+        if stisknuto[pygame.K_d] or stisknuto[pygame.K_a]:
+            if not zvuk_chuze_dum_hraje:
+                zvuk_chuze_dum.play(loops=-1)
+                zvuk_chuze_dum_hraje = True
+        else:
+            if zvuk_chuze_dum_hraje:
+                zvuk_chuze_dum.stop()
+                zvuk_chuze_dum_hraje = False
+    else:
+        if zvuk_chuze_dum_hraje:
+            zvuk_chuze_dum.stop()
+            zvuk_chuze_dum_hraje = False            
+            
+    if pozadi in (jezero, rybareni, rybareni_dole):
+        if not zvuk_jezero_hraje:
+            zvuk_jezero.play(loops=-1)
+            zvuk_jezero_hraje = True
+    else:
+        if zvuk_jezero_hraje:
+            zvuk_jezero.stop()
+            zvuk_jezero_hraje = False
+            
+    if pozadi == rybareni_pozor:
+        if not zvuk_chyt_hraje:
+            zvuk_chyt.play(loops=-1)
+            zvuk_chyt_hraje = True
+    else:
+        if zvuk_chyt_hraje:
+            zvuk_chyt.stop()
+            zvuk_chyt_hraje = False
+        
     #animace lisky pri chuzi
     
     if stisknuto[pygame.K_d] and mazlicek_equipped:
@@ -2148,24 +2351,28 @@ while hra is True:
         
         if hranolky_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= hranolky_cena:
+                zvuk_jidla.play()
                 hlad += hranolky_hunger
                 zizen += hranolky_zizen
                 coins -= hranolky_cena
         
         if salat_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= salat_cena:
+                zvuk_jidla.play()
                 hlad += salat_hunger
                 zizen += salat_zizen
                 coins -= salat_cena
         
         if hamburger_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= hamburger_cena:
+                zvuk_jidla.play()
                 hlad += hamburger_hunger
                 zizen += hamburger_zizen
                 coins -= hamburger_cena
         
         if rybi_prsty_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= rybi_prsty_cena:
+                zvuk_jidla.play()
                 hlad += rybi_prsty_hunger
                 zizen += rybi_prsty_zizen
                 coins -= rybi_prsty_cena
@@ -2559,24 +2766,28 @@ while hra is True:
         
         if voda_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= voda_cena:
+                zvuk_piti.play()
                 zizen += zizen_voda
                 hlad += hlad_voda
                 coins -= voda_cena
         
         if dzus_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= dzus_cena:
+                zvuk_piti.play()
                 zizen += zizen_dzus
                 hlad += hlad_dzus
                 coins -= dzus_cena
         
         if cola_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= cola_cena:
+                zvuk_piti.play()
                 zizen += zizen_cola
                 hlad += hlad_cola
                 coins -= cola_cena
         
         if pivo_buy.collidepoint(mys_pozice) and mouse_click and not inventar:
             if coins >= pivo_cena:
+                zvuk_piti.play()
                 zizen += zizen_pivo
                 hlad += hlad_pivo
                 coins -= pivo_cena
@@ -2599,6 +2810,7 @@ while hra is True:
                         toceni_znaku = True
                         toceni_cas_start = pygame.time.get_ticks()
                         slot_zprava = ""
+                        zvuk_slot_spin.play()
                         break
                 
         if toceni_znaku and pygame.time.get_ticks() - toceni_cas_start > toceni_doba:
@@ -2606,6 +2818,7 @@ while hra is True:
             slot_vysledky = [random.randint(0, 3) for _ in range(3)]
             kombinace = tuple(slot_vysledky)
             slot_animace_indexy = list(slot_vysledky)
+            zvuk_slot_vysledek.play()
             
             if kombinace in slot_vyhry:
                     vyhrano = sazka_aktualni * slot_vyhry[kombinace]
@@ -2945,7 +3158,7 @@ while hra is True:
         None
    
     elif pozadi == rybareni and stisknuto[pygame.K_SPACE] and not (prut or minihra) and not inventar:
-          
+        zvuk_swoosh.play()
         if sum(obsah_inventare.values()) < obsah_inventare_max:
             pozadi = rybareni_dole
             hrac_rychlost = 0
