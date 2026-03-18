@@ -2980,8 +2980,8 @@ while hra is True:
                 pismneko_ktere_zkousime_davat_do_sekvence = chr(random.randint(97, 97 + 25))
             sekvence += pismneko_ktere_zkousime_davat_do_sekvence
         pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
-        okraj_random_x = random.randint(20, 780 - pismeno_velikost)
-        okraj_random_y = random.randint(20, 580 - pismeno_velikost)
+        okraj_random_x = random.randint(40, 760)
+        okraj_random_y = random.randint(40, 560)
         zacatek_limitu = pygame.time.get_ticks()
         
 
@@ -3006,9 +3006,8 @@ while hra is True:
             poradi += 1
             if poradi < ulovek["zmacknuti"]:
                 pismeno_text = pismeno_font.render(f"{sekvence[poradi]}", True, cerna)
-                okraj_random_x = random.randint(20, 780 - pismeno_velikost)
-                okraj_random_y = random.randint(20, 580 - pismeno_velikost)
-                
+                okraj_random_x = random.randint(40, 760)
+                okraj_random_y = random.randint(40, 560)                
                 zacatek_limitu = pygame.time.get_ticks()
             else:
                 inventar_order.append(ulovek)
