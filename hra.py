@@ -1490,6 +1490,11 @@ zvuk_chyt = pygame.mixer.Sound("chyt.wav")
 zvuk_chyt.set_volume(0.6)
 zvuk_chyt_hraje = False
 
+zvuk_soucastka = pygame.mixer.Sound("soucastka.wav")
+zvuk_soucastka.set_volume(0.6)
+
+zvuk_benzin = pygame.mixer.Sound("benzin.wav")
+zvuk_benzin.set_volume(0.6)
 
 while not menu and not animace_start:
     for udalost in pygame.event.get():
@@ -1507,8 +1512,8 @@ while not menu and not animace_start:
                         with open("save.json", "r", encoding="utf-8") as f:
                             aplikuj_save(json.load(f))
                 else:
-                    #animace_start = True
-                    hra = True
+                    animace_start = True
+                    #hra = True
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 break
                 
@@ -1964,7 +1969,7 @@ while hra is True:
                 zvuk_chuze_sterk.stop()
                 zvuk_chuze_sterk_hraje = False
 
-    else:  # ← TOTO CHYBÍ - když pozadi není štěrk, zastav zvuk
+    else:  
         if zvuk_chuze_sterk_hraje:
             zvuk_chuze_sterk.stop()
             zvuk_chuze_sterk_hraje = False
@@ -1993,7 +1998,7 @@ while hra is True:
             zvuk_les_ambient.stop()
             zvuk_les_ambient_hraje = False
     
-    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem):
+    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem, kapota, bouda_odemcena, bouda_zamcena):
         if not zvuk_venek_ambient_hraje:
             zvuk_venek_ambient.play(loops=-1)
             zvuk_venek_ambient_hraje = True
@@ -2187,24 +2192,28 @@ while hra is True:
                 if pneumatiky_inv_pocet > 0:
                     fixed_pneumatiky_pocet += 1
                     pneumatiky_inv_pocet -= 1
+                    zvuk_soucastka.play()
         
         if fix_benzin_kapota.collidepoint(mys_pozice) and mouse_click and not inventar:
             if fixed_benzin_pocet < max_fix_benzin_pocet:
                 if benzin_inv_pocet > 0:
                     fixed_benzin_pocet += 1
                     benzin_inv_pocet -= 1
+                    zvuk_benzin.play()
         
         if fix_brzdy_kapota.collidepoint(mys_pozice) and mouse_click and not inventar:
             if fixed_brzdy_pocet < max_fix_brzdy_pocet:
                 if brzdy_inv_pocet > 0:
                     fixed_brzdy_pocet += 1
                     brzdy_inv_pocet -= 1
+                    zvuk_soucastka.play()
                     
         if fix_motor_kapota.collidepoint(mys_pozice) and mouse_click and not inventar:
             if fixed_motor_pocet < max_fix_motor_pocet:
                 if motor_inv_pocet > 0:
                     fixed_motor_pocet += 1
                     motor_inv_pocet -= 1
+                    zvuk_soucastka.play()
                 
         if fixed_pneumatiky_pocet == max_fix_pneumatiky_pocet:
             maxed_out_pneumatiky =  True
@@ -4560,7 +4569,7 @@ while hra is True:
     
     hrac_obrazovka_x = hrac_pozice_x - kamera_x
     
-    if mazlicek_equipped and (pozadi == rozcestnik or pozadi == garaz or pozadi == venek):
+    if mazlicek_equipped and (pozadi == rozcestnik or pozadi == garaz or pozadi == venek or pozadi == les or pozadi == cesta_pred_lesem):
         okno.blit(aktualni_sprite_lisky, (hrac_obrazovka_x - 60, hrac_pozice_y + 105))
     
     if mazlicek_equipped and pozadi == bouda_odemcena and not inventar:
