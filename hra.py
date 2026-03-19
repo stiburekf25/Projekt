@@ -1451,9 +1451,6 @@ zvuk_barman_hraje = False
 zvuk_click = pygame.mixer.Sound("click.wav")
 zvuk_click.set_volume(0.4)
 
-pygame.mixer.music.load("background_music.wav")
-pygame.mixer.music.set_volume(0.4)
-pygame.mixer.music.play(loops=-1)
 
 zvuk_slot_spin = pygame.mixer.Sound("slotmachine_spin.mp3")
 zvuk_slot_spin.set_volume(1)
@@ -1496,6 +1493,28 @@ zvuk_soucastka.set_volume(0.6)
 zvuk_benzin = pygame.mixer.Sound("benzin.wav")
 zvuk_benzin.set_volume(0.6)
 
+zvuk_auto_silnice = pygame.mixer.Sound("auto_silnice.wav")
+zvuk_auto_silnice.set_volume(0.6)
+
+zvuk_auto_zevnitr = pygame.mixer.Sound("auto_silnice.wav")
+zvuk_auto_zevnitr.set_volume(0.1)
+
+radio = pygame.mixer.Sound("radio.wav")
+radio.set_volume(0.2)
+
+brzdy = pygame.mixer.Sound("brzdy.wav")
+brzdy.set_volume(0.5)
+
+kufr_odemceni = pygame.mixer.Sound("kufr.wav")
+kufr_odemceni.set_volume(1)
+
+menu_muzika = pygame.mixer.Sound("menu_muzika.mp3")
+menu_muzika.set_volume(0.4)
+
+hwg = pygame.mixer.Sound("hwg.wav")
+hwg.set_volume(1)
+
+menu_muzika.play(loops=-1)
 while not menu and not animace_start:
     for udalost in pygame.event.get():
         if udalost.type == pygame.QUIT:
@@ -1504,9 +1523,11 @@ while not menu and not animace_start:
         
         if udalost.type == pygame.MOUSEBUTTONDOWN and udalost.button == 1:
             mys_pozice = pygame.mouse.get_pos()
+            zvuk_click.play()    
             
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 menu = True
+                menu_muzika.stop()
                 if os.path.exists("save.json"):
                         hra = True
                         with open("save.json", "r", encoding="utf-8") as f:
@@ -1529,7 +1550,7 @@ while not menu and not animace_start:
                 
             if paypal_ikona_rect.collidepoint(mys_pozice):
                 webbrowser.open(r"https://www.paypal.com/paypalme/CibulekJede")
-                
+         
     kurzor_hand = False
     mys_pozice = pygame.mouse.get_pos()
     
@@ -1624,7 +1645,9 @@ while animace_start is True:
         
     clock.tick(60)
     pygame.display.flip()    
-    
+
+if animace_start_auto_prijezd:
+    zvuk_auto_silnice.play(loops=-1)
 pocitadlo = 0
 while animace_start_auto_prijezd is True:
     for udalost in pygame.event.get():
@@ -1690,6 +1713,7 @@ while animace_start_auto_ze_predu is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 5: #15  # ← 3x
         animace_start_auto_ze_predu = False
         animace_start_pepa_1 = True
+        zvuk_auto_silnice.stop()
         break
     
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1698,6 +1722,9 @@ while animace_start_auto_ze_predu is True:
     clock.tick(60)
     pygame.display.flip()
 
+if animace_start_pepa_1:
+    zvuk_auto_zevnitr.play(loops=-1)
+    radio.play(loops=-1)
 pocitadlo = 0
 while animace_start_pepa_1 is True:
     for udalost in pygame.event.get():
@@ -1714,6 +1741,8 @@ while animace_start_pepa_1 is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start_pepa_1 = False 
         animace_start_pepa_brzdy = True
+        zvuk_auto_zevnitr.stop()
+        radio.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1722,6 +1751,8 @@ while animace_start_pepa_1 is True:
     clock.tick(60)
     pygame.display.flip()
 
+if animace_start_pepa_brzdy:
+    brzdy.play()
 pocitadlo = 0
 while animace_start_pepa_brzdy is True:
     for udalost in pygame.event.get():
@@ -1746,6 +1777,8 @@ while animace_start_pepa_brzdy is True:
     clock.tick(60)
     pygame.display.flip()
     
+if animace_start_pepa_brzdeni_auta:
+    zvuk_venek_ambient.play(loops=-1)
 pocitadlo = 0
 while animace_start_pepa_brzdeni_auta is True:
     for udalost in pygame.event.get():
@@ -1762,6 +1795,7 @@ while animace_start_pepa_brzdeni_auta is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku: 
         animace_start_pepa_brzdeni_auta = False
         animace_start_kufr = True
+        brzdy.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1770,6 +1804,8 @@ while animace_start_pepa_brzdeni_auta is True:
     clock.tick(60)
     pygame.display.flip()
 
+if animace_start_kufr:
+    kufr_odemceni.play()
 pocitadlo = 0
 while animace_start_kufr is True:
     for udalost in pygame.event.get():
@@ -1786,6 +1822,7 @@ while animace_start_kufr is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start_kufr = False
         animace_start_promluva = True
+        kufr_odemceni.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1794,6 +1831,8 @@ while animace_start_kufr is True:
     clock.tick(60)
     pygame.display.flip()
 
+if animace_start_promluva:
+    hwg.play()
 pocitadlo = 0
 while animace_start_promluva is True:
     for udalost in pygame.event.get():
@@ -1810,9 +1849,8 @@ while animace_start_promluva is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_start_promluva = False
         hra = True
-        if os.path.exists("save.json"):
-            with open("save.json", "r", encoding="utf-8") as f:
-                aplikuj_save(json.load(f))
+        zvuk_venek_ambient.stop()
+        hwg.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -1822,7 +1860,9 @@ while animace_start_promluva is True:
     pygame.display.flip()
 
 
-
+pygame.mixer.music.load("background_music.wav")
+pygame.mixer.music.set_volume(0.4)
+pygame.mixer.music.play(loops=-1)
 
 
 while hra is True:
@@ -1998,7 +2038,7 @@ while hra is True:
             zvuk_les_ambient.stop()
             zvuk_les_ambient_hraje = False
     
-    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem, kapota, bouda_odemcena, bouda_zamcena):
+    if pozadi in (rozcestnik, venek, garaz, cesta_pred_lesem, kapota, bouda_odemcena, bouda_zamcena, automechanik, holka_konec_questu, holka_kytky_otazka, holka_levandule, holka_ruze, holka_tulipan):
         if not zvuk_venek_ambient_hraje:
             zvuk_venek_ambient.play(loops=-1)
             zvuk_venek_ambient_hraje = True
