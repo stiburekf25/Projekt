@@ -1436,8 +1436,8 @@ zvuk_venek_ambient = pygame.mixer.Sound("venek.wav")
 zvuk_venek_ambient.set_volume(1)
 zvuk_venek_ambient_hraje = False
 
-zvuk_boruvky_shop = pygame.mixer.Sound("boruvky_shop.mp3")
-zvuk_boruvky_shop.set_volume(0.5)
+zvuk_boruvky_shop = pygame.mixer.Sound("boruvky_shop.wav")
+zvuk_boruvky_shop.set_volume(0.2)
 zvuk_boruvky_shop_hraje = False
 
 zvuk_shop = pygame.mixer.Sound("shop.mp3")
@@ -1513,6 +1513,18 @@ menu_muzika.set_volume(0.4)
 
 hwg = pygame.mixer.Sound("hwg.wav")
 hwg.set_volume(1)
+
+zvuk_kapota = pygame.mixer.Sound("kapota.wav")
+zvuk_kapota.set_volume(0.7)
+
+crack = pygame.mixer.Sound("crack.wav")
+crack.set_volume(0.7)
+
+kapota_zavreni = pygame.mixer.Sound("kapota_zavreni.wav")
+kapota_zavreni.set_volume(0.7)
+
+konec_muzika = pygame.mixer.Sound("konec_muzika.wav")
+konec_muzika.set_volume(0.7)
 
 menu_muzika.play(loops=-1)
 while not menu and not animace_start:
@@ -2046,6 +2058,9 @@ while hra is True:
         if zvuk_venek_ambient_hraje:
             zvuk_venek_ambient.stop()
             zvuk_venek_ambient_hraje = False
+    
+    if kapota_konec_hry.collidepoint(mys_pozice) and mouse_click:
+        zvuk_venek_ambient.stop()
     
     if pozadi == shop_boruvky:
         if not zvuk_boruvky_shop_hraje:
@@ -5114,9 +5129,9 @@ while hra is True:
     clock.tick(60)
     pygame.display.flip()
     
-
-pocitadlo = 0
-    
+if animace_konec_opraveni_auta:
+    zvuk_kapota.play()
+pocitadlo = 0  
 while animace_konec_opraveni_auta is True:
     for udalost in pygame.event.get():
         if udalost.type == pygame.QUIT:
@@ -5132,6 +5147,7 @@ while animace_konec_opraveni_auta is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_konec_opraveni_auta = False
         animace_konec_zlomeni_prutu = True
+        zvuk_kapota.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -5142,6 +5158,8 @@ while animace_konec_opraveni_auta is True:
 
 pocitadlo = 0
 
+if animace_konec_zlomeni_prutu:
+    crack.play()
 while animace_konec_zlomeni_prutu is True:
     for udalost in pygame.event.get():
         if udalost.type == pygame.QUIT:
@@ -5157,6 +5175,7 @@ while animace_konec_zlomeni_prutu is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_konec_zlomeni_prutu = False
         animace_konec_kufr = True
+        crack.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -5167,6 +5186,10 @@ while animace_konec_zlomeni_prutu is True:
 
 
 pocitadlo = 0
+
+if animace_konec_kufr:
+    kapota_zavreni.play()
+    konec_muzika.play()
 
 while animace_konec_kufr is True:
     for udalost in pygame.event.get():
@@ -5183,6 +5206,7 @@ while animace_konec_kufr is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku:
         animace_konec_kufr = False
         animace_konec = True
+        kapota_zavreni.stop()
         break
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
@@ -5208,9 +5232,12 @@ while animace_konec is True:
     
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 10:
         animace_konec = False
-        menu = False
+        konec_muzika.stop()
         if os.path.exists("save.json"):
-                    os.remove("save.json")        
+                    os.remove("save.json")
+                    
+        pygame.quit()
+        os.execv(sys.executable, [sys.executable] + sys.argv)  # ← restart
 
     index = int(pocitadlo // faktor_zpozdeni) % pocet_snimku
     okno.blit(SK[index], (0, 0))
