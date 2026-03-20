@@ -1437,7 +1437,7 @@ zvuk_venek_ambient.set_volume(1)
 zvuk_venek_ambient_hraje = False
 
 zvuk_boruvky_shop = pygame.mixer.Sound("boruvky_shop.wav")
-zvuk_boruvky_shop.set_volume(0.2)
+zvuk_boruvky_shop.set_volume(0.1)
 zvuk_boruvky_shop_hraje = False
 
 zvuk_shop = pygame.mixer.Sound("shop.mp3")
@@ -1525,6 +1525,18 @@ kapota_zavreni.set_volume(0.7)
 
 konec_muzika = pygame.mixer.Sound("konec_muzika.wav")
 konec_muzika.set_volume(0.7)
+
+zvuk_canuget = pygame.mixer.Sound("canuget.wav")
+zvuk_canuget.set_volume(0.3)
+zvuk_canuget_hraje = False
+
+zvuk_canuhelp = pygame.mixer.Sound("canuhelp.mp3")
+zvuk_canuhelp.set_volume(0.3)
+zvuk_canuhelp_hraje = False
+
+zvuk_thanks = pygame.mixer.Sound("thanks.wav")
+zvuk_thanks.set_volume(0.3)
+zvuk_thanks_hraje = False
 
 menu_muzika.play(loops=-1)
 while not menu and not animace_start:
@@ -2139,7 +2151,34 @@ while hra is True:
         if zvuk_chyt_hraje:
             zvuk_chyt.stop()
             zvuk_chyt_hraje = False
-        
+            
+    if pozadi in (holka_levandule, holka_ruze, holka_tulipan):
+        if not zvuk_canuget_hraje:
+            zvuk_canuget.play()
+            zvuk_canuget_hraje = True
+    else:
+        if zvuk_canuget_hraje:
+            zvuk_canuget.stop()
+            zvuk_canuget_hraje = False
+            
+    if pozadi == holka_kytky_otazka:
+        if not zvuk_canuhelp_hraje:
+            zvuk_canuhelp.play()
+            zvuk_canuhelp_hraje = True
+    else:
+        if zvuk_canuhelp_hraje:
+            zvuk_canuhelp.stop()
+            zvuk_canuhelp_hraje = False
+
+    if pozadi == holka_konec_questu:
+        if not zvuk_thanks_hraje:
+            zvuk_thanks.play()
+            zvuk_thanks_hraje = True
+    else:
+        if zvuk_thanks_hraje:
+            zvuk_thanks.stop()
+            zvuk_thanks_hraje = False
+            
     #animace lisky pri chuzi
     
     if stisknuto[pygame.K_d] and mazlicek_equipped:
@@ -2595,6 +2634,7 @@ while hra is True:
             if pocet_levanduli == 3:
                 levandule = False
                 ruze = True
+                zvuk_canuget.play()
                 pozadi = holka_ruze
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
@@ -2617,6 +2657,7 @@ while hra is True:
             if pocet_ruzi == 3:
                 ruze = False
                 tulipan = True
+                zvuk_canuget.play()
                 pozadi = holka_tulipan
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
@@ -2639,6 +2680,7 @@ while hra is True:
             if pocet_tulipanu == 3:
                 tulipan = False
                 konec_questu = True
+                zvuk_thanks.play()
                 pozadi = holka_konec_questu
                 pozadi_sirka = pozadi.get_width()
                 pozadi_vyska = pozadi.get_height()
