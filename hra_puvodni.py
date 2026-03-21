@@ -4,37 +4,6 @@ import random
 import os
 import webbrowser
 import json
-import base64
-
-
-def uloz_save(data):
-    json_str = json.dumps(data, ensure_ascii=False)
-    zasifrovano = base64.b64encode(json_str.encode("utf-8")).decode("utf-8")
-    with open(save_path("summer_fish_data"), "w", encoding="utf-8") as f:
-        f.write("GAME SAVED DATA - DO NOT DELETE OR CHANGE THIS FILE\n")
-        f.write(zasifrovano)
-
-def nacti_save():
-    with open(save_path("summer_fish_data"), "r", encoding="utf-8") as f:
-        f.readline()
-        zasifrovano = f.read()
-    json_str = base64.b64decode(zasifrovano).decode("utf-8")
-    return json.loads(json_str)
-
-def resource_path(relative_path):
-    """Funguje jak při vývoji, tak v .exe (PyInstaller)"""
-    import sys, os
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
-def save_path(filename):
-    """Cesta k save souboru vedle .exe, ne uvnitř"""
-    import sys, os
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(os.path.dirname(sys.executable), filename)
-    return filename
-
 
 import sys, os
 
@@ -332,7 +301,7 @@ kamera_x = 108
 
 
 
-soubor = open(resource_path("shop.txt"), "r", encoding="utf-8")
+soubor = open("shop.txt", "r", encoding="utf-8")
 
 seznam_vet = []
 
@@ -343,7 +312,7 @@ soubor.close()
 
 
 
-soubor_barman = open(resource_path("barman.txt"), "r", encoding="utf-8")
+soubor_barman = open("barman.txt", "r", encoding="utf-8")
 
 seznam_vet_barman = []
 
@@ -361,7 +330,6 @@ prava_zona = 400
 pocitadlo = 0
 
 okno = pygame.display.set_mode(rozliseni_okna)
-pygame.display.set_caption("Summer Fish")
 clock = pygame.time.Clock()
 pocitadlo += 1
 
@@ -417,7 +385,7 @@ obsah_inventare = {
 
 #Rybareni
 posledni_ulovek = None
-plus_ikona = pygame.image.load(resource_path("plus_ikona.png"))
+plus_ikona = pygame.image.load("plus_ikona.png")
 posledni_ulovek_cas = 0
 posledni_ulovek_doba = 2000
 prut = False
@@ -432,7 +400,7 @@ predmety = [
         "zmacknuti": 5,
         "limit_cekani": 3000,
         "cena": 30,
-        "obrazek": pygame.image.load(resource_path("plechovka.png")),
+        "obrazek": pygame.image.load("plechovka.png"),
     },
     {
         "jmeno": "Bota",
@@ -441,7 +409,7 @@ predmety = [
         "zmacknuti": 7,
         "limit_cekani": 2500,
         "cena": 50,
-        "obrazek": pygame.image.load(resource_path("bota.png")),
+        "obrazek": pygame.image.load("bota.png"),
     },
     {
         "jmeno": "Kapr",
@@ -450,7 +418,7 @@ predmety = [
         "zmacknuti": 12,
         "limit_cekani": 2000,
         "cena": 140,
-        "obrazek": pygame.image.load(resource_path("kapr.png")),
+        "obrazek": pygame.image.load("kapr.png"),
     },
     {
         "jmeno": "Štika",
@@ -459,7 +427,7 @@ predmety = [
         "zmacknuti": 15,
         "limit_cekani": 1300,
         "cena": 280,
-        "obrazek": pygame.image.load(resource_path("stika.png")),
+        "obrazek": pygame.image.load("stika.png"),
     },
     {
         "jmeno": "Sumec",
@@ -468,7 +436,7 @@ predmety = [
         "zmacknuti": 18,
         "limit_cekani": 1000,
         "cena": 500,
-        "obrazek": pygame.image.load(resource_path("sumec.png")),
+        "obrazek": pygame.image.load("sumec.png"),
     },
     {
         "jmeno": "Rak",
@@ -477,7 +445,7 @@ predmety = [
         "zmacknuti": 23,
         "limit_cekani": 1100,
         "cena": 1000,
-        "obrazek": pygame.image.load(resource_path("Rak.png")),
+        "obrazek": pygame.image.load("Rak.png"),
     },
 ]
         
@@ -566,21 +534,21 @@ kyblik_buy_pozice_y = 80
 za_kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x - 1, kyblik_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 kyblik_buy = pygame.draw.rect(okno, hneda, (kyblik_buy_pozice_x, kyblik_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
 kyblik_cena = 1500
-kyblik_buy_ikona = pygame.image.load(resource_path("buy_kyblik.png"))
+kyblik_buy_ikona = pygame.image.load("buy_kyblik.png")
 
 zmacknuti_buy_pozice_x = 315
 zmacknuti_buy_pozice_y = 80
 za_zmacknuti_buy = pygame.draw.rect(okno, cerna, (zmacknuti_buy_pozice_x - 1, zmacknuti_buy_pozice_y - 1, upgrady_velikost_x + 2, upgrady_velikost_y + 2))
 zmacknuti_buy = pygame.draw.rect(okno, hneda, (zmacknuti_buy_pozice_x, zmacknuti_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
 zmacknuti_cena = 250
-zmacknuti_buy_ikona = pygame.image.load(resource_path("buy_zmacknuti.png"))
+zmacknuti_buy_ikona = pygame.image.load("buy_zmacknuti.png")
 
 cekani_buy_pozice_x = 530
 cekani_buy_pozice_y = 80
 za_cekani_buy = pygame.draw.rect(okno, cerna, (cekani_buy_pozice_x -1, cekani_buy_pozice_y -1, upgrady_velikost_x +2, upgrady_velikost_y +2))
 cekani_buy = pygame.draw.rect(okno, hneda, (cekani_buy_pozice_x, cekani_buy_pozice_y, upgrady_velikost_x, upgrady_velikost_y))
 cekani_cena = 50
-cekani_buy_ikona = pygame.image.load(resource_path("buy_cekani.png"))
+cekani_buy_ikona = pygame.image.load("buy_cekani.png")
 
 def vykresli_popis_baitu(bait_data, x, y):
     for i, (klic, text) in enumerate(bait_popisy):
@@ -653,35 +621,35 @@ bread_bait_pozice_y = 300
 za_bread_bait = pygame.draw.rect(okno, cerna, (bread_bait_pozice_x -1, bread_bait_pozice_y -1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y +2))
 bread_bait = pygame.draw.rect(okno, hneda, (bread_bait_pozice_x, bread_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 bread_bait_cena = 20
-bread_bait_ikona = pygame.image.load(resource_path("bread_bait_ikona.png"))
+bread_bait_ikona = pygame.image.load("bread_bait_ikona.png")
 
 worm_bait_pozice_x = 220
 worm_bait_pozice_y = 300
 za_worm_bait = pygame.draw.rect(okno, cerna, (worm_bait_pozice_x - 1, worm_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 worm_bait = pygame.draw.rect(okno, hneda, (worm_bait_pozice_x, worm_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 worm_bait_cena = 40
-worm_bait_ikona = pygame.image.load(resource_path("worm_bait_ikona.png"))
+worm_bait_ikona = pygame.image.load("worm_bait_ikona.png")
 
 baits_upgrade_pozice_x = 340
 baits_upgrade_pozice_y = 300
 za_baits_upgrade = pygame.draw.rect(okno, cerna, (baits_upgrade_pozice_x - 1, baits_upgrade_pozice_y - 1, baits_okenko_velikost_x + 22, baits_okenko_velikost_y + 2))
 baits_upgrade = pygame.draw.rect(okno, hneda, (baits_upgrade_pozice_x, baits_upgrade_pozice_y, baits_okenko_velikost_x +20, baits_okenko_velikost_y))
 baits_upgrade_cena = 200
-baits_upgrade_ikona = pygame.image.load(resource_path("baits_upgrade_ikona.png"))
+baits_upgrade_ikona = pygame.image.load("baits_upgrade_ikona.png")
 
 corn_bait_pozice_x = 480
 corn_bait_pozice_y = 300
 za_corn_bait = pygame.draw.rect(okno, cerna, (corn_bait_pozice_x - 1, corn_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 corn_bait = pygame.draw.rect(okno, hneda, (corn_bait_pozice_x, corn_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 corn_bait_cena = 45
-corn_bait_ikona = pygame.image.load(resource_path("corn_bait_ikona.png"))
+corn_bait_ikona = pygame.image.load("corn_bait_ikona.png")
 
 fish_head_bait_pozice_x = 600
 fish_head_bait_pozice_y = 300
 za_fish_head_bait =pygame.draw.rect(okno, cerna, (fish_head_bait_pozice_x - 1, fish_head_bait_pozice_y - 1, baits_okenko_velikost_x + 2, baits_okenko_velikost_y + 2))
 fish_head_bait = pygame.draw.rect(okno, hneda, (fish_head_bait_pozice_x, fish_head_bait_pozice_y, baits_okenko_velikost_x, baits_okenko_velikost_y))
 fish_head_bait_cena = 100
-fish_head_bait_ikona = pygame.image.load(resource_path("fish_head_bait.png"))
+fish_head_bait_ikona = pygame.image.load("fish_head_bait.png")
 
 baits_lvl = 0
 max_upgrade_baits = 5
@@ -729,10 +697,10 @@ bait_leave_tlacitko_inventory =pygame.draw.rect(okno, cervena,(695, 525, invento
 
 
 
-fish_head_inventory_ikona = pygame.image.load(resource_path("fish_head_inventory_ikona.png"))
-corn_inventory_ikona = pygame.image.load(resource_path("corn_inventory_ikona.png"))
-bread_inventory_ikona = pygame.image.load(resource_path("bread_inventory_ikona.png"))
-worm_inventory_ikona = pygame.image.load(resource_path("worm_inventory_ikona.png"))
+fish_head_inventory_ikona = pygame.image.load("fish_head_inventory_ikona.png")
+corn_inventory_ikona = pygame.image.load("corn_inventory_ikona.png")
+bread_inventory_ikona = pygame.image.load("bread_inventory_ikona.png")
+worm_inventory_ikona = pygame.image.load("worm_inventory_ikona.png")
 
 
 
@@ -772,34 +740,34 @@ leave_sell = pygame.draw.rect(okno, (cerna), (40, 535, 100, 50))
 shop_mode = None # nic / buy / sell
 
 # obrazky levelu
-rozcestnik = pygame.image.load(resource_path("rozcestnik.png"))
-venek = pygame.image.load(resource_path("venek.png"))
-jezero = pygame.image.load(resource_path("level_2.png"))
-shop = pygame.image.load(resource_path("shop.png"))
-pozadi_shop = pygame.image.load(resource_path("pozadi_shop.png"))
-pozadi_shop_jidlo = pygame.image.load(resource_path("pozadi_shop_jidlo.png"))
-rybareni = pygame.image.load(resource_path("rybareni.png"))
-ikona_prut = pygame.image.load(resource_path("ikona_prut.png"))
-rybareni_dole = pygame.image.load(resource_path("rybareni_dole.png"))
-rybareni_pozor = pygame.image.load(resource_path("rybareni_pozor.png"))
-dum = pygame.image.load(resource_path("dum.png"))
-krb = pygame.image.load(resource_path("krb.png"))
+rozcestnik = pygame.image.load("rozcestnik.png")
+venek = pygame.image.load("venek.png")
+jezero = pygame.image.load("level_2.png")
+shop = pygame.image.load("shop.png")
+pozadi_shop = pygame.image.load("pozadi_shop.png")
+pozadi_shop_jidlo = pygame.image.load("pozadi_shop_jidlo.png")
+rybareni = pygame.image.load("rybareni.png")
+ikona_prut = pygame.image.load("ikona_prut.png")
+rybareni_dole = pygame.image.load("rybareni_dole.png")
+rybareni_pozor = pygame.image.load("rybareni_pozor.png")
+dum = pygame.image.load("dum.png")
+krb = pygame.image.load("krb.png")
 
-bar = pygame.image.load(resource_path("bar.png"))
+bar = pygame.image.load("bar.png")
 za_bar_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 bar_exit = pygame.draw.rect(okno, hneda, (20, 530 , 100, 50))
 
-zidle_bar = pygame.image.load(resource_path("zidle_bar.png"))
+zidle_bar = pygame.image.load("zidle_bar.png")
 zidle_bar_rect = zidle_bar.get_rect(bottomright=(699, 380))
 
-slot_bar = pygame.image.load(resource_path("slot.png"))
+slot_bar = pygame.image.load("slot.png")
 slot_bar_rect = slot_bar.get_rect(topleft=(70, 180))
 
-barman = pygame.image.load(resource_path("barman.png"))
+barman = pygame.image.load("barman.png")
 za_barman_exit = pygame.draw.rect(okno, cerna, (9, 544 , 102, 52))
 barman_exit = pygame.draw.rect(okno, hneda, (10, 545 , 100, 50))
 
-slotmachine = pygame.image.load(resource_path("slotmachine.png"))
+slotmachine = pygame.image.load("slotmachine.png")
 za_slotmachine_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 slotmachine_exit = pygame.draw.rect(okno, bila, (20, 530 , 100, 50))
 
@@ -826,10 +794,10 @@ slot_animace_rychlost = 10  # každých N framů přepne symbol
 
 # 4 symboly – nahraď svými obrázky
 slot_symboly = [
-    pygame.image.load(resource_path("bread_bait_ikona.png")),
-    pygame.image.load(resource_path("worm_bait_ikona.png")),
-    pygame.image.load(resource_path("corn_bait_ikona.png")),
-    pygame.image.load(resource_path("fish_head_bait.png")),
+    pygame.image.load("bread_bait_ikona.png"),
+    pygame.image.load("worm_bait_ikona.png"),
+    pygame.image.load("corn_bait_ikona.png"),
+    pygame.image.load("fish_head_bait.png"),
 ]
 
 # Výhry podle kombinací (kolikrát sazka)
@@ -863,13 +831,13 @@ sazka_1000 = pygame.draw.rect(okno, zluta, (320 + sazka_velikost_x + sazka_velik
 
 
 
-garaz = pygame.image.load(resource_path("garaz.png"))
+garaz = pygame.image.load("garaz.png")
 
-bouda_zamcena = pygame.image.load(resource_path("bouda_zamcena.png"))
-kapr_bouda = pygame.image.load(resource_path("kapr_bouda.png"))
-bouda_odemcena = pygame.image.load(resource_path("bouda_odemcena.png"))
+bouda_zamcena = pygame.image.load("bouda_zamcena.png")
+kapr_bouda = pygame.image.load("kapr_bouda.png")
+bouda_odemcena = pygame.image.load("bouda_odemcena.png")
 
-kapota = pygame.image.load(resource_path("kapota.png"))
+kapota = pygame.image.load("kapota.png")
 za_kapota_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 kapota_exit = pygame.draw.rect(okno, cervena, (20, 530 , 100, 50))
 
@@ -905,22 +873,22 @@ fix_motor_kapota = pygame.draw.rect(okno, zelena, (590, 370, 100, 50))
 
 
 
-automechanik = pygame.image.load(resource_path("automechanik.png"))
+automechanik = pygame.image.load("automechanik.png")
 za_automechanik_exit = pygame.draw.rect(okno, cerna, (19, 529 , 102, 52))
 automechanik_exit = pygame.draw.rect(okno, seda, (20, 530 , 100, 50))
 
-pneumatiky_buy = pygame.image.load(resource_path("pneumatiky_buy.png"))
-motor_buy = pygame.image.load(resource_path("motor_buy.png"))
-benzin_buy = pygame.image.load(resource_path("benzin_buy.png"))
-brzdy_buy = pygame.image.load(resource_path("brzdy_buy.png"))
-pneumatika = pygame.image.load(resource_path("pneumatika.png"))
-motor_kapota = pygame.image.load(resource_path("motor_kapota.png"))
-hotovo = pygame.image.load(resource_path("hotovo.png"))
-cesta_pred_lesem = pygame.image.load(resource_path("cesta_pred_lesem.png"))
-les = pygame.image.load(resource_path("les.png"))
-boruvky_ikona = pygame.image.load(resource_path("boruvky.png"))
+pneumatiky_buy = pygame.image.load("pneumatiky_buy.png")
+motor_buy = pygame.image.load("motor_buy.png")
+benzin_buy = pygame.image.load("benzin_buy.png")
+brzdy_buy = pygame.image.load("brzdy_buy.png")
+pneumatika = pygame.image.load("pneumatika.png")
+motor_kapota = pygame.image.load("motor_kapota.png")
+hotovo = pygame.image.load("hotovo.png")
+cesta_pred_lesem = pygame.image.load("cesta_pred_lesem.png")
+les = pygame.image.load("les.png")
+boruvky_ikona = pygame.image.load("boruvky.png")
 
-automechanik_plechovky_sell = pygame.image.load(resource_path("automechanik_plechovky_sell.png"))
+automechanik_plechovky_sell = pygame.image.load("automechanik_plechovky_sell.png")
 
 
 pneumatiky_rect = pygame.Rect(195, 270, 200, 215)
@@ -969,58 +937,58 @@ pozadi_sirka = pozadi.get_width()
 pozadi_vyska = pozadi.get_height()
 
 #obrazky pepy
-postava = pygame.image.load(resource_path("pepa.png"))
+postava = pygame.image.load("pepa.png")
 TEXTURApostava = pygame.transform.scale(postava, (hrac_velikostX, hrac_velikostY))
 
-pepa1 = pygame.image.load(resource_path("pepa_pravo.png"))
+pepa1 = pygame.image.load("pepa_pravo.png")
 TEXTURApepa1 = pygame.transform.scale(pepa1, (hrac_velikostX, hrac_velikostY))
 
-pepa2 = pygame.image.load(resource_path("pepa_pravo_2.png"))
+pepa2 = pygame.image.load("pepa_pravo_2.png")
 TEXTURApepa2 = pygame.transform.scale(pepa2, (hrac_velikostX, hrac_velikostY))
 
 
-pepa_1 = pygame.image.load(resource_path("pepa_levo.png"))
+pepa_1 = pygame.image.load("pepa_levo.png")
 TEXTURApepa_1 = pygame.transform.scale(pepa_1, (hrac_velikostX, hrac_velikostY))
 
-pepa_2 = pygame.image.load(resource_path("pepa_levo_2.png"))
+pepa_2 = pygame.image.load("pepa_levo_2.png")
 TEXTURApepa_2 = pygame.transform.scale(pepa_2, (hrac_velikostX, hrac_velikostY))
 
-pepa_lod = pygame.image.load(resource_path("pepa_beznohy.png"))
+pepa_lod = pygame.image.load("pepa_beznohy.png")
 TEXTURApepa_lod = pygame.transform.scale(pepa_lod, (hrac_velikostX, hrac_velikostY))
 
-pepa_1_lod = pygame.image.load(resource_path("pepa_beznohy_levo.png"))
+pepa_1_lod = pygame.image.load("pepa_beznohy_levo.png")
 TEXTURApepa_1_lod = pygame.transform.scale(pepa_1_lod, (hrac_velikostX, hrac_velikostY))
 
-pepa_2_lod = pygame.image.load(resource_path("pepa_beznohy_pravo.png"))
+pepa_2_lod = pygame.image.load("pepa_beznohy_pravo.png")
 TEXTURApepa_2_lod = pygame.transform.scale(pepa_2_lod, (hrac_velikostX, hrac_velikostY))
 
 #obrazky lisky
 
-liska_sedici = pygame.image.load(resource_path("sedici_liska.png"))
+liska_sedici = pygame.image.load("sedici_liska.png")
 
-liska_pravo_1 = pygame.image.load(resource_path("liska_pravo_1.png"))
+liska_pravo_1 = pygame.image.load("liska_pravo_1.png")
 
-liska_pravo_2 = pygame.image.load(resource_path("liska_pravo_2.png"))
+liska_pravo_2 = pygame.image.load("liska_pravo_2.png")
 
-liska_pravo_3 = pygame.image.load(resource_path("liska_pravo_3.png"))
+liska_pravo_3 = pygame.image.load("liska_pravo_3.png")
 
-liska_pravo_4 = pygame.image.load(resource_path("liska_pravo_4.png"))
+liska_pravo_4 = pygame.image.load("liska_pravo_4.png")
 
-liska_vlevo_1 = pygame.image.load(resource_path("liska_vlevo_1.png"))
+liska_vlevo_1 = pygame.image.load("liska_vlevo_1.png")
 
-liska_vlevo_2 = pygame.image.load(resource_path("liska_vlevo_2.png"))
+liska_vlevo_2 = pygame.image.load("liska_vlevo_2.png")
 
-liska_vlevo_3 = pygame.image.load(resource_path("liska_vlevo_3.png"))
+liska_vlevo_3 = pygame.image.load("liska_vlevo_3.png")
 
-liska_vlevo_4 = pygame.image.load(resource_path("liska_vlevo_4.png"))
+liska_vlevo_4 = pygame.image.load("liska_vlevo_4.png")
 
 
 #obrazek inv
-inv = pygame.image.load(resource_path("inventar.png"))
-inv2 = pygame.image.load(resource_path("inventar_2.png"))
-inv3 = pygame.image.load(resource_path("inventar_3.png"))
-inv4 = pygame.image.load(resource_path("inventar_4.png"))
-ikona_inv = pygame.image.load(resource_path("ikona_inv.png")) # x 70 y 80
+inv = pygame.image.load("inventar.png")
+inv2 = pygame.image.load("inventar_2.png")
+inv3 = pygame.image.load("inventar_3.png")
+inv4 = pygame.image.load("inventar_4.png")
+ikona_inv = pygame.image.load("ikona_inv.png") # x 70 y 80
 ikona_inv_rect = ikona_inv.get_rect(topleft=(700, 20))
 tlacitko = pygame.draw.rect(okno, Sseda, (413 - inventory_tlacitko_velikost, 517 ,inventory_tlacitko_velikost, inventory_tlacitko_velikost))
 za_tlacitko = pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 516, inventory_tlacitko_velikost, inventory_tlacitko_velikost))
@@ -1028,15 +996,15 @@ za_tlacitko = pygame.draw.rect(okno, seda, (412 - inventory_tlacitko_velikost, 5
 
 
 #obrazky shopu
-plechovka = pygame.image.load(resource_path("plechovka.png"))
-bota = pygame.image.load(resource_path("bota.png"))
-kapr = pygame.image.load(resource_path("kapr.png"))
-stika = pygame.image.load(resource_path("stika.png"))
-sumec = pygame.image.load(resource_path("sumec.png"))
-tajnaRyba = pygame.image.load(resource_path("tajnaRyba.png"))
-rak = pygame.image.load(resource_path("Rak.png"))
+plechovka = pygame.image.load("plechovka.png")
+bota = pygame.image.load("bota.png")
+kapr = pygame.image.load("kapr.png")
+stika = pygame.image.load("stika.png")
+sumec = pygame.image.load("sumec.png")
+tajnaRyba = pygame.image.load("tajnaRyba.png")
+rak = pygame.image.load("Rak.png")
 
-coin_ikona = pygame.image.load(resource_path("coin_ikon.png"))
+coin_ikona = pygame.image.load("coin_ikon.png")
 
 #priprava textu
 E_font = pygame.font.SysFont("Aharoni", 40)
@@ -1045,7 +1013,7 @@ za_e_u_jezera = pygame.draw.rect(okno, (cerna), (721, 339, 52, 52))
 za_space_u_jezera = pygame.draw.rect(okno, cerna, (721, 339, 52, 52))
 
 
-coins_font = pygame.font.Font(resource_path("CHAOS16.otf"), 30)
+coins_font = pygame.font.Font("CHAOS16.otf", 30)
 buy_font = pygame.font.SysFont("Aharoni", buy_velikost)
 buy_text = buy_font.render("BUY", True, (cerna))
 sell_font = pygame.font.SysFont("Aharoni", sell_velikost)
@@ -1064,28 +1032,28 @@ plny_inv_text = plny_inv_font.render("!!FULL INVENTORY!!", True, cervena)
 cislo_u_polozky_font = pygame.font.SysFont("Aharoni", cislo_u_polozky_velikost)
 rarita_font = pygame.font.SysFont("Aharoni", rarita_velikost)
 popis_polozky_font = pygame.font.SysFont("Aharoni", popis_polozky_velikost)
-hodnota_polozky_font = pygame.font.Font(resource_path("CHAOS16.otf"), 30)
+hodnota_polozky_font = pygame.font.Font("CHAOS16.otf", 30)
 space_to_fish_font = pygame.font.SysFont("Aharoni", space_to_fish_velikost)
 space_to_fish_text = space_to_fish_font.render("PRESS SPACE TO CAST", True, cerna)
 pocet_upgradu_font = pygame.font.SysFont("Aharoni", cislo_u_upgradu_velikost)
-coins_cena_buy_font = pygame.font.Font(resource_path("CHAOS16.otf"),  30)
+coins_cena_buy_font = pygame.font.Font("CHAOS16.otf",  30)
 inventory_info_font = pygame.font.SysFont("Aharoni", inventory_info_velikost)
 upgrades_shop_font = pygame.font.SysFont("Aharoni", upgrades_shop_velikost)
 upgrades_inventory_font = pygame.font.SysFont("Aharoni", upgrades_inventory_velikost)
 baits_shop_font = pygame.font.SysFont("Aharoni", baits_shop_velikost)
-buy_baits_cena_font = pygame.font.Font(resource_path("CHAOS16.otf"), buy_baits_velikost)
+buy_baits_cena_font = pygame.font.Font("CHAOS16.otf", buy_baits_velikost)
 info_o_baits_font = pygame.font.SysFont("Aharoni", info_o_baits_velikost)
 krb_leave_font = pygame.font.SysFont("Aharoni", krb_leave_velikost)
 statistika_font = pygame.font.SysFont("Aharoni", statistika_velikost)
 exit_bar_font = pygame.font.SysFont("Aharoni", exit_bar_velikost)
 info_barman_font = pygame.font.SysFont("Aharoni", info_barman_velikost)
-drink_cena_font = pygame.font.Font(resource_path("CHAOS16.otf"), drink_cena_velikost)
+drink_cena_font = pygame.font.Font("CHAOS16.otf", drink_cena_velikost)
 exit_shop_s_jidlem_font = pygame.font.SysFont("Aharoni", exit_shop_s_jidlem_velikost)
-jidlo_cena_font = pygame.font.Font(resource_path("CHAOS16.otf"), jidlo_cena_velikost)
+jidlo_cena_font = pygame.font.Font("CHAOS16.otf", jidlo_cena_velikost)
 jidlo_jmeno_font = pygame.font.SysFont("Aharoni", jidlo_jmeno_velikost)
 jidlo_popis_font = pygame.font.SysFont("Aharoni", jidlo_popis_velikost)
-napis_hry_font = pygame.font.Font(resource_path("hra_napis.otf"), 140)
-za_napis_hry_font = pygame.font.Font(resource_path("hra_napis.otf"), 139)
+napis_hry_font = pygame.font.Font("hra_napis.otf", 140)
+za_napis_hry_font = pygame.font.Font("hra_napis.otf", 139)
 exit_bouda_font = pygame.font.SysFont("Aharoni", 40)
 give_kapry_font = pygame.font.SysFont("Aharoni", 40)
 exit_bouda_odemcena_font = pygame.font.SysFont("Aharoni", 40)
@@ -1094,11 +1062,11 @@ exit_automechanik_font = pygame.font.SysFont("Aharoni", 40)
 exit_kapota_font = pygame.font.SysFont("Aharoni", 40)
 popisky_automechanik_font = pygame.font.SysFont("Aharoni", 30)
 pocty_automechanik_font = pygame.font.SysFont("Aharoni", 25)
-cena_automechanik_font = pygame.font.Font(resource_path("CHAOS16.otf"), 30)
+cena_automechanik_font = pygame.font.Font("CHAOS16.otf", 30)
 fix_kapota_font = pygame.font.SysFont("Aharoni", 35)
 predmety_kapota_nadpis_font = pygame.font.SysFont("Aharoni", 50)
 bet_napis_font = pygame.font.SysFont("Aharoni", 20)
-bet_cena_font = pygame.font.Font(resource_path("CHAOS16.otf"), 30)
+bet_cena_font = pygame.font.Font("CHAOS16.otf", 30)
 hlaska_font = pygame.font.SysFont("Aharoni", hlaska_velikost)
 shop_hlaska = random.choice(seznam_vet)
 hlaska_text = hlaska_font.render(shop_hlaska, True, cerna)
@@ -1106,13 +1074,13 @@ hlaska_barman_font = pygame.font.SysFont("Aharoni", hlaska_barman_velikost)
 barman_hlaska = random.choice(seznam_vet_barman)
 hlaska_barman_text = hlaska_barman_font.render(barman_hlaska, True, cerna)
 sell_boruvky_font = pygame.font.SysFont("Aharoni", 60)
-sell_boruvky_odmena_font = pygame.font.Font(resource_path("CHAOS16.otf"), 65)
+sell_boruvky_odmena_font = pygame.font.Font("CHAOS16.otf", 65)
 popisky_upgradu_boruvky_font = pygame.font.SysFont("Aharoni", 30)
-cena_upgradu_boruvky_font = pygame.font.Font(resource_path("CHAOS16.otf"), 45)
+cena_upgradu_boruvky_font = pygame.font.Font("CHAOS16.otf", 45)
 current_upgrade_font = pygame.font.SysFont("Aharoni", 20)
 hlaska_boruvky_font = pygame.font.SysFont("Aharoni", 30)
 odpovedi_holka_font = pygame.font.SysFont("Aharoni", 50)
-quest_odmena_font = pygame.font.Font(resource_path("CHAOS16.otf"), 45)
+quest_odmena_font = pygame.font.Font("CHAOS16.otf", 45)
 
 prechod_lock_venek_a_rozcestnik = False
 prechod_lock_venek_a_jezero = False
@@ -1143,18 +1111,18 @@ zizen_flag_30 = False
 zizen_flag_20 = False
 zizen_flag_0 = False
 
-hlad_ikona = pygame.image.load(resource_path("hlad.png"))
-zizen_ikona = pygame.image.load(resource_path("zizen.png"))
-deprese_ikona = pygame.image.load(resource_path("deprese.png"))
+hlad_ikona = pygame.image.load("hlad.png")
+zizen_ikona = pygame.image.load("zizen.png")
+deprese_ikona = pygame.image.load("deprese.png")
 
 za_zapnuti_statistik = pygame.draw.rect(okno, cerna, (359, 564, 82, 32))
 zapnuti_statistik = pygame.draw.rect(okno, hneda, (360, 565, 80, 30))
-zapnuti_statistik_ikona = pygame.image.load(resource_path("zapnuti.png"))
+zapnuti_statistik_ikona = pygame.image.load("zapnuti.png")
 zapnuti = False
 
 za_vypnuti_statistik = pygame.draw.rect(okno, cerna, (359, 4, 82, 32))
 vypnuti_statistik = pygame.draw.rect(okno, hneda, (360, 5, 80, 30))
-vypnuti_statistik_ikona = pygame.image.load(resource_path("vypnuti.png"))
+vypnuti_statistik_ikona = pygame.image.load("vypnuti.png")
 
 zapnuti_statistik_rybareni = pygame.draw.rect(okno, hneda, (5, 565, 80, 30))
 
@@ -1192,73 +1160,73 @@ hlad_cola = 10
 zizen_pivo = 100
 hlad_pivo = 20
 
-voda = pygame.image.load(resource_path("voda.png"))
-dzus = pygame.image.load(resource_path("dzus.png"))
-cola = pygame.image.load(resource_path("cola.png"))
-pivo = pygame.image.load(resource_path("pivo.png"))
+voda = pygame.image.load("voda.png")
+dzus = pygame.image.load("dzus.png")
+cola = pygame.image.load("cola.png")
+pivo = pygame.image.load("pivo.png")
 
-ikona_prut_menu = pygame.image.load(resource_path("ikona_prut_menu.png"))
+ikona_prut_menu = pygame.image.load("ikona_prut_menu.png")
 
-play_tlacitko = pygame.image.load(resource_path("play_tlacitko.png"))
+play_tlacitko = pygame.image.load("play_tlacitko.png")
 play_tlacitko_rect = play_tlacitko.get_rect(center=(400, 280))
 
-play_tlacitko_vetsi = pygame.image.load(resource_path("play_tlacitko_vetsi.png"))
+play_tlacitko_vetsi = pygame.image.load("play_tlacitko_vetsi.png")
 play_tlacitko_vetsi_rect = play_tlacitko.get_rect(center=(395, 275))
 
-quit_tlacitko = pygame.image.load(resource_path("quit_tlacitko.png"))
+quit_tlacitko = pygame.image.load("quit_tlacitko.png")
 quit_tlacitko_rect = quit_tlacitko.get_rect(center=(30, 570))
 
-quit_tlacitko_vetsi = pygame.image.load(resource_path("quit_tlacitko_vetsi.png"))
+quit_tlacitko_vetsi = pygame.image.load("quit_tlacitko_vetsi.png")
 quit_tlacitko_vetsi_rect = quit_tlacitko_vetsi.get_rect(center=(30, 570))
 
-instagram_ikona = pygame.image.load(resource_path("instagram_ikona.png"))
+instagram_ikona = pygame.image.load("instagram_ikona.png")
 instagram_ikona_rect = instagram_ikona.get_rect(center=(640, 560))
 
-paypal_ikona = pygame.image.load(resource_path("paypal_ikona.png"))
+paypal_ikona = pygame.image.load("paypal_ikona.png")
 paypal_ikona_rect = paypal_ikona.get_rect(center=(700, 560))
 
-github_ikona = pygame.image.load(resource_path("github_ikona.png"))
+github_ikona = pygame.image.load("github_ikona.png")
 github_ikona_rect = github_ikona.get_rect(center=(760, 560))
 
-instagram_ikona_vetsi = pygame.image.load(resource_path("instagram_ikona_vetsi.png"))
+instagram_ikona_vetsi = pygame.image.load("instagram_ikona_vetsi.png")
 instagram_ikona_vetsi_rect = instagram_ikona_vetsi.get_rect(center=(640, 560))
 
-paypal_ikona_vetsi = pygame.image.load(resource_path("paypal_ikona_vetsi.png"))
+paypal_ikona_vetsi = pygame.image.load("paypal_ikona_vetsi.png")
 paypal_ikona_vetsi_rect = paypal_ikona_vetsi.get_rect(center=(700, 560))
 
-github_ikona_vetsi = pygame.image.load(resource_path("github_ikona_vetsi.png"))
+github_ikona_vetsi = pygame.image.load("github_ikona_vetsi.png")
 github_ikona_vetsi_rect = github_ikona_vetsi.get_rect(center=(760, 560))
 
 #Animace
 hra = False
 menu = False
-MN = [pygame.image.load(resource_path(f"{i}.png")) for i in range(1, 51)]
+MN = [pygame.image.load(f"{i}.png") for i in range(1, 51)]
 animace_start = False
-SA = [pygame.image.load(resource_path(f"s{a}.png")) for a in range(1, 13)]
+SA = [pygame.image.load(f"s{a}.png") for a in range(1, 13)]
 animace_start_auto_prijezd = False
-SAP = [pygame.image.load(resource_path(f"sap{l}.png")) for l in range(1, 4)]
+SAP = [pygame.image.load(f"sap{l}.png") for l in range(1, 4)]
 animace_start_auto_ze_zadu = False
-SAZZ = [pygame.image.load(resource_path(f"sazz{a}.png")) for a in range(1, 7)]
+SAZZ = [pygame.image.load(f"sazz{a}.png") for a in range(1, 7)]
 animace_start_auto_ze_predu = False
-SAZP = [pygame.image.load(resource_path(f"sazp{o}.png")) for o in range(1, 7)]
+SAZP = [pygame.image.load(f"sazp{o}.png") for o in range(1, 7)]
 animace_start_pepa_1 = False
-SAPONE = [pygame.image.load(resource_path(f"sapone{k}.png")) for k in range(1, 59)]
+SAPONE = [pygame.image.load(f"sapone{k}.png") for k in range(1, 59)]
 animace_start_pepa_brzdy = False
-SAB = [pygame.image.load(resource_path(f"sab{y}.png")) for y in range(1, 4)]
+SAB = [pygame.image.load(f"sab{y}.png") for y in range(1, 4)]
 animace_start_pepa_brzdeni_auta = False
-SABA = [pygame.image.load(resource_path(f"saba{c}.png")) for c in range(1, 31)]
+SABA = [pygame.image.load(f"saba{c}.png") for c in range(1, 31)]
 animace_start_kufr = False
-SAK = [pygame.image.load(resource_path(f"sak{s}.png")) for s in range(1, 11)]
+SAK = [pygame.image.load(f"sak{s}.png") for s in range(1, 11)]
 animace_start_promluva = False
-SAR = [pygame.image.load(resource_path(f"sapr{s}.png")) for s in range(1, 42)]
+SAR = [pygame.image.load(f"sapr{s}.png") for s in range(1, 42)]
 animace_konec_opraveni_auta = False
-SKO = [pygame.image.load(resource_path(f"sko{x}.png")) for x in range(1, 10)]
+SKO = [pygame.image.load(f"sko{x}.png") for x in range(1, 10)]
 animace_konec_zlomeni_prutu = False
-SKZ = [pygame.image.load(resource_path(f"skz{r}.png")) for r in range(1, 24)]
+SKZ = [pygame.image.load(f"skz{r}.png") for r in range(1, 24)]
 animace_konec_kufr = False
-SKK = [pygame.image.load(resource_path(f"skk{j}.png")) for j in range(1, 23)]
+SKK = [pygame.image.load(f"skk{j}.png") for j in range(1, 23)]
 animace_konec = False
-SK = [pygame.image.load(resource_path(f"sk{u}.png")) for u in range(1, 7)]
+SK = [pygame.image.load(f"sk{u}.png") for u in range(1, 7)]
 
 
 
@@ -1278,7 +1246,7 @@ unequip_text = equip_unequip_font.render("UNEQUIP", True , cerna)
 
 boruvky_pocet_v_inv = 0
 pocet_boruvek_pri_sebrani = 1
-shop_boruvky = pygame.image.load(resource_path("shop_boruvky.png"))
+shop_boruvky = pygame.image.load("shop_boruvky.png")
 
 boruvky_respawn_delay = 80000  # ms než vyrostou znovu (20s)
 boruvka_velikost = 11
@@ -1301,20 +1269,20 @@ shop_boruvky_leave = pygame.draw.rect(okno, hneda, (10, 540, 100, 50))
 
 za_boruvky_sell = pygame.draw.rect(okno, hneda, (49, 399, 252, 122))
 boruvky_sell = pygame.draw.rect(okno, hneda, (50, 400, 250, 120))
-boruvky_sell_ikona = pygame.image.load(resource_path("boruvky_sell.png"))
+boruvky_sell_ikona = pygame.image.load("boruvky_sell.png")
 
 
 za_kosik_na_boruvky_upgrade = pygame.draw.rect(okno, cerna, (399, 399, 112, 192))
 kosik_na_boruvky_upgrade = pygame.draw.rect(okno, hneda, (400, 400, 110, 190))
-kosik_na_boruvky_upgrade_ikona = pygame.image.load(resource_path("kosik_upgrade.png"))
+kosik_na_boruvky_upgrade_ikona = pygame.image.load("kosik_upgrade.png")
 
 za_sber_vice_boruvek = pygame.draw.rect(okno, cerna, (529, 399, 112, 192))
 sber_vice_boruvek = pygame.draw.rect(okno, hneda, (530, 400, 110, 190))
-sber_vice_boruvek_upgrade_ikona = pygame.image.load(resource_path("sber_vice_bouvek.png"))
+sber_vice_boruvek_upgrade_ikona = pygame.image.load("sber_vice_bouvek.png")
 
 za_cekani_na_boruvky = pygame.draw.rect(okno, cerna, (659, 399, 112, 192))
 cekani_na_boruvky = pygame.draw.rect(okno, hneda, (660, 400, 110, 190))
-cekani_na_boruvky_upgrade_ikona = pygame.image.load(resource_path("cekani_na_boruvky.png"))
+cekani_na_boruvky_upgrade_ikona = pygame.image.load("cekani_na_boruvky.png")
 
 
 odmena_za_boruvky_cena = 50
@@ -1335,7 +1303,7 @@ max_sber_vice_boruvek_upgrade_level = 3
 cekani_boruvky_upgrade_level = 0
 max_cekani_boruvky_upgrade_level = 4
 
-soubor_boruvky = open(resource_path("boruvky.txt"), "r", encoding="utf-8")
+soubor_boruvky = open("boruvky.txt", "r", encoding="utf-8")
 
 seznam_vet_boruvky = []
 
@@ -1358,9 +1326,9 @@ save_text_zobrazit = False
 
 #kytky npc
 
-holka_kytky_otazka = pygame.image.load(resource_path("holka_kytky.png"))
-holka_levandule = pygame.image.load(resource_path("holka_levandule.png"))
-holka_ruze = pygame.image.load(resource_path("holka_ruze.png"))
+holka_kytky_otazka = pygame.image.load("holka_kytky.png")
+holka_levandule = pygame.image.load("holka_levandule.png")
+holka_ruze = pygame.image.load("holka_ruze.png")
 start_questu = False
 
 za_holka_leave = pygame.draw.rect(okno, cerna, (9, 539, 102, 52))
@@ -1379,7 +1347,7 @@ holka_levandule_give = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
 levandule = False
 pocet_levanduli = 0
 
-levandule_ikona = pygame.image.load(resource_path("levandule_ikona.png"))
+levandule_ikona = pygame.image.load("levandule_ikona.png")
 levandule_ikona = pygame.transform.scale(levandule_ikona, (50, 80))
 
 levandule_pozice = [
@@ -1399,7 +1367,7 @@ pozadi_na_jmeno = {
 ruze = False
 pocet_ruzi = 0
 
-ruze_ikona = pygame.image.load(resource_path("ruze_ikona.png"))
+ruze_ikona = pygame.image.load("ruze_ikona.png")
 ruze_ikona = pygame.transform.scale(ruze_ikona, (50, 80))
 
 ruze_pozice = [
@@ -1414,9 +1382,9 @@ holka_ruze_give = pygame.draw.rect(okno, hneda, (530, 410, 150, 100))
 tulipan = False
 pocet_tulipanu = 0
 
-tulipan_ikona = pygame.image.load(resource_path("tulipan_ikona.png"))
+tulipan_ikona = pygame.image.load("tulipan_ikona.png")
 tulipan_ikona = pygame.transform.scale(tulipan_ikona, (50, 80))
-holka_tulipan = pygame.image.load(resource_path("holka_tulipan.png"))
+holka_tulipan = pygame.image.load("holka_tulipan.png")
 
 
 za_holka_tulipan_give = pygame.draw.rect(okno, cerna, (529, 409, 152, 102))
@@ -1431,7 +1399,7 @@ tulipan_pozice = [
 odmena_za_quest = 2500
 konec_questu = False
 
-holka_konec_questu = pygame.image.load(resource_path("holka_konec_questu.png"))
+holka_konec_questu = pygame.image.load("holka_konec_questu.png")
             
 stojim_u_jezera = False
 stojim_u_shopu = False
@@ -1459,121 +1427,121 @@ stojim_u_krbu = False
 
 #zvuky
 
-zvuk_chuze_sterk = pygame.mixer.Sound(resource_path("sterk_chuze.mp3"))
+zvuk_chuze_sterk = pygame.mixer.Sound("sterk_chuze.mp3")
 zvuk_chuze_sterk_hraje = False
 zvuk_chuze_sterk.set_volume(0.1)
 
-zvuk_chuze_les = pygame.mixer.Sound(resource_path("zvuk_chuze_les.mp3"))
+zvuk_chuze_les = pygame.mixer.Sound("zvuk_chuze_les.mp3")
 zvuk_chuze_les_hraje = False
 zvuk_chuze_les.set_volume(0.5)
 
-zvuk_les_ambient = pygame.mixer.Sound(resource_path("les_ambient.wav"))
+zvuk_les_ambient = pygame.mixer.Sound("les_ambient.wav")
 zvuk_les_ambient.set_volume(0.4)
 zvuk_les_ambient_hraje = False
 
-zvuk_venek_ambient = pygame.mixer.Sound(resource_path("venek.wav"))
+zvuk_venek_ambient = pygame.mixer.Sound("venek.wav")
 zvuk_venek_ambient.set_volume(1)
 zvuk_venek_ambient_hraje = False
 
-zvuk_boruvky_shop = pygame.mixer.Sound(resource_path("boruvky_shop.wav"))
+zvuk_boruvky_shop = pygame.mixer.Sound("boruvky_shop.wav")
 zvuk_boruvky_shop.set_volume(0.1)
 zvuk_boruvky_shop_hraje = False
 
-zvuk_shop = pygame.mixer.Sound(resource_path("shop.mp3"))
+zvuk_shop = pygame.mixer.Sound("shop.mp3")
 zvuk_shop.set_volume(1)
 zvuk_shop_hraje = False
 
-zvuk_barman = pygame.mixer.Sound(resource_path("barman.mp3"))
+zvuk_barman = pygame.mixer.Sound("barman.mp3")
 zvuk_barman.set_volume(1)
 zvuk_barman_hraje = False
 
-zvuk_click = pygame.mixer.Sound(resource_path("click.wav"))
+zvuk_click = pygame.mixer.Sound("click.wav")
 zvuk_click.set_volume(0.4)
 
 
-zvuk_slot_spin = pygame.mixer.Sound(resource_path("slotmachine_spin.mp3"))
+zvuk_slot_spin = pygame.mixer.Sound("slotmachine_spin.mp3")
 zvuk_slot_spin.set_volume(1)
 
-zvuk_jidla = pygame.mixer.Sound(resource_path("jidlo.wav"))
+zvuk_jidla = pygame.mixer.Sound("jidlo.wav")
 zvuk_jidla.set_volume(0.4)
 
-zvuk_piti = pygame.mixer.Sound(resource_path("piti.wav"))
+zvuk_piti = pygame.mixer.Sound("piti.wav")
 zvuk_piti.set_volume(1)
 
-zvuk_krb = pygame.mixer.Sound(resource_path("krb.mp3"))
+zvuk_krb = pygame.mixer.Sound("krb.mp3")
 zvuk_krb.set_volume(1)
 zvuk_krb_hraje = False
 
-zvuk_chuze_dum = pygame.mixer.Sound(resource_path("drevena_podlaha.mp3"))
+zvuk_chuze_dum = pygame.mixer.Sound("drevena_podlaha.mp3")
 zvuk_chuze_dum.set_volume(0.5)
 zvuk_chuze_dum_hraje = False
 
-zvuk_liska_bouda = pygame.mixer.Sound(resource_path("liska.wav"))
+zvuk_liska_bouda = pygame.mixer.Sound("liska.wav")
 zvuk_liska_bouda.set_volume(0.4)
 zvuk_liska_bouda_hraje = False
 
-zvuk_slot_vysledek = pygame.mixer.Sound(resource_path("vysledek_slotmachine.wav"))
+zvuk_slot_vysledek = pygame.mixer.Sound("vysledek_slotmachine.wav")
 zvuk_slot_vysledek.set_volume(0.6)
 
-zvuk_jezero = pygame.mixer.Sound(resource_path("jezero.wav"))
+zvuk_jezero = pygame.mixer.Sound("jezero.wav")
 zvuk_jezero.set_volume(0.4)
 zvuk_jezero_hraje = False
 
-zvuk_swoosh = pygame.mixer.Sound(resource_path("swoosh.wav"))
+zvuk_swoosh = pygame.mixer.Sound("swoosh.wav")
 zvuk_swoosh.set_volume(1)
 
-zvuk_chyt = pygame.mixer.Sound(resource_path("chyt.wav"))
+zvuk_chyt = pygame.mixer.Sound("chyt.wav")
 zvuk_chyt.set_volume(0.6)
 zvuk_chyt_hraje = False
 
-zvuk_soucastka = pygame.mixer.Sound(resource_path("soucastka.wav"))
+zvuk_soucastka = pygame.mixer.Sound("soucastka.wav")
 zvuk_soucastka.set_volume(0.6)
 
-zvuk_benzin = pygame.mixer.Sound(resource_path("benzin.wav"))
+zvuk_benzin = pygame.mixer.Sound("benzin.wav")
 zvuk_benzin.set_volume(0.6)
 
-zvuk_auto_silnice = pygame.mixer.Sound(resource_path("auto_silnice.wav"))
+zvuk_auto_silnice = pygame.mixer.Sound("auto_silnice.wav")
 zvuk_auto_silnice.set_volume(0.6)
 
-zvuk_auto_zevnitr = pygame.mixer.Sound(resource_path("auto_silnice.wav"))
+zvuk_auto_zevnitr = pygame.mixer.Sound("auto_silnice.wav")
 zvuk_auto_zevnitr.set_volume(0.1)
 
-radio = pygame.mixer.Sound(resource_path("radio.wav"))
+radio = pygame.mixer.Sound("radio.wav")
 radio.set_volume(0.2)
 
-brzdy = pygame.mixer.Sound(resource_path("brzdy.wav"))
+brzdy = pygame.mixer.Sound("brzdy.wav")
 brzdy.set_volume(0.5)
 
-kufr_odemceni = pygame.mixer.Sound(resource_path("kufr.wav"))
+kufr_odemceni = pygame.mixer.Sound("kufr.wav")
 kufr_odemceni.set_volume(1)
 
-menu_muzika = pygame.mixer.Sound(resource_path("menu_muzika.mp3"))
+menu_muzika = pygame.mixer.Sound("menu_muzika.mp3")
 menu_muzika.set_volume(0.4)
 
-hwg = pygame.mixer.Sound(resource_path("hwg.wav"))
+hwg = pygame.mixer.Sound("hwg.wav")
 hwg.set_volume(1)
 
-zvuk_kapota = pygame.mixer.Sound(resource_path("kapota.wav"))
+zvuk_kapota = pygame.mixer.Sound("kapota.wav")
 zvuk_kapota.set_volume(0.7)
 
-crack = pygame.mixer.Sound(resource_path("crack.wav"))
+crack = pygame.mixer.Sound("crack.wav")
 crack.set_volume(0.7)
 
-kapota_zavreni = pygame.mixer.Sound(resource_path("kapota_zavreni.wav"))
+kapota_zavreni = pygame.mixer.Sound("kapota_zavreni.wav")
 kapota_zavreni.set_volume(0.7)
 
-konec_muzika = pygame.mixer.Sound(resource_path("konec_muzika.wav"))
+konec_muzika = pygame.mixer.Sound("konec_muzika.wav")
 konec_muzika.set_volume(0.7)
 
-zvuk_canuget = pygame.mixer.Sound(resource_path("canuget.wav"))
+zvuk_canuget = pygame.mixer.Sound("canuget.wav")
 zvuk_canuget.set_volume(0.3)
 zvuk_canuget_hraje = False
 
-zvuk_canuhelp = pygame.mixer.Sound(resource_path("canuhelp.mp3"))
+zvuk_canuhelp = pygame.mixer.Sound("canuhelp.mp3")
 zvuk_canuhelp.set_volume(0.3)
 zvuk_canuhelp_hraje = False
 
-zvuk_thanks = pygame.mixer.Sound(resource_path("thanks.wav"))
+zvuk_thanks = pygame.mixer.Sound("thanks.wav")
 zvuk_thanks.set_volume(0.3)
 zvuk_thanks_hraje = False
 
@@ -1591,10 +1559,10 @@ while not menu and not animace_start:
             if play_tlacitko_rect.collidepoint(mys_pozice):
                 menu = True
                 menu_muzika.stop()
-                if os.path.exists(save_path("summer_fish_data")):
+                if os.path.exists("save.json"):
                         hra = True
-                        aplikuj_save(nacti_save())
-                        
+                        with open("save.json", "r", encoding="utf-8") as f:
+                            aplikuj_save(json.load(f))
                 else:
                     animace_start = True
                     #hra = True
@@ -1923,7 +1891,7 @@ while animace_start_promluva is True:
     pygame.display.flip()
 
 
-pygame.mixer.music.load(resource_path("background_music.wav"))
+pygame.mixer.music.load("background_music.wav")
 pygame.mixer.music.set_volume(0.4)
 pygame.mixer.music.play(loops=-1)
 
@@ -2434,10 +2402,10 @@ while hra is True:
             rybi_prsty_hunger = 90
             rybi_prsty_zizen = 20
             
-            hranolky_ikona = pygame.image.load(resource_path("hranolky.png"))
-            salat_ikona = pygame.image.load(resource_path("salat.png"))
-            hamburger_ikona = pygame.image.load(resource_path("hamburger.png"))
-            rybi_prsty_ikona = pygame.image.load(resource_path("rybi_prsty.png"))
+            hranolky_ikona = pygame.image.load("hranolky.png")
+            salat_ikona = pygame.image.load("salat.png")
+            hamburger_ikona = pygame.image.load("hamburger.png")
+            rybi_prsty_ikona = pygame.image.load("rybi_prsty.png")
             
             za_hranolky_buy = pygame.draw.rect(okno, cerna, (39, 149, jidlo_polozky_velikost_x + 2, jidlo_polozky_velikost_y + 2))
             hranolky_buy = pygame.draw.rect(okno, hneda, (40, 150, jidlo_polozky_velikost_x, jidlo_polozky_velikost_y))
@@ -3199,7 +3167,8 @@ while hra is True:
             prechod_lock_dum_a_venek = False
         
         if stojim_u_postele and stisknuto[pygame.K_e] and not inventar and pozadi == dum:
-            uloz_save(ziskej_data_pro_save())
+            with open("save.json", "w", encoding="utf-8") as f:
+                    json.dump(ziskej_data_pro_save(), f, indent=2, ensure_ascii=False)
             save_text_zobrazit = True
             save_text_cas = pygame.time.get_ticks()                    
                     
@@ -5313,8 +5282,8 @@ while animace_konec is True:
     if (pocitadlo // faktor_zpozdeni) >= pocet_snimku * 10:
         animace_konec = False
         konec_muzika.stop()
-        if os.path.exists(save_path("summer_fish_data")):
-                    os.remove(save_path("summer_fish_data"))
+        if os.path.exists("save.json"):
+                    os.remove("save.json")
                     
         pygame.quit()
         os.execv(sys.executable, [sys.executable] + sys.argv)  # ← restart
